@@ -1,23 +1,31 @@
 import { MongoClient } from "mongodb";
 
-const MONGODB_URI = "mongodb://root:imperial_king2030@127.0.0.1:27017/?authSource=admin";
+const MONGODB_URI = process.env.MONGODB_URI;
 const MONGODB_DB = "mydatabase";
 
-if (!MONGODB_URI) throw new Error("Please define MONGODB_URI in .env");
-
-let client;
-let clientPromise;
-
-if (!global._mongoClientPromise) {
-  client = new MongoClient(MONGODB_URI);
-  global._mongoClientPromise = client.connect();
+if (!MONGODB_URI) {
+  throw new Error("Please define MONGODB_URI in .env");
 }
 
-clientPromise = global._mongoClientPromise;
+let cached = global._mongo;
+
+if (!cached) {
+  cached = global._mongo = {
+    client: null,
+    promise: null,
+  };
+}
 
 export async function connectDB() {
-  const client = await clientPromise;
-  return client.db(MONGODB_DB);
-}
+  if (cached.client) {
+    return cached.client.db(MONGODB_DB);
+  }
 
-export default clientPromise;
+  if (!cached.promise) {
+    const client = new MongoClient(MONGODB_URI);
+    cached.promise = client.connect();
+  }
+
+  cached.client = await cached.promise;
+  return cached.client.db(MONGODB_DB);
+}
