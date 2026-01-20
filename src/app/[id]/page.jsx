@@ -1,5 +1,5 @@
 import BioClient from "@/components/BioClient/BioClient";
-import { adminDB } from "@/lib/firebaseAdmin";
+import { connectDB } from "@/lib/mongoClient";
 
 /* =========================
    Helpers
@@ -16,14 +16,13 @@ export async function generateMetadata({ params }) {
   const username = params.id;
 
   try {
-    const userSnap = await adminDB
+    const db = await connectDB();
+    const user = await db
       .collection("users")
-      .doc(username)
-      .get();
+      .findOne({ username });
 
-    if (userSnap.exists) {
-      const userData = userSnap.data();
-      const capitalized = capitalize(userData?.username || username);
+    if (user) {
+      const capitalized = capitalize(user.username || username);
 
       return {
         title: `${capitalized}'s Profile | Bio Link`,
@@ -45,23 +44,22 @@ export async function generateMetadata({ params }) {
 ========================= */
 export default async function BioPage({ params }) {
   const username = params.id;
+  const db = await connectDB();
 
   /* =========================
      1. USER
   ========================= */
-  let userSnap = null;
-  try {
-    userSnap = await adminDB
-      .collection("users")
-      .doc(username)
-      .get();
-  } catch (_) {}
+  let userData = null;
 
-  const userData = userSnap?.exists ? userSnap.data() : null;
+  try {
+    userData = await db
+      .collection("users")
+      .findOne({ username });
+  } catch (_) {}
 
   const user = userData
     ? {
-        id: userSnap.id,
+        id: userData._id.toString(),
         email: userData.email || "",
         username: capitalize(userData.username),
         avatar: userData.avatar || "",
@@ -83,18 +81,16 @@ export default async function BioPage({ params }) {
   let creator = null;
 
   try {
-    const creatorSnap = await adminDB
+    const creatorData = await db
       .collection("creators")
-      .doc(username)
-      .get();
+      .findOne({ username });
 
-    if (creatorSnap.exists) {
-      const data = creatorSnap.data();
+    if (creatorData) {
       creator = {
         username,
-        adsterraSmartlink: data.adsterraSmartlink || "",
-        creatorApiKey: data.creatorApiKey || "",
-        instagramId: data.instagramId || "",
+        adsterraSmartlink: creatorData.adsterraSmartlink || "",
+        creatorApiKey: creatorData.creatorApiKey || "",
+        instagramId: creatorData.instagramId || "",
       };
     }
   } catch (_) {}
@@ -105,14 +101,9 @@ export default async function BioPage({ params }) {
   let accountsDoc = null;
 
   try {
-    const snap = await adminDB
+    accountsDoc = await db
       .collection("accounts")
-      .doc("main") // single document pattern
-      .get();
-
-    if (snap.exists) {
-      accountsDoc = snap.data();
-    }
+      .findOne({ _id: "main" }); // single-document pattern
   } catch (_) {}
 
   let selectedAccount = "account1";
@@ -143,13 +134,12 @@ export default async function BioPage({ params }) {
   let design = "";
 
   try {
-    const linksSnap = await adminDB
+    const linkData = await db
       .collection("links")
-      .doc(username)
-      .get();
+      .findOne({ username });
 
-    if (linksSnap.exists) {
-      design = linksSnap.data()?.design || "";
+    if (linkData) {
+      design = linkData.design || "";
     }
   } catch (_) {}
 

@@ -2,13 +2,12 @@
 
 import Advertize from "@/components/Advertize/Advertize";
 import Genre from "@/components/Genre/Genre";
-import { adminDB } from "@/lib/firebaseAdmin"; // Firestore instance
+import { connectDB } from "@/lib/mongoClient"; // ✨ Import the DB connection utility
 
 export default async function SeriesPage({ searchParams }) {
-  const searchParam = await searchParams
-  const page = searchParam.page || 1;
-  const genre = searchParam.genre;
-  const creatorApiKey = searchParam.creator; // Get the creator API key
+  const page = searchParams.page || 1;
+  const genre = searchParams.genre;
+  const creatorApiKey = searchParams.creator; // Get the creator API key
 
   // --- Start Creator Ad Link Logic ---
   const DEFAULT_AD_LINK =
@@ -16,33 +15,40 @@ export default async function SeriesPage({ searchParams }) {
   let dynamicAdLink = DEFAULT_AD_LINK;
 
   if (creatorApiKey) {
+    let client;
     try {
-      // 1. Reference the creator document in Firestore
-      const docRef = adminDB.collection("creators").doc(creatorApiKey);
-      const docSnapshot = await docRef.get();
+      // 1. Connect to MongoDB
+      const db = await connectDB();
+      const collection = db.collection("creators");
 
-      // 2. Update the ad link if found
-      if (docSnapshot.exists) {
-        const creatorData = docSnapshot.data();
-        if (creatorData?.adsterraSmartlink) {
-          dynamicAdLink = creatorData.adsterraSmartlink;
-        }
+      // 2. Fetch the creator data using the creatorApiKey
+      // Note: No need for a separate fetch() call, we query the DB directly.
+      const creatorData = await collection.findOne(
+        { username: creatorApiKey },
+        { projection: { adsterraSmartlink: 1, _id: 0 } } // Only retrieve the smartlink
+      );
+
+      // 3. Update the ad link if found
+      if (creatorData && creatorData.adsterraSmartlink) {
+        dynamicAdLink = creatorData.adsterraSmartlink;
       }
     } catch (error) {
-      console.error("Firestore fetch failed for creator:", creatorApiKey, error);
+      console.error("MongoDB fetch failed for creator:", creatorApiKey, error);
       // Fallback to default link
     }
+    // No need to explicitly close the connection when using the module-scoped client pattern
   }
   // --- End Creator Ad Link Logic ---
 
   // --- Start Genre Data Fetch Logic ---
-  const apiUrl = `https://henpro-api-three.vercel.app/api/genre?genre=${genre}&page=${page}`;
+  const apiUrl = `https://api.henpro.fun/api/genre?genre=${genre}&page=${page}`;
 
   const res = await fetch(apiUrl, {
     next: { revalidate: 300 }, // revalidate every 5 min
   });
 
   if (!res.ok) {
+    // Note: You might want to log the fetch error or handle it more gracefully
     throw new Error("Failed to fetch series");
   }
 

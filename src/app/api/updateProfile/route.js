@@ -1,21 +1,21 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth/next";
-import { adminDB } from "@/lib/firebaseAdmin"; // Firestore instance
+import { connectDB } from "@/lib/mongoClient";
 import { hash } from "bcryptjs";
+import { ObjectId } from "mongodb";
 
 export async function POST(req) {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session?.user?.id) {
+    if (!session || !session.user || !session?.user?.id) {
       return new Response(JSON.stringify({ message: "Unauthorized" }), { status: 403 });
     }
 
     const body = await req.json();
     const { userId, email, username, password, avatar } = body;
 
-    // Ensure the user is updating their own profile
-    if (session.user.id !== userId) {
+    if (session?.user?.id !== userId) {
       return new Response(JSON.stringify({ message: "Unauthorized" }), { status: 403 });
     }
 
@@ -32,19 +32,24 @@ export async function POST(req) {
       return new Response(JSON.stringify({ message: "No changes detected" }), { status: 400 });
     }
 
-    // Firestore: update user document
-    const userRef = adminDB.collection("users").doc(userId);
-    await userRef.update(updateData);
+    const db = await connectDB();
+    const users = db.collection("users"); 
 
-    // Update session object (optional, only for server-side use)
-    if (avatar) session.user.avatar = avatar;
-    if (email) session.user.email = email;
-    if (username) session.user.username = username;
+    // Update user in MongoDB 
+    const result = await users.updateOne(
+      { _id: new ObjectId(userId) },
+      { $set: updateData }
+    );
+
+    if (result.modifiedCount > 0) {
+      if (avatar) session.user.avatar = avatar;
+      if (email) session.user.email = email;
+      if (username) session.user.username = username;
+    }
 
     return new Response(JSON.stringify({ message: "Profile updated successfully" }), { status: 200 });
 
   } catch (error) {
-    console.error("Firestore profile update error:", error);
-    return new Response(JSON.stringify({ message: "Internal Server Error" }), { status: 500 });
+    return new Response(JSON.stringify({ message: error.message }), { status: 500 });
   }
 }

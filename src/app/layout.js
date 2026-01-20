@@ -23,6 +23,10 @@ export default function RootLayout({ children }) {
           src="https://www.googletagmanager.com/gtag/js?id=G-64QSGGL3N5"
         />
         <Script
+          strategy="afterInteractive"
+          src="https://pl27309289.effectivegatecpm.com/d6/f8/e1/d6f8e16851504f20f1ccaadcdd965ee3.js"
+        />
+        <Script
           id="google-analytics"
           strategy="afterInteractive"
           dangerouslySetInnerHTML={{

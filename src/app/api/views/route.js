@@ -1,64 +1,82 @@
-// /app/api/views/route.js
+// /app/api/views/route.js (ADD THE GET METHOD)
+
 import { NextResponse } from "next/server";
-import { adminDB } from "@/lib/firebaseAdmin"; // Firestore instance
+import { connectDB } from "@/lib/mongoClient";
 
-const CONTENT_COLLECTION_NAME = "hanimeViews";
+const CONTENT_COLLECTION_NAME = "hanimeViews"; // Assuming you have a collection for content metadata
 
-/**
- * POST: Increment view count for a contentKey
- * Body: { contentKey }
- */
+// --- POST METHOD (Increment View) ---
 export async function POST(request) {
+  // ... (Your existing POST logic to increment views)
   const { contentKey } = await request.json();
 
   if (!contentKey) {
-    return NextResponse.json({ message: "Missing contentKey" }, { status: 400 });
+    return NextResponse.json(
+      { message: "Missing contentKey" },
+      { status: 400 },
+    );
   }
 
   try {
-    const docRef = adminDB.collection(CONTENT_COLLECTION_NAME).doc(contentKey);
+    const db = await connectDB();
+    const collection = db.collection(CONTENT_COLLECTION_NAME);
 
-    // Atomically increment the views counter
-    await docRef.set(
-      { views: adminDB.FieldValue.increment(1) },
-      { merge: true }
+    await collection.updateOne(
+      { contentKey: contentKey },
+      { $inc: { views: 1 } },
+      { upsert: true },
     );
 
-    // Fetch the updated count
-    const updatedDoc = await docRef.get();
-    const views = updatedDoc.data()?.views || 1;
+    // It's good practice to fetch the new count after incrementing
+    const updatedContent = await collection.findOne(
+      { contentKey: contentKey },
+      { projection: { views: 1, _id: 0 } },
+    );
 
     return NextResponse.json(
-      { message: "View recorded successfully", views },
-      { status: 200 }
+      {
+        message: "View recorded successfully",
+        views: updatedContent?.views || 1, // Return the updated count immediately
+      },
+      { status: 200 },
     );
   } catch (error) {
-    console.error("Firestore POST view error:", error);
-    return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
+    console.error("DB Error on POST view:", error);
+    return NextResponse.json(
+      { message: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }
 
-/**
- * GET: Retrieve current view count for a contentKey
- * Query: ?contentKey=<contentKey>
- */
+// --- 🔑 NEW: GET METHOD (Retrieve Current View Count) ---
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const contentKey = searchParams.get("contentKey");
 
   if (!contentKey) {
-    return NextResponse.json({ message: "Missing contentKey" }, { status: 400 });
+    return NextResponse.json(
+      { message: "Missing contentKey" },
+      { status: 400 },
+    );
   }
 
   try {
-    const docRef = adminDB.collection(CONTENT_COLLECTION_NAME).doc(contentKey);
-    const docSnapshot = await docRef.get();
+    const db = await connectDB();
+    const collection = db.collection(CONTENT_COLLECTION_NAME);
 
-    const views = docSnapshot.exists ? docSnapshot.data()?.views || 0 : 0;
+    const content = await collection.findOne(
+      { contentKey: contentKey },
+      { projection: { views: 1, _id: 0 } }, // Only retrieve the views field
+    );
 
-    return NextResponse.json({ views }, { status: 200 });
+    // Return the views count, defaulting to 0 if not found
+    return NextResponse.json({ views: content?.views || 0 }, { status: 200 });
   } catch (error) {
-    console.error("Firestore GET views error:", error);
-    return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
+    console.error("DB Error on GET views:", error);
+    return NextResponse.json(
+      { message: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }

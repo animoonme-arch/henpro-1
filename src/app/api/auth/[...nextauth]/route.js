@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
-import { adminDB } from "@/lib/firebaseAdmin";
+import { connectDB } from "@/lib/mongoClient";
 import { imageData } from "@/data/imageData";
 
 /* =========================
@@ -20,12 +20,13 @@ const getRandomImage = () => {
 ========================= */
 export const authOptions = {
   session: {
-    strategy: "jwt", // ✅ REQUIRED for Firestore
+    strategy: "jwt",
   },
 
   providers: [
     CredentialsProvider({
       name: "Credentials",
+
       credentials: {
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
@@ -36,19 +37,20 @@ export const authOptions = {
       },
 
       async authorize(credentials) {
-        const email = credentials.email;
-        if (!email) throw new Error("EMAIL_REQUIRED");
-
-        const userRef = adminDB.collection("users").doc(email);
-        const userSnap = await userRef.get();
-
-        if (!userSnap.exists) {
-          const error = new Error("USER_NOT_FOUND");
-          error.code = "USER_NOT_FOUND";
-          throw error;
+        if (!credentials?.email) {
+          throw new Error("EMAIL_REQUIRED");
         }
 
-        const user = userSnap.data();
+        const db = await connectDB();
+        const users = db.collection("users");
+
+        const user = await users.findOne({
+          email: credentials.email,
+        });
+
+        if (!user) {
+          throw new Error("USER_NOT_FOUND");
+        }
 
         /* =========================
            PROFILE UPDATE FLOW
@@ -60,15 +62,16 @@ export const authOptions = {
             bio: credentials.bio || user.bio,
           };
 
-          await userRef.update(updatedUser);
-
-          const avatar = updatedUser.avatar || getRandomImage();
+          await users.updateOne(
+            { _id: user._id },
+            { $set: updatedUser }
+          );
 
           return {
-            id: userSnap.id,
-            email,
+            id: user._id.toString(),
+            email: user.email,
             username: updatedUser.username,
-            avatar,
+            avatar: updatedUser.avatar || getRandomImage(),
             bio: updatedUser.bio || "",
             timeOfJoining: user.timeOfJoining,
           };
@@ -83,20 +86,21 @@ export const authOptions = {
         );
 
         if (!isValid) {
-          const error = new Error("INVALID_CREDENTIALS");
-          error.code = "INVALID_CREDENTIALS";
-          throw error;
+          throw new Error("INVALID_CREDENTIALS");
         }
 
         let avatar = user.avatar;
         if (!avatar) {
           avatar = getRandomImage();
-          await userRef.update({ avatar });
+          await users.updateOne(
+            { _id: user._id },
+            { $set: { avatar } }
+          );
         }
 
         return {
-          id: userSnap.id,
-          email,
+          id: user._id.toString(),
+          email: user.email,
           username: user.username,
           avatar,
           bio: user.bio || "",
@@ -106,9 +110,6 @@ export const authOptions = {
     }),
   ],
 
-  /* =========================
-     Callbacks
-  ========================= */
   callbacks: {
     async jwt({ token, user, trigger, session }) {
       if (user) {

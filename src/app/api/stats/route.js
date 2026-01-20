@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { adminDB } from "@/lib/firebaseAdmin"; // Firestore instance
+import { connectDB } from "@/lib/mongoClient";
 import dayjs from "dayjs"; // npm install dayjs
 
 const CREATOR_COLLECTION = "creators";
@@ -24,10 +24,12 @@ export async function GET(request) {
   }
 
   try {
-    // Firestore: retrieve creator document
-    const creatorRef = adminDB.collection(CREATOR_COLLECTION).doc(userId);
-    const creatorSnap = await creatorRef.get();
-    const creator = creatorSnap.exists ? creatorSnap.data() : null;
+    const db = await connectDB();
+
+    // Retrieve stored details
+    const creator = await db
+      .collection(CREATOR_COLLECTION)
+      .findOne({ userId: userId }, { projection: { _id: 0, creatorApiKey: 1, placementId: 1 } });
 
     let apiKey = creator?.creatorApiKey;
     let placementId = creator?.placementId;
@@ -35,12 +37,12 @@ export async function GET(request) {
     // *****************************
     //    SPECIAL OVERRIDE FOR SANDEEP
     // *****************************
-    if (username === "Sandeep") {
+    if (username === "Sandeep") {                                      
       apiKey = "f7becce758687baa0a1fd8e200e2d4e4";
       placementId = 25912166;
     }
 
-    if (!apiKey) {
+    if (!apiKey) { 
       return NextResponse.json(
         { message: "API Key missing. Complete monetization setup." },
         { status: 404 }

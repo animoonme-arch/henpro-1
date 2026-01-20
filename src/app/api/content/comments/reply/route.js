@@ -3,18 +3,18 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { adminDB, FieldValue } from "@/lib/firebaseAdmin";
+import { connectDB } from "@/lib/mongoClient";
+import { ObjectId } from "mongodb";
 
 const COLLECTION_NAME = "contentComments";
-const NOTIFICATION_COLLECTION_NAME = "userNotifications";
+const NOTIFICATION_COLLECTION_NAME = "userNotifications"; // 👈 NEW COLLECTION FOR NOTIFICATIONS
 
 /**
- * POST: Add a new reply to an existing comment (Firestore)
+ * POST: Add a new reply to an existing comment (UPDATED FOR NOTIFICATIONS)
  * Body: { contentId, text, parentCommentId }
  */
 export async function POST(request) {
   const session = await getServerSession(authOptions);
-
   if (!session?.user?.id) {
     return NextResponse.json(
       { message: "You must be logged in to reply." },
@@ -32,87 +32,78 @@ export async function POST(request) {
   }
 
   try {
-    const commentsRef = adminDB.collection(COLLECTION_NAME);
-    const parentRef = commentsRef.doc(parentCommentId);
+    const db = await connectDB();
+    const collection = db.collection(COLLECTION_NAME);
+    const parentObjectId = new ObjectId(parentCommentId);
 
-    // 1️⃣ Fetch parent comment
-    const parentSnap = await parentRef.get();
-
-    if (!parentSnap.exists) {
-      return NextResponse.json(
-        { message: "Parent comment not found." },
-        { status: 404 }
-      );
+    // 1. Fetch the parent comment to get owner ID (for notification) and rootCommentId
+    const parentComment = await collection.findOne(
+        { _id: parentObjectId },
+        { projection: { rootCommentId: 1, userId: 1 } } 
+    );
+    
+    if (!parentComment) {
+      return NextResponse.json({ message: "Parent comment not found." }, { status: 404 });
     }
-
-    const parentComment = parentSnap.data();
 
     const recipientId = parentComment.userId;
     const isSelfReply = recipientId === session.user.id;
+    
+    const rootCommentId = parentComment.rootCommentId || parentObjectId;
 
-    const rootCommentId =
-      parentComment.rootCommentId || parentSnap.id;
-
-    // 2️⃣ Create reply document
-    const replyRef = commentsRef.doc();
-
+    // 2. Prepare the new reply document
     const newReply = {
       contentId,
       userId: session.user.id,
-      userName:
-        session.user.username ||
-        session.user.name ||
-        "Anonymous",
-      userImage:
-        session.user.avatar ||
-        session.user.image ||
-        "/default-avatar.png",
+      userName: session.user.username || session.user.name || "Anonymous",
+      userImage: session.user.avatar || session.user.image || "/default-avatar.png",
       text: text.trim(),
       createdAt: new Date(),
-      parentId: parentSnap.id,
-      rootCommentId: rootCommentId,
+      parentId: parentObjectId, // Link to immediate parent
+      rootCommentId: rootCommentId, // Link to the top-level comment
       likes: [],
       dislikes: [],
-      replies: [],
+      replies: [], 
     };
 
-    // 3️⃣ Save reply
-    await replyRef.set(newReply);
+    // 3. Insert the new reply
+    const result = await collection.insertOne(newReply);
+    const insertedId = result.insertedId;
 
-    // 4️⃣ Update parent comment replies (prepend like Mongo `$position: 0`)
-    await parentRef.update({
-      replies: FieldValue.arrayUnion(replyRef.id),
-    });
-
-    // 5️⃣ Create notification (if not self reply)
+    // 4. Update the immediate parent comment's replies array
+    await collection.updateOne(
+      { _id: parentObjectId },
+      { $push: { replies: { $each: [insertedId], $position: 0 } } } 
+    );
+    
+    // ⭐ NOTIFICATION CREATION LOGIC ⭐
     if (!isSelfReply) {
-      await adminDB
-        .collection(NOTIFICATION_COLLECTION_NAME)
-        .add({
-          recipientId,
-          senderId: session.user.id,
-          type: "REPLY",
-          contentId,
-          commentId: parentSnap.id,
-          replyId: replyRef.id,
-          read: false,
-          createdAt: new Date(),
+        const notificationCollection = db.collection(NOTIFICATION_COLLECTION_NAME);
+        await notificationCollection.insertOne({
+            recipientId: recipientId, // Owner of the parent comment
+            senderId: session.user.id, // User who posted the reply
+            type: 'REPLY', // Notification type
+            contentId: contentId,
+            commentId: parentObjectId, // Links to the parent comment
+            replyId: insertedId, // Links to the newly created reply
+            read: false,
+            createdAt: new Date(),
         });
     }
+    // ⭐ END NOTIFICATION LOGIC ⭐
 
-    // 6️⃣ Return reply
+    // 5. Return the full reply object
+    const returnedReply = await collection.findOne({ _id: insertedId });
+
     return NextResponse.json(
       {
         message: "Reply posted successfully",
-        reply: {
-          id: replyRef.id,
-          ...newReply,
-        },
+        reply: returnedReply,
       },
       { status: 201 }
     );
   } catch (error) {
-    console.error("Firestore Error on POST reply:", error);
+    console.error("DB Error on POST reply:", error);
     return NextResponse.json(
       { message: "Internal Server Error" },
       { status: 500 }

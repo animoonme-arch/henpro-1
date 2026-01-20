@@ -2,82 +2,64 @@
 
 import Advertize from "@/components/Advertize/Advertize";
 import Home from "@/components/Home/Home";
+import { connectDB } from "@/lib/mongoClient";
 import React from "react";
-import { adminDB } from "@/lib/firebaseAdmin";
 
-// Force dynamic rendering so searchParams always work
+// ✨ NEXT.JS CONFIG: Force dynamic rendering to ensure searchParams are always current
 export const dynamic = "force-dynamic";
 
 export default async function Page({ searchParams }) {
   const creatorApiKey = searchParams?.creator;
 
-  /* ==========================
-     Dynamic Ad Link Logic
-  ========================== */
+  // --- Start Dynamic Ad Link Logic ---
   const DEFAULT_AD_LINK =
     "https://www.effectivegatecpm.com/z67nn0nfnb?key=047c39737c61fbc71ce51ba3d9ff8923";
-
   let dynamicAdLink = DEFAULT_AD_LINK;
 
   if (creatorApiKey) {
     try {
-      const creatorSnap = await adminDB
-        .collection("creators")
-        .doc(creatorApiKey) // username as document ID
-        .get();
+      // Ensure you are using destructuring: const { db } = await connectDB();
+      const db = await connectDB();
+      const collection = db.collection("creators");
 
-      if (creatorSnap.exists) {
-        const creatorData = creatorSnap.data();
-        if (creatorData?.adsterraSmartlink) {
-          dynamicAdLink = creatorData.adsterraSmartlink;
-        }
+      const creatorData = await collection.findOne(
+        { username: creatorApiKey },
+        { projection: { adsterraSmartlink: 1, _id: 0 } }
+      );
+
+      if (creatorData && creatorData.adsterraSmartlink) {
+        dynamicAdLink = creatorData.adsterraSmartlink;
       }
     } catch (error) {
       console.error(
-        "Firestore fetch failed for creator on homepage:",
+        "MongoDB fetch failed for creator on homepage:",
         creatorApiKey,
         error
       );
     }
   }
+  // --- End Dynamic Ad Link Logic ---
 
-  /* ==========================
-     Fetch Homepage API Data
-  ========================== */
-  const res = await fetch("https://henpro-api-three.vercel.app/api/homepage", {
+  // 🧠 Fetch from API
+  const res = await fetch("https://api.henpro.fun/api/homepage", {
     next: { revalidate: 3600 },
   });
   const recentEpi = await res.json();
 
-  /* ==========================
-     Fetch Latest Hompro Doc
-  ========================== */
-  let hompro = null;
+  // 🧩 Connect MongoDB
+  const db = await connectDB();
 
-  try {
-    const homproSnap = await adminDB
-      .collection("hompros")
-      .orderBy("createdAt", "desc")
-      .limit(1)
-      .get();
+  // 🗂️ Fetch latest hompro document
+  const homproData = await db
+    .collection("hompros")
+    .findOne({}, { sort: { createdAt: -1 } });
 
-    if (!homproSnap.empty) {
-      hompro = {
-        id: homproSnap.docs[0].id,
-        ...homproSnap.docs[0].data(),
-      };
-    }
-  } catch (error) {
-    console.error("Failed to fetch hompro:", error);
-  }
+  // 🧼 Convert to plain object
+  const hompro = JSON.parse(JSON.stringify(homproData));
 
   return (
     <div>
-      <Home
-        recentEpi={recentEpi}
-        hompro={hompro}
-        creator={creatorApiKey}
-      />
+      <Home recentEpi={recentEpi} hompro={hompro} creator={creatorApiKey}/>
       <Advertize initialAdLink={dynamicAdLink} />
     </div>
   );

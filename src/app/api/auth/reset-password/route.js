@@ -1,4 +1,4 @@
-import { adminDB } from "@/lib/firebaseAdmin";
+import { connectDB } from "@/lib/mongoClient";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
 
@@ -13,24 +13,33 @@ export const POST = async (req) => {
       );
     }
 
-    const userRef = adminDB.collection("users").doc(email);
-    const userSnap = await userRef.get();
+    const db = await connectDB();
+    const users = db.collection("users");
 
-    if (!userSnap.exists) {
+    const user = await users.findOne({ email });
+
+    if (!user) {
       return new Response(
         JSON.stringify({ message: "User not found" }),
         { status: 404, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    // Generate reset token + expiry (1 hour)
+    /* =========================
+       Generate reset token
+    ========================= */
     const resetToken = crypto.randomBytes(32).toString("hex");
-    const resetTokenExpiry = Date.now() + 3600000; // store as timestamp (ms)
+    const resetTokenExpiry = Date.now() + 3600000; // 1 hour
 
-    await userRef.update({
-      resetToken,
-      resetTokenExpiry,
-    });
+    await users.updateOne(
+      { _id: user._id },
+      {
+        $set: {
+          resetToken,
+          resetTokenExpiry,
+        },
+      }
+    );
 
     /* =========================
        Send Reset Email

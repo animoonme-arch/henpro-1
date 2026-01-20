@@ -1,12 +1,13 @@
-// app/search/page.js (or app/series/page.js if using search routing)
+// app/series/page.js (or app/search/page.js, based on your routing)
+
+// Assuming connectDB is set up in "@/lib/mongoClient"
+import { connectDB } from "@/lib/mongoClient";
 import Advertize from "@/components/Advertize/Advertize";
 import Search from "@/components/Search/Search";
-import { adminDB } from "@/lib/firebaseAdmin"; // Firestore instance
 
-export default async function SearchPage({ searchParams }) {
-  const searchParam = await searchParams
-  const q = searchParam.q || ""; // The search query
-  const creatorApiKey = searchParam.creator; // ✨ Get the creator API key
+export default async function SeriesPage({ searchParams }) {
+  const q = searchParams.q || ""; // The search query is expected to be 'q'
+  const creatorApiKey = searchParams.creator; // ✨ Get the creator API key
 
   // --- Start Dynamic Ad Link Logic ---
   const DEFAULT_AD_LINK =
@@ -15,31 +16,37 @@ export default async function SearchPage({ searchParams }) {
 
   if (creatorApiKey) {
     try {
-      // 1. Reference the creator document in Firestore
-      // Assuming document ID is the username; otherwise use a query
-      const docRef = adminDB.collection("creators").doc(creatorApiKey);
-      const docSnapshot = await docRef.get();
+      // 1. Connect to MongoDB
+      const db = await connectDB();
+      // Assuming your collection is named 'creators'
+      const collection = db.collection("creators");
 
-      if (docSnapshot.exists) {
-        const creatorData = docSnapshot.data();
-        if (creatorData?.adsterraSmartlink) {
-          dynamicAdLink = creatorData.adsterraSmartlink;
-        }
+      // 2. Fetch the creator data
+      const creatorData = await collection.findOne(
+        { username: creatorApiKey },
+        // Project to only include the smartlink for efficiency
+        { projection: { adsterraSmartlink: 1, _id: 0 } }
+      );
+
+      // 3. Update the ad link if found
+      if (creatorData && creatorData.adsterraSmartlink) {
+        dynamicAdLink = creatorData.adsterraSmartlink;
       }
     } catch (error) {
       console.error(
-        "Firestore fetch failed for creator on search page:",
+        "MongoDB fetch failed for creator on search page:",
         creatorApiKey,
         error
       );
-      // fallback to DEFAULT_AD_LINK
+      // Fallback to DEFAULT_AD_LINK
     }
   }
   // --- End Dynamic Ad Link Logic ---
 
   // --- Standard Search Data Fetch Logic ---
+  // Ensure the query parameter is correctly URL-encoded for safety
   const encodedQ = encodeURIComponent(q);
-  const apiUrl = `https://henpro-api-three.vercel.app/api/search?q=${encodedQ}`;
+  const apiUrl = `https://api.henpro.fun/api/search?q=${encodedQ}`;
 
   const res = await fetch(apiUrl, {
     next: { revalidate: 300 }, // revalidate every 5 min
@@ -54,7 +61,8 @@ export default async function SearchPage({ searchParams }) {
 
   return (
     <div className="page-wrapper">
-      <Search data={data || []} keyword={q} creator={creatorApiKey} />
+      <Search data={data || []} keyword={q} creator={creatorApiKey}/>
+      {/* 🌟 Pass the dynamic ad link to the Advertize component */}
       <Advertize initialAdLink={dynamicAdLink} />
     </div>
   );

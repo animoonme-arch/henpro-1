@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
-import { adminDB } from "@/lib/firebaseAdmin"; // Make sure adminDB is your Firestore instance
-
-const COLLECTION_NAME = "shares";
+import { connectDB } from "@/lib/mongoClient"; // adjust if your file is elsewhere
 
 // ✅ GET - fetch share data
 export async function GET(req) {
   try {
+    const db = await connectDB();
     const { searchParams } = new URL(req.url);
     const pageId = searchParams.get("pageId");
 
@@ -13,16 +12,10 @@ export async function GET(req) {
       return NextResponse.json({ error: "Missing pageId" }, { status: 400 });
     }
 
-    const docRef = adminDB.collection(COLLECTION_NAME).doc(pageId);
-    const docSnap = await docRef.get();
-
-    if (!docSnap.exists) {
-      return NextResponse.json({ shares: {}, totalShares: 0 });
-    }
-
-    return NextResponse.json(docSnap.data());
+    const data = await db.collection("shares").findOne({ pageId });
+    return NextResponse.json(data || { shares: {}, totalShares: 0 });
   } catch (err) {
-    console.error("GET /api/share Firestore error:", err);
+    console.error("GET /api/share error:", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
@@ -30,29 +23,27 @@ export async function GET(req) {
 // ✅ POST - increment share count
 export async function POST(req) {
   try {
+    const db = await connectDB();
     const { pageId, platform } = await req.json();
 
     if (!pageId || !platform) {
       return NextResponse.json({ error: "Missing data" }, { status: 400 });
     }
 
-    const docRef = adminDB.collection(COLLECTION_NAME).doc(pageId);
-
-    await docRef.set(
+    const result = await db.collection("shares").findOneAndUpdate(
+      { pageId },
       {
-        shares: {
-          [platform]: adminDB.FieldValue.increment(1),
+        $inc: {
+          [`shares.${platform}`]: 1,
+          totalShares: 1,
         },
-        totalShares: adminDB.FieldValue.increment(1),
       },
-      { merge: true } // upsert behavior
+      { upsert: true, returnDocument: "after" }
     );
 
-    const updatedDoc = await docRef.get();
-
-    return NextResponse.json(updatedDoc.data());
+    return NextResponse.json(result.value);
   } catch (err) {
-    console.error("POST /api/share Firestore error:", err);
+    console.error("POST /api/share error:", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }

@@ -1,49 +1,46 @@
-// app/api/creator/monetization/route.js
-
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { adminDB } from "@/lib/firebaseAdmin";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route"; // Adjust path as necessary
+import { connectDB } from "@/lib/mongoClient"; // Adjust path as necessary
 
+// Define the collection for storing monetization details
 const CREATOR_COLLECTION = "creators";
 
-/* ======================================================
-   GET: Fetch creator monetization setup
-====================================================== */
+/**
+ * GET handler: Retrieves the creator's monetization setup data.
+ * Used by the frontend (MonetizeContent component) to check setup status.
+ */
 export async function GET() {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
 
   if (!userId) {
+    // If no session, they shouldn't even reach the authenticated part of the dashboard
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    const snap = await adminDB
-      .collection(CREATOR_COLLECTION)
-      .where("userId", "==", userId)
-      .limit(1)
-      .get();
+    // Correctly destructure the returned db object
+    const db = await connectDB();
 
-    if (snap.empty) {
-      return NextResponse.json({ setup: null }, { status: 200 });
-    }
-
-    const doc = snap.docs[0].data();
-
-    return NextResponse.json(
+    const creatorSetup = await db.collection(CREATOR_COLLECTION).findOne(
+      { userId: userId }, // Query by the authenticated user's ID
+      // ✨ ADD 'username' to the projection so it is returned
       {
-        setup: {
-          adsterraSmartlink: doc.adsterraSmartlink || "",
-          creatorApiKey: doc.creatorApiKey || "",
-          instagramId: doc.instagramId || null,
-          username: doc.username || "",
+        projection: {
+          _id: 0,
+          adsterraSmartlink: 1,
+          creatorApiKey: 1,
+          instagramId: 1,
+          username: 1,
         },
-      },
-      { status: 200 }
+      }
     );
+
+    // If data is found, return it. If not found (null), it means setup hasn't been done yet.
+    return NextResponse.json({ setup: creatorSetup }, { status: 200 });
   } catch (err) {
-    console.error("GET Creator Setup Firestore Error:", err);
+    console.error("GET Creator Setup DB Error:", err);
     return NextResponse.json(
       { message: "Internal Server Error" },
       { status: 500 }
@@ -51,15 +48,18 @@ export async function GET() {
   }
 }
 
-/* ======================================================
-   POST: Create / Update creator monetization setup
-====================================================== */
+/**
+ * POST handler: Saves or updates the creator's monetization setup data.
+ * Called when the user clicks 'Complete Setup & Save' in the frontend.
+ */
 export async function POST(request) {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
+  // ✨ Extract username from the session
   const username = session?.user?.username;
 
   if (!userId || !username) {
+    // Ensure both are present for proper saving
     return NextResponse.json(
       { message: "Unauthorized or missing user data" },
       { status: 401 }
@@ -70,6 +70,7 @@ export async function POST(request) {
     const { adsterraSmartlink, creatorApiKey, instagramId } =
       await request.json();
 
+    // Basic Validation
     if (!adsterraSmartlink || !creatorApiKey) {
       return NextResponse.json(
         { message: "Smartlink and API Key are required." },
@@ -77,35 +78,39 @@ export async function POST(request) {
       );
     }
 
-    // Use userId as document ID (best practice)
-    const ref = adminDB
-      .collection(CREATOR_COLLECTION)
-      .doc(userId);
+    // Correctly destructure the returned db object
+    const db = await connectDB();
 
-    const now = Date.now();
-
-    await ref.set(
-      {
-        userId,
-        username,
-        adsterraSmartlink,
-        creatorApiKey,
+    // Data to be inserted/updated
+    const updateData = {
+      $set: {
+        userId: userId,
+        // ✨ Add username to the $set operator
+        username: username,
+        adsterraSmartlink: adsterraSmartlink,
+        creatorApiKey: creatorApiKey,
         instagramId: instagramId || null,
-        updatedAt: now,
-        createdAt: now,
+        updatedAt: new Date(),
       },
-      { merge: true } // 🔑 Acts like Mongo upsert
-    );
+      $setOnInsert: {
+        createdAt: new Date(),
+      },
+    };
+
+    // Use upsert to either update an existing document or insert a new one
+    const result = await db
+      .collection(CREATOR_COLLECTION)
+      .updateOne({ userId: userId }, updateData, { upsert: true });
 
     return NextResponse.json(
       {
         message: "Monetization setup saved successfully.",
-        setupStatus: "saved",
+        setupStatus: result.upsertedId ? "created" : "updated",
       },
       { status: 200 }
     );
   } catch (err) {
-    console.error("POST Creator Setup Firestore Error:", err);
+    console.error("POST Creator Setup DB Error:", err);
     return NextResponse.json(
       { message: "Internal Server Error" },
       { status: 500 }
