@@ -1,17 +1,7 @@
+import GlobalAdScript from "@/components/GlobalAdScript/GlobalAdScript";
 import "./globals.css";
 import Script from "next/script";
-
-const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "Hanimetv";
-
-export const metadata = {
-  title: `Watch Free Hentai Video Streams Online in 720p , 1080p HD - ${siteName}`,
-  description: `Enjoy your unlimited hentai & anime
-          collection. We are the definitive source for the best curated 720p /
-          1080p HD hentai videos, viewable by mobile phone and tablet, for free.`,
-  verification: {
-    google: "x0aiWAODNGU-1UA2FXyORfyme9uWJir7mIMu8AMmLm4",
-  },
-};
+// import GlobalAdScript from "@/components/GlobalAdScript";
 
 export default function RootLayout({ children }) {
   return (
@@ -21,10 +11,6 @@ export default function RootLayout({ children }) {
         <Script
           strategy="afterInteractive"
           src="https://www.googletagmanager.com/gtag/js?id=G-64QSGGL3N5"
-        />
-        <Script
-          strategy="afterInteractive"
-          src="https://pl27309289.effectivegatecpm.com/d6/f8/e1/d6f8e16851504f20f1ccaadcdd965ee3.js"
         />
         <Script
           id="google-analytics"
@@ -40,13 +26,9 @@ export default function RootLayout({ children }) {
         />
       </head>
 
-      <body
-        className="antialiased"
-        style={{
-          fontFamily:
-            "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Ubuntu, Cantarell, 'Noto Sans', Arial, sans-serif",
-        }}
-      >
+      <body className="antialiased">
+        {/* 🔥 Conditional global ad */}
+        <GlobalAdScript />
         {children}
       </body>
     </html>
