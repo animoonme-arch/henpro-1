@@ -1,45 +1,60 @@
-// app/watch/[id]/page.js
 import { connectDB } from "@/lib/mongoClient";
 import Advertize from "@/components/Advertize/Advertize";
 import WatchWrapper from "@/components/Watch/WatchWrapper";
 
-// --- Safe fetch helper ---
+/* ---------------- SAFE FETCH ---------------- */
 async function safeFetchJSON(url) {
   try {
     const res = await fetch(url, { cache: "no-store" });
     const text = await res.text();
-
-    try {
-      const data = JSON.parse(text);
-      return data;
-    } catch (e) {
-      console.error(`Expected JSON from ${url}, got HTML or invalid JSON:`, text);
-      return null;
-    }
+    return JSON.parse(text);
   } catch (err) {
-    console.error(`Fetch failed for ${url}:`, err);
+    console.error("safeFetchJSON failed:", url, err);
     return null;
   }
 }
 
-// --- Metadata generation ---
-export async function generateMetadata({ params }) {
-  function capitalizeWords(str) {
-    return str
-      .split("-")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-  }
+/* ---------------- MONGO EPISODE STREAM ---------------- */
+async function getEpisodeStreamFromDB(episodeId) {
+  // 🔒 HARD GUARD
+  if (!episodeId || !episodeId.includes("episode")) return null;
 
-  const formattedTitle = capitalizeWords(params.id);
+  try {
+    const db = await connectDB();
+    const episode = await db.collection("episodes").findOne(
+      { episodeId }, // ← EXACT MATCH with your DB
+      {
+        projection: {
+          _id: 0,
+          videoUrl: 1,
+          iframeSrc: 1,
+          downloadUrl: 1,
+        },
+      }
+    );
+
+    return episode || null;
+  } catch (err) {
+    console.error("Mongo episode fetch failed:", err);
+    return null;
+  }
+}
+
+/* ---------------- METADATA ---------------- */
+export async function generateMetadata({ params }) {
+  const title = params.id
+    .split("-")
+    .map((w) => w[0]?.toUpperCase() + w.slice(1))
+    .join(" ");
 
   return {
-    title: `Watch ${formattedTitle} Hentai Video Streams Online in 720p , 1080p HD - Henpro`,
-    description: `Enjoy your unlimited hentai & anime collection. We are the definitive source for the best curated 720p / 1080p HD hentai videos, viewable by mobile phone and tablet, for free.`,
+    title: `Watch ${title} Hentai Video Streams Online in 720p, 1080p HD - Henpro`,
+    description:
+      "Enjoy your unlimited hentai & anime collection. Stream high quality 720p / 1080p HD hentai videos for free.",
   };
 }
 
-// --- Main page component ---
+/* ---------------- PAGE ---------------- */
 export default async function Page({ params, searchParams }) {
   const id = params.id;
   const creatorApiKey = searchParams.creator;
@@ -47,7 +62,7 @@ export default async function Page({ params, searchParams }) {
   let watchData = null;
   let infoData = null;
 
-  // --- Dynamic Ad Link ---
+  /* -------- AD LINK -------- */
   const DEFAULT_AD_LINK =
     "https://www.effectivegatecpm.com/z67nn0nfnb?key=047c39737c61fbc71ce51ba3d9ff8923";
   let dynamicAdLink = DEFAULT_AD_LINK;
@@ -55,59 +70,103 @@ export default async function Page({ params, searchParams }) {
   if (creatorApiKey) {
     try {
       const db = await connectDB();
-      const collection = db.collection("creators");
-      const creatorData = await collection.findOne(
+      const creator = await db.collection("creators").findOne(
         { username: creatorApiKey },
         { projection: { adsterraSmartlink: 1, _id: 0 } }
       );
-      if (creatorData?.adsterraSmartlink) dynamicAdLink = creatorData.adsterraSmartlink;
+
+      if (creator?.adsterraSmartlink) {
+        dynamicAdLink = creator.adsterraSmartlink;
+      }
     } catch (err) {
-      console.error("MongoDB fetch failed for creator:", creatorApiKey, err);
+      console.error("Creator lookup failed:", err);
     }
   }
 
-  // --- Fetch Watch & Info ---
+  /* -------- DATA FETCH -------- */
   try {
     if (id.includes("episode")) {
-      // Fetch watch data first
-      const watchJson = await safeFetchJSON(`https://api.henpro.fun/api/watch?id=${id}`);
+      /* ----- WATCH API ----- */
+      const watchJson = await safeFetchJSON(
+        `https://api.henpro.fun/api/watch?id=${id}`
+      );
+
       if (watchJson?.success) watchData = watchJson.data;
 
-      // Derive series ID
-      const seriesId = watchData?.seriesId || id.replace(/-episode-.*/, "-id-01");
-      const infoJson = await safeFetchJSON(`https://api.henpro.fun/api/info?id=${seriesId}`);
-      if (infoJson?.success) infoData = infoJson.data;
+      /* ----- PATCH STREAM FROM MONGO ----- */
+      const mongoEpisode = await getEpisodeStreamFromDB(id);
 
+      if (watchData && mongoEpisode) {
+        watchData.videoUrl = mongoEpisode.videoUrl || null;
+        watchData.iframeSrc = mongoEpisode.iframeSrc || "about:blank";
+        watchData.downloadLink = mongoEpisode.downloadUrl || "#";
+      }
+
+      /* ----- INFO API ----- */
+      const seriesId =
+        watchData?.seriesId || id.replace(/-episode-.*/, "-id-01");
+
+      const infoJson = await safeFetchJSON(
+        `https://api.henpro.fun/api/info?id=${seriesId}`
+      );
+
+      if (infoJson?.success) infoData = infoJson.data;
     } else {
-      // Fetch info first
-      const infoJson = await safeFetchJSON(`https://api.henpro.fun/api/info?id=${id}`);
+      /* ----- INFO FIRST ----- */
+      const infoJson = await safeFetchJSON(
+        `https://api.henpro.fun/api/info?id=${id}`
+      );
+
       if (infoJson?.success) infoData = infoJson.data;
 
+      /* ----- AUTO LOAD FIRST EPISODE ----- */
       const firstEpisodeSlug = infoData?.episodes?.[0]?.slug;
+
       if (firstEpisodeSlug) {
-        const watchJson = await safeFetchJSON(`https://api.henpro.fun/api/watch?id=${firstEpisodeSlug}`);
+        const watchJson = await safeFetchJSON(
+          `https://api.henpro.fun/api/watch?id=${firstEpisodeSlug}`
+        );
+
         if (watchJson?.success) watchData = watchJson.data;
+
+        /* ----- PATCH FROM MONGO (EPISODE ONLY) ----- */
+        if (firstEpisodeSlug.includes("episode")) {
+          const mongoEpisode =
+            await getEpisodeStreamFromDB(firstEpisodeSlug);
+
+          if (watchData && mongoEpisode) {
+            watchData.videoUrl = mongoEpisode.videoUrl;
+            watchData.iframeSrc = mongoEpisode.iframeSrc;
+            watchData.downloadLink = mongoEpisode.downloadUrl || "#";
+          }
+        }
       }
     }
   } catch (err) {
-    console.error("Error fetching watch/info data:", err);
+    console.error("Watch / Info fetch error:", err);
   }
 
-  // --- Render fallback UI if no data ---
+  /* -------- FALLBACK -------- */
   if (!watchData && !infoData) {
     return (
       <div className="p-8 text-center">
         <h1 className="text-2xl font-bold mb-4">Video Unavailable</h1>
         <p className="text-gray-500">
-          Sorry, we couldn’t load this video. Please try refreshing the page or check back later.
+          Sorry, we couldn’t load this video. Please try again later.
         </p>
       </div>
     );
   }
 
+  /* -------- RENDER -------- */
   return (
     <>
-      <WatchWrapper watchData={watchData} infoData={infoData} id={id} creator={creatorApiKey} />
+      <WatchWrapper
+        watchData={watchData}
+        infoData={infoData}
+        id={id}
+        creator={creatorApiKey}
+      />
       <Advertize initialAdLink={dynamicAdLink} />
     </>
   );
