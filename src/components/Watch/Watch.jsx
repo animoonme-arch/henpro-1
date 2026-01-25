@@ -186,9 +186,15 @@ export default function WatchPageClient({
   const dropdownRef = useRef(null);
 
   // ✅ Determine proper contentId based on ID type
-  const contentId = id?.includes("episode")
-    ? id
-    : infoData?.episodes?.[0]?.slug || id;
+  const isEpisode = infoData?.episodes?.some(
+    (ep) => ep.slug === id || ep.id === id
+  );
+
+  const contentId =
+    isEpisode
+      ? id
+      : infoData?.episodes?.[0]?.slug ?? id;
+
 
   // State initialization (using the initial watchData or null)
   const [currentViews, setCurrentViews] = useState(watchData?.views || null);
