@@ -193,11 +193,11 @@ export default function WatchPageClient({
   const contentId =
     isEpisode
       ? id
-      : infoData?.episodes?.[0]?.slug ?? id;
+      : infoData?.episodes?.[0]?.slug;
 
 
   // State initialization (using the initial watchData or null)
-  const [currentViews, setCurrentViews] = useState(watchData?.views || null);
+  const [currentViews, setCurrentViews] = useState(null);
 
   // 2. Define the function to fetch views using the calculated contentId
   const hasCountedRef = useRef(false);
