@@ -1,45 +1,79 @@
-// /app/api/views/route.js (ADD THE GET METHOD)
-
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongoClient";
 
-const CONTENT_COLLECTION_NAME = "hanimeViews"; // Assuming you have a collection for content metadata
+const VIEWS_COLLECTION = "hanimeViews";
+const LOGS_COLLECTION = "hanimeViewLogs";
 
-// --- POST METHOD (Increment View) ---
+/**
+ * ------------------------------------------------------
+ * POST: Increment view count (ANTI-SPAM SAFE)
+ * Body: { contentKey }
+ * ------------------------------------------------------
+ */
 export async function POST(request) {
-  // ... (Your existing POST logic to increment views)
-  const { contentKey } = await request.json();
-
-  if (!contentKey) {
-    return NextResponse.json(
-      { message: "Missing contentKey" },
-      { status: 400 },
-    );
-  }
-
   try {
+    const { contentKey } = await request.json();
+
+    if (!contentKey) {
+      return NextResponse.json(
+        { message: "Missing contentKey" },
+        { status: 400 },
+      );
+    }
+
     const db = await connectDB();
-    const collection = db.collection(CONTENT_COLLECTION_NAME);
+    const viewsCol = db.collection(VIEWS_COLLECTION);
+    const logsCol = db.collection(LOGS_COLLECTION);
 
-    await collection.updateOne(
-      { contentKey: contentKey },
+    // Get client IP (Cloudflare / Vercel safe)
+    const ip =
+      request.headers.get("x-forwarded-for")?.split(",")[0] ||
+      request.headers.get("x-real-ip") ||
+      "unknown";
+
+    // 24 hour window
+    const VIEW_TTL = 24 * 60 * 60 * 1000;
+
+    const alreadyViewed = await logsCol.findOne({
+      contentKey,
+      ip,
+      createdAt: { $gt: new Date(Date.now() - VIEW_TTL) },
+    });
+
+    // If already counted → return current views WITHOUT increment
+    if (alreadyViewed) {
+      const existing = await viewsCol.findOne(
+        { contentKey },
+        { projection: { views: 1, _id: 0 } },
+      );
+
+      return NextResponse.json({
+        views: existing?.views || 0,
+        counted: false,
+      });
+    }
+
+    // Log this view
+    await logsCol.insertOne({
+      contentKey,
+      ip,
+      createdAt: new Date(),
+    });
+
+    // Increment views atomically
+    const result = await viewsCol.findOneAndUpdate(
+      { contentKey },
       { $inc: { views: 1 } },
-      { upsert: true },
-    );
-
-    // It's good practice to fetch the new count after incrementing
-    const updatedContent = await collection.findOne(
-      { contentKey: contentKey },
-      { projection: { views: 1, _id: 0 } },
-    );
-
-    return NextResponse.json(
       {
-        message: "View recorded successfully",
-        views: updatedContent?.views || 1, // Return the updated count immediately
+        upsert: true,
+        returnDocument: "after",
       },
-      { status: 200 },
     );
+
+    return NextResponse.json({
+      views: result.value.views,
+      counted: true,
+    });
   } catch (error) {
     console.error("DB Error on POST view:", error);
     return NextResponse.json(
@@ -49,29 +83,36 @@ export async function POST(request) {
   }
 }
 
-// --- 🔑 NEW: GET METHOD (Retrieve Current View Count) ---
+/**
+ * ------------------------------------------------------
+ * GET: Fetch current view count
+ * Query: ?contentKey=...
+ * ------------------------------------------------------
+ */
 export async function GET(request) {
-  const { searchParams } = new URL(request.url);
-  const contentKey = searchParams.get("contentKey");
-
-  if (!contentKey) {
-    return NextResponse.json(
-      { message: "Missing contentKey" },
-      { status: 400 },
-    );
-  }
-
   try {
-    const db = await connectDB();
-    const collection = db.collection(CONTENT_COLLECTION_NAME);
+    const { searchParams } = new URL(request.url);
+    const contentKey = searchParams.get("contentKey");
 
-    const content = await collection.findOne(
-      { contentKey: contentKey },
-      { projection: { views: 1, _id: 0 } }, // Only retrieve the views field
+    if (!contentKey) {
+      return NextResponse.json(
+        { message: "Missing contentKey" },
+        { status: 400 },
+      );
+    }
+
+    const db = await connectDB();
+    const viewsCol = db.collection(VIEWS_COLLECTION);
+
+    const content = await viewsCol.findOne(
+      { contentKey },
+      { projection: { views: 1, _id: 0 } },
     );
 
-    // Return the views count, defaulting to 0 if not found
-    return NextResponse.json({ views: content?.views || 0 }, { status: 200 });
+    return NextResponse.json(
+      { views: content?.views || 0 },
+      { status: 200 },
+    );
   } catch (error) {
     console.error("DB Error on GET views:", error);
     return NextResponse.json(

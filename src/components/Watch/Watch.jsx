@@ -195,32 +195,35 @@ export default function WatchPageClient({
   const [currentViews, setCurrentViews] = useState(watchData?.views || null);
 
   // 2. Define the function to fetch views using the calculated contentId
+  const hasCountedRef = useRef(false);
+
+  // Increment ONCE
+  useEffect(() => {
+    if (!contentId || hasCountedRef.current) return;
+    hasCountedRef.current = true;
+
+    fetch("/api/views", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ contentKey: contentId }),
+    });
+  }, [contentId]);
+
+  // Fetch views
   const fetchLatestViews = useCallback(async () => {
-    if (!contentId) return; // Use the calculated contentId here!
+    if (!contentId) return;
 
-    try {
-      // 🔑 USES THE CALCULATED contentId TO FETCH VIEWS
-      const res = await fetch(`/api/views?contentKey=${contentId}`, {
-        method: "GET",
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        if (data.views !== undefined) {
-          setCurrentViews(data.views);
-        }
-      } else {
-        console.warn(`Failed to fetch latest views for ${contentId}.`);
-      }
-    } catch (error) {
-      console.error("Network error fetching views:", error);
+    const res = await fetch(`/api/views?contentKey=${contentId}`);
+    if (res.ok) {
+      const data = await res.json();
+      setCurrentViews(data.views ?? 0);
     }
-  }, [contentId]); // 🔑 IMPORTANT: Dependency array must include contentId
+  }, [contentId]);
 
-  // Initial fetch of views when component loads or contentId changes
   useEffect(() => {
     fetchLatestViews();
   }, [fetchLatestViews]);
+
 
   const handleSelect = async (status) => {
     if (!session) {
