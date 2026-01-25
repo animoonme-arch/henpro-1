@@ -145,7 +145,16 @@ export default function WatchPageClient({
   const totalDurationSeconds = durationToSeconds(durationString);
   const combinedTitle = infoData?.title || "Unknown Series";
 
-  let progressContentKey = id;
+  const isEpisode = infoData?.episodes?.some(
+    (ep) => ep.slug === id || ep.id === id
+  );
+
+  const contentId =
+    isEpisode
+      ? id
+      : infoData?.episodes?.[0]?.slug;
+
+  let progressContentKey = contentId;
   let progressEpisodeNo;
 
   if (id && id.toLowerCase().includes("episode")) {
@@ -158,6 +167,8 @@ export default function WatchPageClient({
   } else {
     progressEpisodeNo = 1;
   }
+
+  // ✅ Determine proper contentId based on ID type
 
   const videoMetadata = {
     contentKey: progressContentKey,
@@ -184,17 +195,6 @@ export default function WatchPageClient({
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
-
-  // ✅ Determine proper contentId based on ID type
-  const isEpisode = infoData?.episodes?.some(
-    (ep) => ep.slug === id || ep.id === id
-  );
-
-  const contentId =
-    isEpisode
-      ? id
-      : infoData?.episodes?.[0]?.slug;
-
 
   // State initialization (using the initial watchData or null)
   const [currentViews, setCurrentViews] = useState(null);
