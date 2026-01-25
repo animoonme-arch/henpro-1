@@ -103,6 +103,7 @@ export default function WatchPageClient({
   id,
   creat
 }) {
+  views
   const { data: session } = useSession();
   const [isScrolled, setIsScrolled] = useState(false);
   const [lightboxImg, setLightboxImg] = useState(null);
@@ -186,9 +187,15 @@ export default function WatchPageClient({
   const dropdownRef = useRef(null);
 
   // ✅ Determine proper contentId based on ID type
-  const contentId = id?.includes("episode")
-    ? id
-    : infoData?.episodes?.[0]?.slug || id;
+  const isEpisode = infoData?.episodes?.some(
+    (ep) => ep.slug === id || ep.id === id
+  );
+
+  const contentId =
+    isEpisode
+      ? id
+      : infoData?.episodes?.[0]?.slug ?? id;
+
 
   // State initialization (using the initial watchData or null)
   const [currentViews, setCurrentViews] = useState(watchData?.views || null);
@@ -273,7 +280,7 @@ export default function WatchPageClient({
   }, []);
   return (
     <>
-      <Navbar now={false} creator={creator}/>
+      <Navbar now={false} creator={creator} />
 
       {customToast && (
         <CustomToast
@@ -496,11 +503,11 @@ export default function WatchPageClient({
               </div>
             )}
 
-            <CommentSection contentId={contentId} showToast={showCustomToast} creator={creator}/>
+            <CommentSection contentId={contentId} showToast={showCustomToast} creator={creator} />
 
             <div>
               {/* RelatedGrid component handles its own internal links, but if it contained an external view-all link, it would need the creator logic passed in */}
-              <RelatedGrid related={infoData.related || []} creator={creator}/>
+              <RelatedGrid related={infoData.related || []} creator={creator} />
             </div>
           </div>
 
@@ -578,11 +585,11 @@ export default function WatchPageClient({
             </div>
           </div>
 
-          <Sidebar sidebar={watchData.sidebar} creator={creator}/>
+          <Sidebar sidebar={watchData.sidebar} creator={creator} />
         </div>
       </div>
       {!adClosed && <Loading onClose={() => setAdClosed(true)} />}
-      <Footer creator={creator}/>
+      <Footer creator={creator} />
 
       <style jsx>{`
         /* --- WATCHLIST BUTTON STYLES (REQUIRED) --- */
