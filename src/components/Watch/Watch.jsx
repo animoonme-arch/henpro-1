@@ -103,7 +103,6 @@ export default function WatchPageClient({
   id,
   creat
 }) {
-  views
   const { data: session } = useSession();
   const [isScrolled, setIsScrolled] = useState(false);
   const [lightboxImg, setLightboxImg] = useState(null);
