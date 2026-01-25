@@ -546,43 +546,67 @@ export default function CustomVideoPlayer({ metadata }) {
     const video = videoRef.current;
     if (!video) return;
 
-    setDuration(video.duration);
     setIsReady(true);
     setIsLoading(false);
-
     video.playbackRate = playbackSpeed;
 
+    // ✅ Wait until duration is actually known
+    const duration = await new Promise((resolve) => {
+      if (isFinite(video.duration) && video.duration > 0) {
+        return resolve(video.duration);
+      }
+
+      const onDuration = () => {
+        if (isFinite(video.duration) && video.duration > 0) {
+          video.removeEventListener("durationchange", onDuration);
+          resolve(video.duration);
+        }
+      };
+
+      video.addEventListener("durationchange", onDuration);
+    });
+
+    setDuration(duration);
+
     const lastTime = await getProgress();
-    const videoDuration = video.duration;
 
     if (
       lastTime.currentTime > 5 &&
-      videoDuration > 0 &&
-      lastTime.currentTime < videoDuration - 5
+      lastTime.currentTime < duration - 5
     ) {
       video.currentTime = lastTime.currentTime;
     }
 
-    // 🔑 VIEW TRACKING: Trigger view tracking here!
+    // 🔑 Count view ONLY when metadata is valid
     trackView();
   }, [getProgress, playbackSpeed, trackView]);
 
+
+  const lastUpdateRef = useRef(0);
+
   const handleTimeUpdate = useCallback(() => {
+    const now = Date.now();
+    if (now - lastUpdateRef.current < 250) return;
+    lastUpdateRef.current = now;
+
     const video = videoRef.current;
     if (!video || !isReady) return;
 
+    const duration = video.duration;
+    if (!isFinite(duration) || duration <= 0) return;
+
     const time = video.currentTime;
-    const percent = (time / video.duration) * 100;
+    const percent = (time / duration) * 100;
 
     setCurrentTime(time);
-    if (!isSeeking) {
-      setProgressPercent(percent);
-    }
+    if (!isSeeking) setProgressPercent(percent);
 
-    if (containerRef.current) {
-      containerRef.current.style.setProperty("--progress-fill", `${percent}%`);
-    }
+    containerRef.current?.style.setProperty(
+      "--progress-fill",
+      `${Math.min(percent, 100)}%`
+    );
   }, [isReady, isSeeking]);
+
 
   useEffect(() => {
     let saveInterval = null;
@@ -1001,7 +1025,7 @@ export default function CustomVideoPlayer({ metadata }) {
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="currentColor" 
+                stroke="currentColor"
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"

@@ -9,7 +9,7 @@ export async function GET(req) {
       return new Response("Missing url parameter", { status: 400 });
     }
 
-    const videoUrl = decodeURIComponent(url);
+    const videoUrl = decodeURIComponent(url); 
     const range = req.headers.get("range");
 
     const headers = {
