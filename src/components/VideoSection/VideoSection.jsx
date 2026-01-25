@@ -778,6 +778,7 @@ export default function CustomVideoPlayer({ metadata }) {
         onClick={handleVideoClick}
         tabIndex={-1}
         className="video-element"
+        preload="auto"
         crossOrigin="anonymous" // IMPORTANT: Allows canvas drawing for screenshot
         playsInline
       />

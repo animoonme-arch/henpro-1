@@ -1,3 +1,5 @@
+import { PassThrough } from "stream";
+
 export const runtime = "nodejs"; // IMPORTANT for streaming
 
 export async function GET(req) {
@@ -9,8 +11,8 @@ export async function GET(req) {
       return new Response("Missing url parameter", { status: 400 });
     }
 
-    const videoUrl = decodeURIComponent(url); 
-    const range = req.headers.get("range");
+    const videoUrl = decodeURIComponent(url);
+    const range = req.headers.get("range"); // e.g., "bytes=0-"
 
     const headers = {
       Referer: "https://watchhentai.net/",
@@ -20,6 +22,7 @@ export async function GET(req) {
 
     if (range) headers.Range = range;
 
+    // Fetch the upstream video
     const upstream = await fetch(videoUrl, { headers });
 
     if (!upstream.ok || !upstream.body) {
@@ -28,12 +31,15 @@ export async function GET(req) {
       });
     }
 
+    // Create a streaming response
+    const stream = new PassThrough();
+    upstream.body.pipeTo(stream.writable); // Pipe upstream to PassThrough
+
     const responseHeaders = new Headers();
 
-    // ONLY forward safe streaming headers
+    // Forward only safe streaming headers
     [
       "content-type",
-      "content-length",
       "content-range",
       "accept-ranges",
     ].forEach((key) => {
@@ -41,7 +47,11 @@ export async function GET(req) {
       if (value) responseHeaders.set(key, value);
     });
 
-    return new Response(upstream.body, {
+    // If content-length exists, set it (helps browser buffer properly)
+    const contentLength = upstream.headers.get("content-length");
+    if (contentLength) responseHeaders.set("content-length", contentLength);
+
+    return new Response(stream, {
       status: range ? 206 : 200,
       headers: responseHeaders,
     });

@@ -1,25 +1,20 @@
 /* ------------------------------------------------------------- */
-/* --- Custom Video Player Styles (Enhanced Version) --- */
+/* --- Enhanced Custom Video Player CSS --- */
 /* ------------------------------------------------------------- */
 
-/* --- Custom Property for Progress Fill --- */
 .custom-video-player {
   --theme-color: #ff9741;
-  --progress-fill: 0%; /* Tracks the actual progress */
-
+  --progress-fill: 0%;
   position: relative;
   width: 100%;
   height: 100%;
-  /* min-height: 350px; */
   background-color: #000;
   border-radius: 12px;
   overflow: hidden;
-  cursor: default;
-  user-select: none;
   font-family: "Inter", sans-serif;
-  transition: all 0.3s ease;
-  /* Enhancement: Subtle outer shadow for a premium feel */
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  user-select: none;
+  transition: all 0.3s ease;
 }
 
 .custom-video-player.fullscreen {
@@ -30,15 +25,14 @@
   top: 0;
   left: 0;
   z-index: 9999;
-  box-shadow: none; /* Remove shadow in fullscreen */
+  box-shadow: none;
 }
 
-/* Hide cursor when controls are hidden and playing */
+/* Hide cursor when playing & controls hidden */
 .custom-video-player.is-playing.controls-hidden {
   cursor: none;
 }
 
-/* --- Video Element --- */
 .video-element {
   width: 100%;
   height: 100%;
@@ -50,52 +44,45 @@
 /* --- Loading Spinner --- */
 .player-loading-spinner {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   display: flex;
   justify-content: center;
   align-items: center;
+  background: rgba(0, 0, 0, 0.5);
   z-index: 10;
-  background: rgba(0, 0, 0, 0.5); /* Slightly darker overlay */
 }
 
-.spinner {
+.spinner,
+.button-spinner {
   border: 4px solid rgba(255, 255, 255, 0.2);
-  border-top: 4px solid var(--theme-color);
+  border-top-color: var(--theme-color);
   border-radius: 50%;
   width: 40px;
   height: 40px;
   animation: spin 1s linear infinite;
-  box-shadow: 0 0 10px rgba(255, 151, 65, 0.5); /* Glowing effect */
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
+  to {
     transform: rotate(360deg);
   }
 }
 
-/* --- Center Play Button (Transient) --- */
+/* --- Center Play Button --- */
 .center-play-button {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  font-size: 80px;
   z-index: 15;
+  pointer-events: all;
   color: #fff;
   opacity: 0.8;
-  transition: opacity 0.2s, transform 0.2s;
-  pointer-events: all;
-  cursor: pointer;
-  /* Enhancement: Larger icon and subtle shadow */
-  font-size: 80px;
-  line-height: 1;
   text-shadow: 0 0 15px rgba(0, 0, 0, 0.9);
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
 }
 
 .custom-video-player.is-playing .center-play-button {
@@ -104,11 +91,11 @@
 }
 
 .center-play-button:hover {
+  transform: translate(-50%, -50%) scale(1.15);
   opacity: 1;
-  transform: translate(-50%, -50%) scale(1.15); /* Slightly bigger scale up */
 }
 
-/* --- Skip Feedback Overlay (New Feature) --- */
+/* --- Skip Feedback --- */
 .skip-feedback {
   position: absolute;
   top: 50%;
@@ -116,40 +103,41 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.75); /* Darker background */
+  background: rgba(0, 0, 0, 0.75);
   color: #fff;
-  width: 110px; /* Slightly larger hit area */
+  width: 110px;
   height: 110px;
-  border-radius: 16px; /* More rounded */
+  border-radius: 16px;
   font-size: 16px;
   font-weight: bold;
   opacity: 0;
-  transition: opacity 0.15s ease-in-out;
+  transform: translateY(-50%) scale(0.9);
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease;
   z-index: 30;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-}
-
-/* Apply transform for active display, not for initial positioning */
-.skip-feedback.backward {
-  left: 10%;
-  opacity: 1;
-  transform: translate(-10%, -50%);
 }
 
 .skip-feedback.forward {
   right: 10%;
   opacity: 1;
-  transform: translate(10%, -50%);
+  transform: translate(10%, -50%) scale(1);
+}
+.skip-feedback.backward {
+  left: 10%;
+  opacity: 1;
+  transform: translate(-10%, -50%) scale(1);
 }
 
 .skip-feedback svg {
-  width: 40px; /* Larger icons for impact */
+  width: 40px;
   height: 40px;
   margin-bottom: 5px;
-  color: var(--theme-color); /* Use theme color for icon */
+  color: var(--theme-color);
 }
 
-/* --- Controls Bar --- */
+/* --- Controls --- */
 .player-controls {
   position: absolute;
   bottom: 0;
@@ -157,17 +145,18 @@
   right: 0;
   z-index: 20;
   padding: 10px 15px;
-  /* Enhanced gradient for a better fade into black */
   background: linear-gradient(
     to top,
     rgba(0, 0, 0, 1),
     rgba(0, 0, 0, 0.5),
     rgba(0, 0, 0, 0)
   );
-  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
   opacity: 0;
   transform: translateY(100%);
   pointer-events: none;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
 }
 
 .player-controls.visible {
@@ -199,9 +188,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.2s ease, transform 0.1s ease;
-  opacity: 0.9;
-  border-radius: 4px; /* Ensure button area has rounded corners */
+  border-radius: 4px;
+  transition:
+    transform 0.1s ease,
+    color 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .control-button:hover,
@@ -211,7 +202,6 @@
   opacity: 1;
 }
 
-/* Enhancement: Better focus visibility for accessibility */
 .control-button:focus-visible {
   outline: 2px solid var(--theme-color);
   outline-offset: 2px;
@@ -223,25 +213,23 @@
   height: 24px;
 }
 
+/* --- Time Display --- */
 .time-display {
   color: #fff;
   font-size: 14px;
   font-weight: 500;
   margin-left: 5px;
-  /* Enhancement: Slight shadow for contrast */
   text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
 }
 
-/* 🔑 Progress Bar Slider (ENHANCED STYLING) */
+/* --- Progress Slider --- */
 .progress-slider {
   -webkit-appearance: none;
-  appearance: none;
   width: 100%;
   height: 6px;
   border-radius: 3px;
   margin-bottom: 5px;
   cursor: pointer;
-  /* Enhancement: Added a transition on track background for smooth fill update */
   background: linear-gradient(
     to right,
     var(--theme-color) 0%,
@@ -249,48 +237,43 @@
     #555 var(--progress-fill),
     #555 100%
   );
-  transition: background 0.2s ease, height 0.2s ease;
+  transition:
+    background 0.2s ease,
+    height 0.2s ease;
 }
 
-/* Track height on hover/focus */
 .progress-slider:hover,
 .progress-slider:focus {
-  height: 8px; /* Slightly thicker for easier interaction */
+  height: 8px;
   border-radius: 4px;
 }
 
-/* Remove default thumb/track styles for Chrome/Safari */
-.progress-slider::-webkit-slider-runnable-track {
-  background: transparent;
-}
-
-/* Default thumb visibility (hidden) */
 .progress-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  appearance: none;
   width: 0;
   height: 0;
-  background: var(--theme-color); /* Changed thumb color to theme color */
   border-radius: 50%;
-  transition: width 0.2s, height 0.2s, background 0.2s;
+  transition:
+    width 0.2s,
+    height 0.2s,
+    background 0.2s;
 }
 
-/* Show thumb on hover/active/focus */
 .progress-slider:hover::-webkit-slider-thumb,
 .progress-slider:focus-visible::-webkit-slider-thumb,
 .progress-slider:active::-webkit-slider-thumb {
-  width: 16px; /* Slightly larger thumb */
+  width: 16px;
   height: 16px;
-  background: #fff; /* White thumb on hover/active */
-  border: 3px solid var(--theme-color); /* Theme color border */
+  background: #fff;
+  border: 3px solid var(--theme-color);
   box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
   top: -4px;
 }
 
-/* --- Seek Preview Tooltip (New Feature) --- */
+/* --- Seek Tooltip --- */
 .seek-tooltip {
   position: absolute;
-  top: -35px; /* Adjust height for the new arrow */
+  top: -35px;
   background: rgba(0, 0, 0, 0.9);
   color: #fff;
   padding: 4px 8px;
@@ -298,55 +281,56 @@
   font-size: 12px;
   transform: translateX(-50%);
   white-space: nowrap;
-  transition: opacity 0.1s;
+  opacity: 0;
   pointer-events: none;
   z-index: 25;
+  transition:
+    opacity 0.1s ease,
+    transform 0.1s ease;
 }
 
 .seek-tooltip::after {
   content: "";
   position: absolute;
-  bottom: -5px; /* Position it at the bottom edge */
+  bottom: -5px;
   left: 50%;
   transform: translateX(-50%);
   width: 0;
   height: 0;
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
-  border-top: 5px solid rgba(0, 0, 0, 0.9); /* Matches background of tooltip */
+  border-top: 5px solid rgba(0, 0, 0, 0.9);
 }
 
-/* --- Volume Control --- */
+/* --- Volume Slider --- */
 .volume-control {
   display: flex;
   align-items: center;
 }
-
 .volume-slider {
   -webkit-appearance: none;
-  width: 0px;
+  width: 0;
   height: 4px;
   background: #666;
   border-radius: 2px;
   cursor: pointer;
-  transition: width 0.2s ease, opacity 0.2s ease;
   opacity: 0;
-  margin-right: 5px; /* Added space between slider and button */
+  margin-right: 5px;
+  transition:
+    width 0.2s ease,
+    opacity 0.2s ease;
 }
-
 .volume-control:hover .volume-slider,
 .volume-slider:focus {
-  width: 80px; /* Wider slider on hover */
+  width: 80px;
   opacity: 1;
 }
-
 .volume-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  appearance: none;
-  width: 12px; /* Slightly larger thumb */
+  width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: var(--theme-color); /* Theme color thumb */
+  background: var(--theme-color);
   box-shadow: 0 0 5px rgba(255, 151, 65, 0.3);
 }
 
@@ -355,149 +339,120 @@
   position: absolute;
   bottom: 70px;
   right: 20px;
-  width: 220px; /* Even wider */
-  background: rgba(20, 20, 20, 0.95); /* Near black background */
-  backdrop-filter: blur(10px); /* Increased blur */
-  border-radius: 10px; /* More rounded */
-  border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle border */
-  padding: 15px; /* More padding */
+  width: 220px;
+  background: rgba(20, 20, 20, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 15px;
   z-index: 25;
   color: #fff;
   opacity: 0;
   visibility: hidden;
   transform: translateY(10px);
-  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    visibility 0.2s;
 }
-
 .settings-menu.open {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
 }
-
 .setting-section {
-  margin-bottom: 15px; /* Added structure for multiple settings */
+  margin-bottom: 15px;
 }
-
 .setting-label {
   font-size: 15px;
   font-weight: 700;
-  color: #fff; /* White title for better contrast */
+  color: #fff;
   margin-bottom: 8px;
-  border-bottom: 2px solid var(--theme-color); /* Theme color separator */
+  border-bottom: 2px solid var(--theme-color);
   padding-bottom: 4px;
-  margin-top: 0;
 }
-
 .setting-options {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px; /* Increased gap */
+  gap: 10px;
 }
-
 .setting-options .speed-button,
 .setting-options .quality-button {
-  background: rgba(255, 255, 255, 0.08); /* Lighter base for options */
+  background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.15);
   color: #ccc;
   text-align: center;
   padding: 8px 12px;
   cursor: pointer;
   font-size: 14px;
-  border-radius: 8px; /* More rounded buttons */
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  border-radius: 8px;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    border-color 0.2s;
   min-width: 60px;
   flex-grow: 1;
 }
-
 .setting-options .speed-button:hover,
 .setting-options .quality-button:hover {
   background: rgba(255, 255, 255, 0.2);
   color: #fff;
   border-color: var(--theme-color);
 }
-
 .setting-options .speed-button.active,
 .setting-options .quality-button.active {
   background: var(--theme-color);
   color: #000;
   font-weight: 700;
   border: 1px solid var(--theme-color);
-  transform: translateY(-1px); /* Little lift effect */
+  transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(255, 151, 65, 0.5);
 }
 
-/* Add this to your VideoPlayer.css */
-
-.custom-video-player .clip-processing-overlay {
+/* --- Clip Processing Overlay --- */
+.clip-processing-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: rgba(0, 0, 0, 0.7); /* Dark semi-transparent background */
-  z-index: 100; /* Ensure it's above the video */
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 100;
   color: white;
   font-size: 1.2rem;
 }
-
-.custom-video-player .clip-processing-overlay .loading-text {
+.clip-processing-overlay .loading-text {
   margin-top: 20px;
   font-size: 0.9em;
   opacity: 0.8;
 }
 
-/* Spinner for the button */
-.custom-video-player .button-spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  border-top-color: #fff;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* --- Mobile Responsiveness Adjustments --- */
+/* --- Responsive --- */
 @media (max-width: 600px) {
   .controls-group {
-    gap: 10px; /* Reduced gap on mobile */
+    gap: 10px;
   }
-
   .control-button svg {
     width: 20px;
     height: 20px;
   }
-
   .time-display {
     font-size: 12px;
     margin-left: 0;
   }
-
   .volume-control:hover .volume-slider,
   .volume-slider:focus {
-    width: 40px; /* Smaller volume slider on mobile */
+    width: 40px;
   }
-
   .settings-menu {
-    /* Move settings menu to be closer to center on smaller screens */
     bottom: 80px;
     right: 50%;
     transform: translateX(50%);
-    width: 90%; /* Take up most of the width */
+    width: 90%;
     max-width: 300px;
   }
 }
-
 @media (max-width: 420px) {
   .sreen-sht {
     display: none;
