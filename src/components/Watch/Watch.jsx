@@ -96,6 +96,35 @@ const CustomToast = ({ message, type, onClose }) => {
   );
 };
 
+const useViewTracker = (contentKey) => {
+  const isViewTracked = useRef(false);
+
+  const trackView = useCallback(() => {
+    // Only track if the contentKey is available and we haven't tracked it yet
+    if (!contentKey || isViewTracked.current) return;
+
+    // Set ref immediately to prevent subsequent calls
+    isViewTracked.current = true;
+
+    // Send request to your new view tracking API endpoint
+    fetch("/api/views", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ contentKey }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          console.warn("View tracking failed on API side.");
+        }
+      })
+      .catch((e) => {
+        console.error("Failed to send view tracking request:", e);
+      });
+  }, [contentKey]);
+
+  return { trackView };
+};
+
 export default function WatchPageClient({
   watchData = {},
   infoData = {},
@@ -155,6 +184,9 @@ export default function WatchPageClient({
       : infoData?.episodes?.[0]?.slug;
 
   let progressContentKey = contentId;
+
+  // 🔑 VIEW TRACKING: Integrate tracker hook
+  const { trackView } = useViewTracker(contentKey);
   let progressEpisodeNo;
 
   if (id && id.toLowerCase().includes("episode")) {
