@@ -187,6 +187,7 @@ export default function WatchPageClient({
 
   // 🔑 VIEW TRACKING: Integrate tracker hook
   const { trackView } = useViewTracker(contentKey);
+
   let progressEpisodeNo;
 
   if (id && id.toLowerCase().includes("episode")) {
@@ -255,7 +256,8 @@ export default function WatchPageClient({
       const data = await res.json();
       setCurrentViews(data.views ?? 0);
     }
-  }, [contentId]);
+    trackView()
+  }, [contentId , trackView]);
 
   useEffect(() => {
     fetchLatestViews();
