@@ -324,6 +324,33 @@ export default function WatchPageClient({
         />
       )}
 
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          padding: "10px 0",
+          backgroundColor: "#201f31",
+        }}
+      >
+        <iframe
+          src="/ad"
+          title="Sponsored Ad"
+          scrolling="no"
+
+          referrerPolicy="no-referrer-when-downgrade"
+          style={{
+            width: "100%",
+            maxWidth: "728px",
+            height: "90px",
+            border: "none",
+            borderRadius: "10px",
+            overflow: "hidden",
+            backgroundColor: "#201f31",
+          }}
+        />
+      </div>
+
       <div className="compli">
         <div className="watc">
           {/* --- Video Player --- */}
@@ -471,6 +498,33 @@ export default function WatchPageClient({
               </div>
             </div>
 
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                padding: "10px 0",
+                backgroundColor: "#201f31",
+              }}
+            >
+              <iframe
+                src="/ad"
+                title="Sponsored Ad"
+                scrolling="no"
+
+                referrerPolicy="no-referrer-when-downgrade"
+                style={{
+                  width: "100%",
+                  maxWidth: "728px",
+                  height: "90px",
+                  border: "none",
+                  borderRadius: "10px",
+                  overflow: "hidden",
+                  backgroundColor: "#201f31",
+                }}
+              />
+            </div>
+
             <ShareSlab
               pageId={id}
               url={`https://henpro.fun/watch/${id}`}
@@ -478,6 +532,33 @@ export default function WatchPageClient({
               pageName="this hentai"
               creator={creator}
             />
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                padding: "10px 0",
+                backgroundColor: "#201f31",
+              }}
+            >
+              <iframe
+                src="/ad"
+                title="Sponsored Ad"
+                scrolling="no"
+
+                referrerPolicy="no-referrer-when-downgrade"
+                style={{
+                  width: "100%",
+                  maxWidth: "728px",
+                  height: "90px",
+                  border: "none",
+                  borderRadius: "10px",
+                  overflow: "hidden",
+                  backgroundColor: "#201f31",
+                }}
+              />
+            </div>
 
             {/* --- Episode Gallery Inline --- */}
             {infoData.gallery?.length > 0 && (
@@ -544,6 +625,33 @@ export default function WatchPageClient({
                 )}
               </div>
             )}
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                padding: "10px 0",
+                backgroundColor: "#201f31",
+              }}
+            >
+              <iframe
+                src="/ad"
+                title="Sponsored Ad"
+                scrolling="no"
+
+                referrerPolicy="no-referrer-when-downgrade"
+                style={{
+                  width: "100%",
+                  maxWidth: "728px",
+                  height: "90px",
+                  border: "none",
+                  borderRadius: "10px",
+                  overflow: "hidden",
+                  backgroundColor: "#201f31",
+                }}
+              />
+            </div>
 
             <CommentSection contentId={contentId} showToast={showCustomToast} creator={creator} />
 
