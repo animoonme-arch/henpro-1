@@ -135,7 +135,7 @@ export default function WatchPageClient({
   const { data: session } = useSession();
   const [isScrolled, setIsScrolled] = useState(false);
   const [lightboxImg, setLightboxImg] = useState(null);
-  const [adClosed, setAdClosed] = useState(false);
+  const [adClosed, setAdClosed] = useState(true);
 
   const [watchlistStatus, setWatchlistStatus] = useState(null);
   const [isUpdating, setIsUpdating] = useState(false);

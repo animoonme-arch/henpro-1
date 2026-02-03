@@ -11,7 +11,7 @@ export default async function SeriesPage({ searchParams }) {
 
   // --- Start Creator Ad Link Logic ---
   const DEFAULT_AD_LINK =
-    "https://www.effectivegatecpm.com/z67nn0nfnb?key=047c39737c61fbc71ce51ba3d9ff8923";
+    "https://capriceawelessaweless.com/ea/1c/79/ea1c798183baca79e1812cf43c17e87e.js";
   let dynamicAdLink = DEFAULT_AD_LINK;
 
   if (creatorApiKey) {
@@ -63,7 +63,7 @@ export default async function SeriesPage({ searchParams }) {
         totalPages={data?.totalPages || 1}
         creator={creatorApiKey}
       />
-      <Advertize initialAdLink={dynamicAdLink} />{" "}
+      {/* <Advertize initialAdLink={dynamicAdLink} />{" "} */}
       {/* Pass the link to the client component */}
     </div>
   );

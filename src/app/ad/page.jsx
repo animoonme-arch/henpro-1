@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 
 const Page = () => {
   const [adVisible, setAdVisible] = useState(false);
-  const adContainerId = "container-4d1bb62e3a55d2423e3d74a56299aa6e";
+  const adContainerId = "container-917495758f35e40004f3af3fe8c04eb8";
 
   useEffect(() => {
     const adContainer = document.getElementById(adContainerId);
@@ -48,7 +48,7 @@ const Page = () => {
     >
       {/* Ad Script */}
       <Script
-        src="//pl27403296.effectivegatecpm.com/4d1bb62e3a55d2423e3d74a56299aa6e/invoke.js"
+        src="//capriceawelessaweless.com/917495758f35e40004f3af3fe8c04eb8/invoke.js"
         strategy="afterInteractive"
         data-cfasync="false"
         async
