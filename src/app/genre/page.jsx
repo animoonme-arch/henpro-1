@@ -63,7 +63,7 @@ export default async function SeriesPage({ searchParams }) {
         totalPages={data?.totalPages || 1}
         creator={creatorApiKey}
       />
-      {/* <Advertize initialAdLink={dynamicAdLink} />{" "} */}
+      <Advertize initialAdLink={dynamicAdLink} />{" "}
       {/* Pass the link to the client component */}
     </div>
   );

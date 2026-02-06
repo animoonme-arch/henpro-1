@@ -63,7 +63,7 @@ export default async function SeriesPage({ searchParams }) {
         creator={creatorApiKey}
       />
       {/* 🌟 Pass the dynamic ad link to the Advertize component */}
-      {/* <Advertize initialAdLink={dynamicAdLink} /> */}
+      <Advertize initialAdLink={dynamicAdLink} />
     </div>
   );
 }

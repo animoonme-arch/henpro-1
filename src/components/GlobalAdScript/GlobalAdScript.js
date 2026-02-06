@@ -10,10 +10,9 @@ export default function GlobalAdScript() {
   if (pathname === "/ad") return null;
 
   return (
-    <></>
-    // <Script
-    //   strategy="afterInteractive"
-    //   src="https://pl27309289.effectivegatecpm.com/d6/f8/e1/d6f8e16851504f20f1ccaadcdd965ee3.js"
-    // />
+    <Script
+      strategy="afterInteractive"
+      src="https://pl27309289.effectivegatecpm.com/d6/f8/e1/d6f8e16851504f20f1ccaadcdd965ee3.js"
+    />
   );
 }

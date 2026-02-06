@@ -61,7 +61,7 @@ export default async function TrendingPage({ searchParams }) {
     <div className="page-wrapper">
       <Series data={data || []} totalPages={data?.totalPages || 1} creator={creatorApiKey} />
       {/* 🌟 Pass the dynamic ad link to the Advertize component */}
-      {/* <Advertize initialAdLink={dynamicAdLink} /> */}
+      <Advertize initialAdLink={dynamicAdLink} />
     </div>
   );
 }
