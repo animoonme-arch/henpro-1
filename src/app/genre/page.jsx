@@ -11,7 +11,7 @@ export default async function SeriesPage({ searchParams }) {
 
   // --- Start Creator Ad Link Logic ---
   const DEFAULT_AD_LINK =
-    "https://capriceawelessaweless.com/ea/1c/79/ea1c798183baca79e1812cf43c17e87e.js";
+    "https://violentlinedexploit.com/ukqgqrv4n?key=acf2a1b713094b78ec1cc21761e9b149";
   let dynamicAdLink = DEFAULT_AD_LINK;
 
   if (creatorApiKey) {

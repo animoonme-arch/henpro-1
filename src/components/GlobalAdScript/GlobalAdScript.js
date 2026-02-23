@@ -12,7 +12,7 @@ export default function GlobalAdScript() {
   return (
     <Script
       strategy="afterInteractive"
-      src="https://pl27309289.effectivegatecpm.com/d6/f8/e1/d6f8e16851504f20f1ccaadcdd965ee3.js"
+      src="https://violentlinedexploit.com/ea/1c/79/ea1c798183baca79e1812cf43c17e87e.js"
     />
   );
 }

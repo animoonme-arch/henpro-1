@@ -48,7 +48,7 @@ const Page = () => {
     >
       {/* Ad Script */}
       <Script
-        src="//capriceawelessaweless.com/917495758f35e40004f3af3fe8c04eb8/invoke.js"
+        src="//violentlinedexploit.com/917495758f35e40004f3af3fe8c04eb8/invoke.js"
         strategy="afterInteractive"
         data-cfasync="false"
         async
