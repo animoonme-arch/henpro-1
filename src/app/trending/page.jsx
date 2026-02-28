@@ -44,7 +44,15 @@ export default async function TrendingPage({ searchParams }) {
   // --- End Dynamic Ad Link Logic ---
 
   // --- Standard Trending Data Fetch Logic ---
-  const apiUrl = `https://api.henpro.fun/api/trending?page=${page}`;
+      const apiDomains = [
+    "https://api.henpro.fun",
+    "https://api2.henpro.fun",
+    "https://api3.henpro.fun",
+  ];
+
+  const randomDomain =
+    apiDomains[Math.floor(Math.random() * apiDomains.length)];
+  const apiUrl = `${randomDomain}/api/trending?page=${page}`;
 
   const res = await fetch(apiUrl, {
     next: { revalidate: 300 }, // revalidate every 5 min

@@ -41,7 +41,15 @@ export default async function SeriesPage({ searchParams }) {
   // --- End Dynamic Ad Link Logic ---
 
   // --- Standard Data Fetch Logic ---
-  const apiUrl = `https://api.henpro.fun/api/year?year=${year}&page=${page}`;
+    const apiDomains = [
+    "https://api.henpro.fun",
+    "https://api2.henpro.fun",
+    "https://api3.henpro.fun"
+  ];
+
+  const randomDomain =
+    apiDomains[Math.floor(Math.random() * apiDomains.length)];
+  const apiUrl = `${randomDomain}/api/year?year=${year}&page=${page}`;
 
   const res = await fetch(apiUrl, {
     next: { revalidate: 300 }, // revalidate every 5 min

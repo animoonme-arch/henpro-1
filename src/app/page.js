@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 export default async function Page({ searchParams }) {
   const creatorApiKey = searchParams?.creator;
 
-  // --- Start Dynamic Ad Link Logic ---
+  // --- Start Dynamic Ad Link Logic ---imperial_mertakjiguhrgmkrjg?]\hggjdusf
   const DEFAULT_AD_LINK =
     "https://violentlinedexploit.com/ukqgqrv4n?key=acf2a1b713094b78ec1cc21761e9b149";
   let dynamicAdLink = DEFAULT_AD_LINK;
@@ -24,7 +24,7 @@ export default async function Page({ searchParams }) {
 
       const creatorData = await collection.findOne(
         { username: creatorApiKey },
-        { projection: { adsterraSmartlink: 1, _id: 0 } }
+        { projection: { adsterraSmartlink: 1, _id: 0 } },
       );
 
       if (creatorData && creatorData.adsterraSmartlink) {
@@ -34,14 +34,22 @@ export default async function Page({ searchParams }) {
       console.error(
         "MongoDB fetch failed for creator on homepage:",
         creatorApiKey,
-        error
+        error,
       );
     }
   }
   // --- End Dynamic Ad Link Logic ---
 
   // 🧠 Fetch from API
-  const res = await fetch("https://api.henpro.fun/api/homepage", {
+  const apiDomains = [
+    "https://api.henpro.fun",
+    "https://api2.henpro.fun",
+    "https://api3.henpro.fun",
+  ];
+
+  const randomDomain =
+    apiDomains[Math.floor(Math.random() * apiDomains.length)];
+  const res = await fetch(`${randomDomain}/api/homepage`, {
     next: { revalidate: 3600 },
   });
   const recentEpi = await res.json();
@@ -59,7 +67,7 @@ export default async function Page({ searchParams }) {
 
   return (
     <div>
-      <Home recentEpi={recentEpi} hompro={hompro} creator={creatorApiKey}/>
+      <Home recentEpi={recentEpi} hompro={hompro} creator={creatorApiKey} />
       <Advertize initialAdLink={dynamicAdLink} />
     </div>
   );

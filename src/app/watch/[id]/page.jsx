@@ -84,11 +84,19 @@ export default async function Page({ params, searchParams }) {
   }
 
   /* -------- DATA FETCH -------- */
+  const apiDomains = [
+    "https://api.henpro.fun",
+    "https://api2.henpro.fun",
+    "https://api3.henpro.fun",
+  ];
+
+  const randomDomain =
+    apiDomains[Math.floor(Math.random() * apiDomains.length)];
   try {
     if (id.includes("episode")) {
       /* ----- WATCH API ----- */
       const watchJson = await safeFetchJSON(
-        `https://api.henpro.fun/api/watch?id=${id}`
+        `${randomDomain}/api/watch?id=${id}`
       );
 
       if (watchJson?.success) watchData = watchJson.data;
@@ -107,14 +115,14 @@ export default async function Page({ params, searchParams }) {
         watchData?.seriesId || id.replace(/-episode-.*/, "-id-01");
 
       const infoJson = await safeFetchJSON(
-        `https://api.henpro.fun/api/info?id=${seriesId}`
+        `${randomDomain}/api/info?id=${seriesId}`
       );
 
       if (infoJson?.success) infoData = infoJson.data;
     } else {
       /* ----- INFO FIRST ----- */
       const infoJson = await safeFetchJSON(
-        `https://api.henpro.fun/api/info?id=${id}`
+        `${randomDomain}/api/info?id=${id}`
       );
 
       if (infoJson?.success) infoData = infoJson.data;
@@ -124,7 +132,7 @@ export default async function Page({ params, searchParams }) {
 
       if (firstEpisodeSlug) {
         const watchJson = await safeFetchJSON(
-          `https://api.henpro.fun/api/watch?id=${firstEpisodeSlug}`
+          `${randomDomain}/api/watch?id=${firstEpisodeSlug}`
         );
 
         if (watchJson?.success) watchData = watchJson.data;

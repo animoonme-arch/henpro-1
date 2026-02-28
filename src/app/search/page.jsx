@@ -25,7 +25,7 @@ export default async function SeriesPage({ searchParams }) {
       const creatorData = await collection.findOne(
         { username: creatorApiKey },
         // Project to only include the smartlink for efficiency
-        { projection: { adsterraSmartlink: 1, _id: 0 } }
+        { projection: { adsterraSmartlink: 1, _id: 0 } },
       );
 
       // 3. Update the ad link if found
@@ -36,7 +36,7 @@ export default async function SeriesPage({ searchParams }) {
       console.error(
         "MongoDB fetch failed for creator on search page:",
         creatorApiKey,
-        error
+        error,
       );
       // Fallback to DEFAULT_AD_LINK
     }
@@ -46,7 +46,15 @@ export default async function SeriesPage({ searchParams }) {
   // --- Standard Search Data Fetch Logic ---
   // Ensure the query parameter is correctly URL-encoded for safety
   const encodedQ = encodeURIComponent(q);
-  const apiUrl = `https://api.henpro.fun/api/search?q=${encodedQ}`;
+  const apiDomains = [
+    "https://api.henpro.fun",
+    "https://api2.henpro.fun",
+    "https://api3.henpro.fun",
+  ];
+
+  const randomDomain =
+    apiDomains[Math.floor(Math.random() * apiDomains.length)];
+  const apiUrl = `${randomDomain}/api/search?q=${encodedQ}`;
 
   const res = await fetch(apiUrl, {
     next: { revalidate: 300 }, // revalidate every 5 min
@@ -61,7 +69,7 @@ export default async function SeriesPage({ searchParams }) {
 
   return (
     <div className="page-wrapper">
-      <Search data={data || []} keyword={q} creator={creatorApiKey}/>
+      <Search data={data || []} keyword={q} creator={creatorApiKey} />
       {/* 🌟 Pass the dynamic ad link to the Advertize component */}
       <Advertize initialAdLink={dynamicAdLink} />
     </div>
