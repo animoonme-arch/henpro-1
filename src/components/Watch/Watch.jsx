@@ -257,7 +257,7 @@ export default function WatchPageClient({
       setCurrentViews(data.views ?? 0);
     }
     trackView()
-  }, [contentId , trackView]);
+  }, [contentId, trackView]);
 
   useEffect(() => {
     fetchLatestViews();
@@ -380,6 +380,52 @@ export default function WatchPageClient({
                   </div>
                 )}
               </div>
+
+              <div className="cdis">
+                <div className="episode-list">
+                  <h3 className="episode-heading">Episodes</h3>
+                  <div className="epsi">
+                    {infoData?.episodes?.length > 0 ? (
+                      infoData.episodes.map((ep, idx) => {
+                        // Extract episode number (from title or slug)
+                        const match = ep.title.match(/(\d+)/);
+                        const episodeNumber = match ? parseInt(match[1], 10) : null;
+
+                        // Compare with current progress episode number
+                        const isCurrent = episodeNumber === progressEpisodeNo;
+
+                        return (
+                          <Link
+                            key={idx}
+                            // ⭐️ Applied creator logic to Episode Links
+                            href={getUpdatedLink(`/watch/${ep.slug}`)}
+                            className={`episode-card ${isCurrent ? "current-ep" : ""
+                              }`}
+                          >
+                            <img
+                              src={ep.image}
+                              alt={ep.title}
+                              className="ep-thumb"
+                              loading="lazy"
+                            />
+                            <div className="ep-info">
+                              <div className="ep-title">{ep.title}</div>
+                              <div className="ep-meta">
+                                <span className="ep-date">{ep.date}</span>
+                                <span className="dot">•</span>
+                                <span className="ep-cen">
+                                  {infoData.censorship || "Censored"}
+                                </span>
+                              </div>
+                            </div>
+                          </Link>
+                        );
+                      })
+                    ) : (
+                      <div className="no-episodes">No episodes available.</div>
+                    )}
+                  </div>
+                </div></div>
 
               {/* --- WATCHLIST BUTTON SECTION --- */}
               <div className="flex justify-end items-center min-h-[70px] mt-[-20px] p-2.5 w-full">
@@ -692,7 +738,7 @@ export default function WatchPageClient({
         </div>
 
         <div className="sidc">
-          <div className="episode-list">
+          <div className="episode-list hno">
             <h3 className="episode-heading">Episodes</h3>
             <div className="epsi">
               {infoData?.episodes?.length > 0 ? (
@@ -739,8 +785,9 @@ export default function WatchPageClient({
 
           <Sidebar sidebar={watchData.sidebar} creator={creator} />
         </div>
-      </div>
-      {!adClosed && <Loading onClose={() => setAdClosed(true)} />}
+      </div >
+      {!adClosed && <Loading onClose={() => setAdClosed(true)} />
+      }
       <Footer creator={creator} />
 
       <style jsx>{`

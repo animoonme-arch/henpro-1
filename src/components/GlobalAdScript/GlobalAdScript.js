@@ -10,9 +10,10 @@ export default function GlobalAdScript() {
   if (pathname === "/ad") return null;
 
   return (
-    <Script
-      strategy="afterInteractive"
-      src="https://violentlinedexploit.com/ea/1c/79/ea1c798183baca79e1812cf43c17e87e.js"
-    />
+    <></>
+    // <Script
+    //   strategy="afterInteractive"
+    //   src="https://violentlinedexploit.com/ea/1c/79/ea1c798183baca79e1812cf43c17e87e.js"
+    // />
   );
 }

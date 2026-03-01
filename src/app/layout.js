@@ -1,5 +1,5 @@
 // import GlobalAdScript from "@/components/GlobalAdScript/GlobalAdScript";
-import GlobalAdScript from "@/components/GlobalAdScript/GlobalAdScript";
+// import GlobalAdScript from "@/components/GlobalAdScript/GlobalAdScript";
 import "./globals.css";
 import Script from "next/script";
 // import GlobalAdScript from "@/components/GlobalAdScript";
@@ -29,7 +29,7 @@ export default function RootLayout({ children }) {
 
       <body className="antialiased">
         {/* 🔥 Conditional global ad */}
-        <GlobalAdScript />
+        {/* <GlobalAdScript /> */}
         {children}
       </body>
     </html>

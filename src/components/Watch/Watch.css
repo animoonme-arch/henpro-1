@@ -103,6 +103,13 @@
   padding-right: 10px;
 }
 
+.cdis {
+  display: none;
+  width: 25%;
+  /* margin-top: 60px; */
+  padding-right: 10px;
+}
+
 .episode-list {
   background: linear-gradient(
     180deg,
@@ -184,7 +191,9 @@
   object-fit: cover;
   border-radius: 10px;
   flex-shrink: 0;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 .episode-card:hover .ep-thumb {
   transform: scale(1.06);
@@ -259,15 +268,18 @@
 /* Add a faint pulsing glow animation */
 @keyframes glowPulse {
   0% {
-    box-shadow: 0 0 12px rgba(255, 151, 65, 0.3),
+    box-shadow:
+      0 0 12px rgba(255, 151, 65, 0.3),
       0 0 25px rgba(168, 108, 249, 0.2);
   }
   50% {
-    box-shadow: 0 0 25px rgba(255, 151, 65, 0.5),
+    box-shadow:
+      0 0 25px rgba(255, 151, 65, 0.5),
       0 0 45px rgba(168, 108, 249, 0.4);
   }
   100% {
-    box-shadow: 0 0 12px rgba(255, 151, 65, 0.3),
+    box-shadow:
+      0 0 12px rgba(255, 151, 65, 0.3),
       0 0 25px rgba(168, 108, 249, 0.2);
   }
 }
@@ -366,7 +378,9 @@
   width: 250px;
   border-radius: 12px;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 .posterD:hover {
   transform: scale(1.05);
@@ -380,7 +394,9 @@
   margin-bottom: 20px;
   border-radius: 12px;
   background: rgba(25, 25, 25, 0.85);
-  transition: background 0.3s ease, transform 0.3s ease;
+  transition:
+    background 0.3s ease,
+    transform 0.3s ease;
 }
 .slab1:hover,
 .slab2:hover {
@@ -518,7 +534,9 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 .fixed-size-img:hover {
   transform: scale(1.05);
@@ -680,6 +698,9 @@
   opacity: 1;
   transform: scale(1.3);
 }
+.hno {
+  display: block;
+}
 
 /* Responsive */
 @media (max-width: 1280px) {
@@ -706,6 +727,14 @@
   }
   .sidc {
     width: 100%;
+  }
+  .hno {
+    display: none;
+  }
+  .cdis {
+    display: block;
+    width: 100%;
+    margin-bottom: 20px;
   }
   .epsi {
     grid-template-columns: repeat(2, 1fr);
