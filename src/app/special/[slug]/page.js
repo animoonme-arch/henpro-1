@@ -24,7 +24,7 @@ export default async function Page({ params }) {
         preload="metadata"
         poster={video.thumbnail}
       >
-        <source src={video.videoFilel} type="video/mp4" />
+        <source src={video.customVideoURL} type="video/mp4" />
       </video>
 
       {/* TITLE */}
