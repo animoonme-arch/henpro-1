@@ -7,6 +7,7 @@ import RecentEpisodes from "../RecentEpisodes/RecentEpisodes";
 import ShareSlab from "../ShareSlab/ShareSlab";
 import Swipe from "../Swipe/Hero";
 import Footer from "../footer/Footer";
+import "./home.css"
 
 const Home = (props) => {
   return (
@@ -43,6 +44,29 @@ const Home = (props) => {
         </div>
 
         <div>
+          <div className="special-grid-wrapper">
+            <h2 className="special-title">Trending 3D Videos</h2>
+
+            <div className="special-grid">
+              {props.specialHome?.data?.map((item, index) => (
+                <a
+                  key={index}
+                  href={item.link}
+                  className="special-card"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="thumb-wrapper">
+                    <img src={item.thumbnail} alt={item.title} />
+                    <span className="duration">{item.duration}</span>
+                  </div>
+
+                  <p className="title">{item.title}</p>
+                </a>
+              ))}
+            </div>
+          </div>
+
           <RecentEpisodes recentEpi={props.recentEpi.data.recentEpisodes} creator={props.creator} />
 
           <ShareSlab
@@ -73,7 +97,7 @@ const Home = (props) => {
               src="/ad"
               title="Sponsored Ad"
               scrolling="no"
-  
+
               referrerPolicy="no-referrer-when-downgrade"
               style={{
                 width: "100%",
@@ -104,7 +128,7 @@ const Home = (props) => {
             title="School Girls"
             slides={props.hompro?.genre?.["school-girls"] || []}
             slug={`/genre?genre=school-girls`}
-            creator={props.creator} 
+            creator={props.creator}
           />
 
           <Swipe
@@ -114,7 +138,7 @@ const Home = (props) => {
             creator={props.creator}
           />
         </div>
-        <Footer creator={props.creator}/>
+        <Footer creator={props.creator} />
       </div>
     </SessionProvider>
   );

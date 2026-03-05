@@ -1,30 +1,26 @@
-// app/page.js
-
 import Advertize from "@/components/Advertize/Advertize";
 import Home from "@/components/Home/Home";
 import { connectDB } from "@/lib/mongoClient";
 import React from "react";
 
-// ✨ NEXT.JS CONFIG: Force dynamic rendering to ensure searchParams are always current
 export const dynamic = "force-dynamic";
 
 export default async function Page({ searchParams }) {
   const creatorApiKey = searchParams?.creator;
 
-  // --- Start Dynamic Ad Link Logic ---imperial_mertakjiguhrgmkrjg?]\hggjdusf
   const DEFAULT_AD_LINK =
     "https://violentlinedexploit.com/ukqgqrv4n?key=acf2a1b713094b78ec1cc21761e9b149";
+
   let dynamicAdLink = DEFAULT_AD_LINK;
 
   if (creatorApiKey) {
     try {
-      // Ensure you are using destructuring: const { db } = await connectDB();
       const db = await connectDB();
       const collection = db.collection("creators");
 
       const creatorData = await collection.findOne(
         { username: creatorApiKey },
-        { projection: { adsterraSmartlink: 1, _id: 0 } },
+        { projection: { adsterraSmartlink: 1, _id: 0 } }
       );
 
       if (creatorData && creatorData.adsterraSmartlink) {
@@ -34,13 +30,11 @@ export default async function Page({ searchParams }) {
       console.error(
         "MongoDB fetch failed for creator on homepage:",
         creatorApiKey,
-        error,
+        error
       );
     }
   }
-  // --- End Dynamic Ad Link Logic ---
 
-  // 🧠 Fetch from API
   const apiDomains = [
     "https://api.henpro.fun",
     "https://api2.henpro.fun",
@@ -49,25 +43,35 @@ export default async function Page({ searchParams }) {
 
   const randomDomain =
     apiDomains[Math.floor(Math.random() * apiDomains.length)];
-  const res = await fetch(`${randomDomain}/api/homepage`, {
+
+  // 🔹 Homepage data
+  const homeRes = await fetch(`${randomDomain}/api/homepage`, {
     next: { revalidate: 3600 },
   });
-  const recentEpi = await res.json();
+  const recentEpi = await homeRes.json();
 
-  // 🧩 Connect MongoDB
+  // 🔹 Special home data
+  const specialRes = await fetch(`${randomDomain}/api/special-home`, {
+    next: { revalidate: 3600 },
+  });
+  const specialHome = await specialRes.json();
+
   const db = await connectDB();
 
-  // 🗂️ Fetch latest hompro document
   const homproData = await db
     .collection("hompros")
     .findOne({}, { sort: { createdAt: -1 } });
 
-  // 🧼 Convert to plain object
   const hompro = JSON.parse(JSON.stringify(homproData));
 
   return (
     <div>
-      <Home recentEpi={recentEpi} hompro={hompro} creator={creatorApiKey} />
+      <Home
+        recentEpi={recentEpi}
+        specialHome={specialHome}
+        hompro={hompro}
+        creator={creatorApiKey}
+      />
       <Advertize initialAdLink={dynamicAdLink} />
     </div>
   );
