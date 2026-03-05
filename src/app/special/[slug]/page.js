@@ -16,8 +16,8 @@ export default async function Page({ params }) {
 
     const videoMetadata = {
     videoUrl: video.videoFile,
-    title: data.title,
-    poster: data.poster,
+    title: video.title,
+    poster: video.thumbnail,
   };
 
   return (
