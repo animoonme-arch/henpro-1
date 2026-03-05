@@ -45,25 +45,35 @@ const Home = (props) => {
 
         <div>
           <div className="special-grid-wrapper">
-            <h2 className="special-title">Trending 3D Videos</h2>
+            <h2 className="special-title">🔥 Trending 3D Videos</h2>
 
             <div className="special-grid">
-              {props.specialHome?.data?.map((item, index) => (
-                <a
-                  key={index}
-                  href={item.link}
-                  className="special-card"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <div className="thumb-wrapper">
-                    <img src={item.thumbnail} alt={item.title} />
-                    <span className="duration">{item.duration}</span>
-                  </div>
+              {props.specialHome?.data?.map((item, index) => {
+                const slug = new URL(item.link).pathname.replace(/\/$/, "");
+                const internalLink = `/SPECIAL${slug}`;
 
-                  <p className="title">{item.title}</p>
-                </a>
-              ))}
+                return (
+                  <a key={index} href={internalLink} className="special-card">
+                    <div className="thumb-wrapper">
+                      <img
+                        src={item.thumbnail}
+                        alt={item.title}
+                        loading="lazy"
+                        decoding="async"
+                      />
+
+                      <span className="duration">{item.duration}</span>
+                      <span className="rating">{item.rating}</span>
+                    </div>
+
+                    <p className="title">{item.title}</p>
+
+                    <div className="meta">
+                      <span>{item.views}</span>
+                    </div>
+                  </a>
+                );
+              })}
             </div>
           </div>
 
