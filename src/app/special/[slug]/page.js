@@ -14,18 +14,25 @@ export default async function Page({ params }) {
   const json = await res.json();
   const video = json.data;
 
+    const videoMetadata = {
+    videoUrl: video.customVideoURL,
+    title: video.title,
+    poster: video.thumbnail,
+  };
 
   return (
     <div className="special-container">
       {/* VIDEO PLAYER */}
-      <video
-        className="video-player"
-        controls
-        preload="metadata"
-        poster={video.thumbnail}
+      <div
+        style={{
+          width: "100%",
+          maxWidth: "1200px",
+          margin: "0 auto",
+          padding: "10px",
+        }}
       >
-        <source src={video.customVideoURL} type="video/mp4" />
-      </video>
+        <VideoSection metadata={videoMetadata} />
+      </div>
 
       {/* TITLE */}
       <h1 className="video-title">{video.title}</h1>
