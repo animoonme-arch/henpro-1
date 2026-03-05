@@ -50,7 +50,7 @@ const Home = (props) => {
             <div className="special-grid">
               {props.specialHome?.data?.map((item, index) => {
                 const slug = new URL(item.link).pathname.replace(/\/$/, "");
-                const internalLink = `/SPECIAL${slug}`;
+                const internalLink = `/special${slug}`;
 
                 return (
                   <a key={index} href={internalLink} className="special-card">
