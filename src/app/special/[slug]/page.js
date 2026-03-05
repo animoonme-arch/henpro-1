@@ -14,11 +14,24 @@ export default async function Page({ params }) {
   const json = await res.json();
   const video = json.data;
 
+    const videoMetadata = {
+    videoUrl: video.videoFile,
+    title: data.title,
+    poster: data.poster,
+  };
+
   return (
     <div className="special-container">
       {/* VIDEO PLAYER */}
-      <div className="player-wrapper">
-        <iframe src={video.iframeSrc} allowFullScreen className="player" />
+      <div
+        style={{
+          width: "100%",
+          maxWidth: "1200px",
+          margin: "0 auto",
+          padding: "10px",
+        }}
+      >
+        <VideoSection metadata={videoMetadata} />
       </div>
 
       {/* TITLE */}
