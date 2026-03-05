@@ -22,7 +22,7 @@ export default async function Page({ params }) {
         className="video-player"
         controls
         preload="metadata"
-        poster={data.poster}
+        poster={video.thumbnail}
       >
         <source src={video.videoFilel} type="video/mp4" />
       </video>
