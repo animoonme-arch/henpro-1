@@ -1,6 +1,6 @@
 "use client";
 import { SessionProvider } from "next-auth/react";
-import React, { useRef } from "react";
+import React from "react";
 import Navbar from "../Navbar/Navbar";
 import Hero from "../Hero/Hero";
 import RecentEpisodes from "../RecentEpisodes/RecentEpisodes";
@@ -13,18 +13,23 @@ const Home = (props) => {
 
   const playPreview = (e) => {
     const video = e.currentTarget.querySelector("video");
-    if (video) {
+
+    if (!video) return;
+
+    if (!video.src) {
       video.src = video.dataset.src;
-      video.play();
     }
+
+    video.play().catch(()=>{});
   };
 
   const stopPreview = (e) => {
     const video = e.currentTarget.querySelector("video");
-    if (video) {
-      video.pause();
-      video.currentTime = 0;
-    }
+
+    if (!video) return;
+
+    video.pause();
+    video.currentTime = 0;
   };
 
   return (
@@ -32,11 +37,19 @@ const Home = (props) => {
       <div className="home-container">
 
         <Navbar now={true} creator={props.creator} />
-        <Hero recentEpi={props.recentEpi} creator={props.creator} />
+
+        <Hero
+          recentEpi={props.recentEpi}
+          creator={props.creator}
+        />
 
         {/* AD */}
         <div className="ad-container">
-          <iframe src="/ad" title="Sponsored Ad" scrolling="no" />
+          <iframe
+            src="/ad"
+            title="Sponsored Ad"
+            scrolling="no"
+          />
         </div>
 
         {/* TRENDING GRID */}
@@ -58,6 +71,8 @@ const Home = (props) => {
                 .split("/")
                 .pop();
 
+              const previewSrc = `https://3dhq1.org/video/3d/${previewVideo}`;
+
               return (
                 <a
                   key={index}
@@ -66,6 +81,7 @@ const Home = (props) => {
                   onMouseEnter={playPreview}
                   onMouseLeave={stopPreview}
                   onTouchStart={playPreview}
+                  onTouchEnd={stopPreview}
                 >
 
                   <div className="thumb-wrapper">
@@ -83,18 +99,27 @@ const Home = (props) => {
                       loop
                       playsInline
                       preload="none"
-                      data-src={`https://3dhq1.org/video/3d/${previewVideo}`}
+                      data-src={previewSrc}
                     />
 
-                    <span className="duration">{item.duration}</span>
-                    <span className="rating">⭐ {item.rating}</span>
+                    <span className="duration">
+                      {item.duration}
+                    </span>
+
+                    <span className="rating">
+                      ⭐ {item.rating}
+                    </span>
 
                   </div>
 
-                  <p className="title">{item.title}</p>
+                  <p className="title">
+                    {item.title}
+                  </p>
 
                   <div className="meta">
-                    <span>👁 {item.views}</span>
+                    <span>
+                      👁 {item.views}
+                    </span>
                   </div>
 
                 </a>

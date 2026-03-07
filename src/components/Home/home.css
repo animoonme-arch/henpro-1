@@ -3,15 +3,22 @@
   overflow-x: hidden;
 }
 
+/* SECTION */
+
 .special-section {
   padding: 40px 6%;
+}
+
+.section-header {
+  margin-bottom: 25px;
 }
 
 .section-header h2 {
   font-size: 28px;
   font-weight: 700;
-  margin-bottom: 25px;
 }
+
+/* GRID */
 
 .special-grid {
   display: grid;
@@ -19,20 +26,23 @@
   gap: 20px;
 }
 
+/* CARD */
+
 .special-card {
   text-decoration: none;
   color: white;
-  transition: transform 0.2s ease;
+  transition: transform 0.25s ease;
 }
 
 .special-card:hover {
   transform: translateY(-5px);
 }
 
+/* THUMB */
+
 .thumb-wrapper {
   position: relative;
-  width: 100%;
-  border-radius: 10px;
+  border-radius: 12px;
   overflow: hidden;
   background: #111;
 }
@@ -41,6 +51,8 @@
   width: 100%;
   display: block;
 }
+
+/* VIDEO PREVIEW */
 
 .hover-preview {
   position: absolute;
@@ -56,6 +68,8 @@
 .special-card:hover .hover-preview {
   opacity: 1;
 }
+
+/* BADGES */
 
 .duration {
   position: absolute;
@@ -77,6 +91,8 @@
   border-radius: 4px;
 }
 
+/* TITLE */
+
 .title {
   font-size: 15px;
   margin-top: 8px;
@@ -84,10 +100,14 @@
   font-weight: 500;
 }
 
+/* META */
+
 .meta {
   font-size: 13px;
   opacity: 0.8;
 }
+
+/* AD */
 
 .ad-container {
   width: 100%;
