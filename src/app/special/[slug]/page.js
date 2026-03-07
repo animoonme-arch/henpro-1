@@ -1,31 +1,43 @@
+"use client";
+
 import Link from "next/link";
 import "./special.css";
+import { FaPlay } from "react-icons/fa";
 
 export const dynamic = "force-dynamic";
 
-export default async function Page({ params }) {
-  const param = await params;
-  const { slug } = param;
+export default function PageClient({ video }) {
 
-  const res = await fetch(`https://api.henpro.fun/api/special-watch/${slug}`, {
-    next: { revalidate: 3600 },
-  });
+  const playPreview = (e) => {
+    const vid = e.currentTarget.querySelector("video");
+    if (!vid) return;
 
-  const json = await res.json();
-  const video = json.data;
+    if (!vid.src) vid.src = vid.dataset.src;
+    vid.play().catch(() => {});
+  };
 
+  const stopPreview = (e) => {
+    const vid = e.currentTarget.querySelector("video");
+    if (!vid) return;
+
+    vid.pause();
+    vid.currentTime = 0;
+  };
 
   return (
     <div className="special-container">
+
       {/* VIDEO PLAYER */}
-      <video
-        className="video-player"
-        controls
-        preload="metadata"
-        poster={video.thumbnail}
-      >
-        <source src={video.customVideoURL} type="video/mp4" />
-      </video>
+      <div className="player-wrapper">
+        <video
+          className="video-player"
+          controls
+          preload="metadata"
+          poster={video.thumbnail}
+        >
+          <source src={video.customVideoURL} type="video/mp4" />
+        </video>
+      </div>
 
       {/* TITLE */}
       <h1 className="video-title">{video.title}</h1>
@@ -54,25 +66,66 @@ export default async function Page({ params }) {
         ))}
       </div>
 
-      {/* RELATED VIDEOS */}
+      {/* RELATED */}
       <h2 className="related-title">Related Videos</h2>
 
       <div className="related-grid">
+
         {video.related?.map((item, i) => {
+
           const slug = new URL(item.link).pathname.replace(/\/$/, "");
           const internal = `/special${slug}`;
 
+          const previewVideo = item.thumbnail
+            .replace(/-\d+x\d+\.webp$/, ".mp4")
+            .split("/")
+            .pop();
+
+          const previewSrc = `https://3dhq1.org/video/3d/${previewVideo}`;
+
           return (
-            <Link key={i} href={internal} className="related-card">
+            <Link
+              key={i}
+              href={internal}
+              className="related-card"
+              onMouseEnter={playPreview}
+              onMouseLeave={stopPreview}
+              onTouchStart={playPreview}
+            >
+
               <div className="thumb">
+
                 <img
-                  src={`https://3dhentai.co/wp-content/uploads/${item.videoFile}`}
+                  src={item.thumbnail}
                   alt={item.title}
                 />
-                <span className="duration">{item.duration}</span>
+
+                {/* hover preview */}
+                <video
+                  className="hover-preview"
+                  muted
+                  loop
+                  playsInline
+                  preload="none"
+                  data-src={previewSrc}
+                />
+
+                {/* overlay */}
+                <div className="overlay">
+                  <FaPlay />
+                </div>
+
+                {/* duration */}
+                <span className="duration">
+                  {item.duration}
+                </span>
+
               </div>
 
-              <p>{item.title}</p>
+              <p className="related-name">
+                {item.title}
+              </p>
+
             </Link>
           );
         })}
