@@ -120,6 +120,20 @@
   border: none;
 }
 
+.hover-preview{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  opacity:0;
+  transition:opacity .3s ease;
+}
+
+.decent-card:hover .hover-preview{
+  opacity:1;
+}
+
 /* MOBILE */
 
 @media (max-width: 768px) {

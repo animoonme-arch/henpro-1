@@ -1,6 +1,7 @@
 "use client";
 import { SessionProvider } from "next-auth/react";
 import React from "react";
+import { FaPlay, FaClock } from "react-icons/fa";
 import Navbar from "../Navbar/Navbar";
 import Hero from "../Hero/Hero";
 import RecentEpisodes from "../RecentEpisodes/RecentEpisodes";
@@ -13,19 +14,15 @@ const Home = (props) => {
 
   const playPreview = (e) => {
     const video = e.currentTarget.querySelector("video");
-
     if (!video) return;
 
-    if (!video.src) {
-      video.src = video.dataset.src;
-    }
+    if (!video.src) video.src = video.dataset.src;
 
     video.play().catch(()=>{});
   };
 
   const stopPreview = (e) => {
     const video = e.currentTarget.querySelector("video");
-
     if (!video) return;
 
     video.pause();
@@ -45,21 +42,17 @@ const Home = (props) => {
 
         {/* AD */}
         <div className="ad-container">
-          <iframe
-            src="/ad"
-            title="Sponsored Ad"
-            scrolling="no"
-          />
+          <iframe src="/ad" title="Sponsored Ad" scrolling="no" />
         </div>
 
         {/* TRENDING GRID */}
-        <section className="special-section">
+        <section className="decent-container">
 
-          <div className="section-header">
-            <h2>🔥 Trending 3D Videos</h2>
-          </div>
+          <h2 className="decent-heading">
+            <span>🔥 Trending 3D Videos</span>
+          </h2>
 
-          <div className="special-grid">
+          <div className="decent-grid">
 
             {props.specialHome?.data?.map((item, index) => {
 
@@ -77,19 +70,18 @@ const Home = (props) => {
                 <a
                   key={index}
                   href={internalLink}
-                  className="special-card"
+                  className="decent-card"
                   onMouseEnter={playPreview}
                   onMouseLeave={stopPreview}
                   onTouchStart={playPreview}
-                  onTouchEnd={stopPreview}
                 >
 
-                  <div className="thumb-wrapper">
+                  <div className="image-container">
 
                     <img
                       src={item.thumbnail}
                       alt={item.title}
-                      className="thumb-image"
+                      className="poster"
                       loading="lazy"
                     />
 
@@ -102,24 +94,36 @@ const Home = (props) => {
                       data-src={previewSrc}
                     />
 
-                    <span className="duration">
+                    {/* overlay */}
+                    <div className="decent-overlay">
+                      <FaPlay className="decent-play-icon" />
+                    </div>
+
+                    {/* duration */}
+                    <span className="dabel-tag bottom dabel-default">
+                      <FaClock className="inline-icon"/>
                       {item.duration}
                     </span>
 
-                    <span className="rating">
+                    {/* rating */}
+                    <span className="dabel-tag top dabel-unc">
                       ⭐ {item.rating}
                     </span>
 
                   </div>
 
-                  <p className="title">
-                    {item.title}
-                  </p>
+                  <div className="info">
 
-                  <div className="meta">
-                    <span>
-                      👁 {item.views}
-                    </span>
+                    <h3 className="series-name">
+                      {item.title}
+                    </h3>
+
+                    <div className="meta">
+                      <p className="episode-title">
+                        👁 {item.views}
+                      </p>
+                    </div>
+
                   </div>
 
                 </a>
