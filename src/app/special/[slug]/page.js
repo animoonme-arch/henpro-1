@@ -1,30 +1,31 @@
 import Link from "next/link";
 import "./special.css";
-import FlowPlayer from "@/components/FlowPlayer/FlowPlayer";
 
 export const dynamic = "force-dynamic";
 
 export default async function Page({ params }) {
-  const { slug } = params;
+  const param = await params;
+  const { slug } = param;
 
   const res = await fetch(`https://api.henpro.fun/api/special-watch/${slug}`, {
     next: { revalidate: 3600 },
   });
 
   const json = await res.json();
+  const video = json.data;
 
-  const video = json?.data ?? {
-    tags: [],
-    characters: [],
-    related: [],
-  };
 
   return (
     <div className="special-container">
-      {/* PLAYER */}
-      <div className="player-wrapper">
-        <FlowPlayer url={video.customVideoURL} poster={video.thumbnail} />
-      </div>
+      {/* VIDEO PLAYER */}
+      <video
+        className="video-player"
+        controls
+        preload="metadata"
+        poster={video.thumbnail}
+      >
+        <source src={video.customVideoURL} type="video/mp4" />
+      </video>
 
       {/* TITLE */}
       <h1 className="video-title">{video.title}</h1>
@@ -37,7 +38,7 @@ export default async function Page({ params }) {
 
       {/* CHARACTERS */}
       <div className="characters">
-        {(video.characters || []).map((char, i) => (
+        {video.characters?.map((char, i) => (
           <span key={i} className="character">
             {char.name}
           </span>
@@ -46,20 +47,19 @@ export default async function Page({ params }) {
 
       {/* TAGS */}
       <div className="tags">
-        {(video.tags || []).slice(0, 25).map((tag, i) => (
+        {video.tags?.slice(0, 25).map((tag, i) => (
           <span key={i} className="tag">
             {tag.name}
           </span>
         ))}
       </div>
 
-      {/* RELATED */}
+      {/* RELATED VIDEOS */}
       <h2 className="related-title">Related Videos</h2>
 
       <div className="related-grid">
-        {(video.related || []).map((item, i) => {
+        {video.related?.map((item, i) => {
           const slug = new URL(item.link).pathname.replace(/\/$/, "");
-
           const internal = `/special${slug}`;
 
           return (

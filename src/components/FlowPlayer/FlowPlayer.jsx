@@ -1,41 +1,42 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import "@flowplayer/player/flowplayer.css";
+import Plyr from "plyr";
+import "plyr/dist/plyr.css";
 
-export default function FlowPlayer({ url, poster }) {
-  const playerRef = useRef(null);
+export default function PlyrPlayer({ url, poster }) {
+  const videoRef = useRef(null);
 
   useEffect(() => {
-    let fp;
-
-    async function init() {
-      const flowplayer = (await import("@flowplayer/player")).default;
-
-      fp = flowplayer(playerRef.current, {
-        src: url,
-        poster: poster,
-        autoplay: false,
-        controls: true,
-      });
-    }
-
-    init();
+    const player = new Plyr(videoRef.current, {
+      controls: [
+        "play",
+        "progress",
+        "current-time",
+        "mute",
+        "volume",
+        "settings",
+        "fullscreen"
+      ]
+    });
 
     return () => {
-      if (fp) fp.destroy();
+      if (player) player.destroy();
     };
-  }, [url, poster]);
+  }, []);
 
   return (
-    <div
-      ref={playerRef}
+    <video
+      ref={videoRef}
+      controls
+      playsInline
+      poster={poster}
       style={{
         width: "100%",
-        aspectRatio: "16/9",
         borderRadius: "12px",
-        overflow: "hidden",
       }}
-    />
+    >
+      <source src={url} type="video/mp4" />
+    </video>
   );
 }
