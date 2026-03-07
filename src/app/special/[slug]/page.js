@@ -1,5 +1,5 @@
 import Link from "next/link";
-import ArtPlayer from "@/components/ArtPlayer/ArtPlayer";
+import ArtPlayer from "@/components/Artplayer/Artplayer";
 import "./special.css";
 
 export const dynamic = "force-dynamic";
