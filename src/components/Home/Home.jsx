@@ -63,7 +63,7 @@ const Home = (props) => {
 
                       <video
                         className="hover-preview"
-                        src={`${previewVideo}`}
+                        src={`https://3dhq1.org/video/3d/${previewVideo}`}
                         muted
                         loop
                         playsInline
