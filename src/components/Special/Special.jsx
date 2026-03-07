@@ -2,18 +2,123 @@
 
 import Link from "next/link";
 import "./special.css";
-import { FaPlay } from "react-icons/fa";
+import { FaCheckCircle, FaEye, FaInfoCircle, FaPlay, FaTimesCircle } from "react-icons/fa";
+import Navbar from "../Navbar/Navbar";
+import Footer from "../footer/Footer";
+import { SessionProvider } from "next-auth/react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { AiOutlineClose } from "react-icons/ai";
+import ShareSlab from "../ShareSlab/ShareSlab";
+import CommentSection from "../CommentSection/CommentSection";
 
 export const dynamic = "force-dynamic";
 
-export default function Special({ video }) {
+const CustomToast = ({ message, type, onClose }) => {
+  let Icon = FaInfoCircle;
+  if (type === "success") Icon = FaCheckCircle;
+  if (type === "error") Icon = FaTimesCircle;
+
+  return (
+    <div className={`custom-toast custom-toast-${type}`}>
+      <div className="toast-icon-message">
+        <Icon />
+        <p>{message}</p>
+      </div>
+      <button onClick={onClose} className="toast-close-btn">
+        <AiOutlineClose />
+      </button>
+    </div>
+  );
+};
+
+const useViewTracker = (progressContentKey) => {
+  const isViewTracked = useRef(false);
+
+  const trackView = useCallback(() => {
+    // Only track if the progressContentKey is available and we haven't tracked it yet
+    if (!progressContentKey || isViewTracked.current) return;
+
+    // Set ref immediately to prevent subsequent calls
+    isViewTracked.current = true;
+
+    // Send request to your new view tracking API endpoint
+    fetch("/api/views", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ progressContentKey }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          console.warn("View tracking failed on API side.");
+        }
+      })
+      .catch((e) => {
+        console.error("Failed to send view tracking request:", e);
+      });
+  }, [progressContentKey]);
+
+  return { trackView };
+};
+
+
+export default function Special({ video, id }) {
+  const [customToast, setCustomToast] = useState(null);
+
+  const contentId = id;
+
+  let progressContentKey = contentId;
+
+  // 🔑 VIEW TRACKING: Integrate tracker hook
+  const { trackView } = useViewTracker(progressContentKey);
+
+  const showCustomToast = (message, type = "info") => {
+    setCustomToast({ message, type });
+    setTimeout(() => {
+      setCustomToast(null);
+    }, 4000); // Toast disappears after 4 seconds
+  };
+
+  // State initialization (using the initial watchData or null)
+  const [currentViews, setCurrentViews] = useState(null);
+
+  // 2. Define the function to fetch views using the calculated contentId
+  const hasCountedRef = useRef(false);
+
+  // Increment ONCE
+  useEffect(() => {
+    if (!contentId || hasCountedRef.current) return;
+    hasCountedRef.current = true;
+
+    fetch("/api/views", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ contentKey: contentId }),
+    });
+  }, [contentId]);
+
+  // Fetch views
+  const fetchLatestViews = useCallback(async () => {
+    if (!contentId) return;
+
+    const res = await fetch(`/api/views?contentKey=${contentId}`);
+    if (res.ok) {
+      const data = await res.json();
+      setCurrentViews(data.views ?? 0);
+    }
+    trackView()
+  }, [contentId, trackView]);
+
+  useEffect(() => {
+    fetchLatestViews();
+  }, [fetchLatestViews]);
+
 
   const playPreview = (e) => {
     const vid = e.currentTarget.querySelector("video");
     if (!vid) return;
 
     if (!vid.src) vid.src = vid.dataset.src;
-    vid.play().catch(() => {});
+    vid.play().catch(() => { });
   };
 
   const stopPreview = (e) => {
@@ -25,111 +130,140 @@ export default function Special({ video }) {
   };
 
   return (
-    <div className="special-container">
+    <SessionProvider>
+      <Navbar now={true} />
 
-      {/* VIDEO PLAYER */}
-      <div className="player-wrapper">
-        <video
-          className="video-player"
-          controls
-          preload="metadata"
-          poster={video?.thumbnail}
-        >
-          <source src={video.customVideoURL} type="video/mp4" />
-        </video>
-      </div>
+      {customToast && (
+        <CustomToast
+          message={customToast.message}
+          type={customToast.type}
+          onClose={() => setCustomToast(null)}
+        />
+      )}
+      <div className="special-container">
 
-      {/* TITLE */}
-      <h1 className="video-title">{video.title}</h1>
+        {/* VIDEO PLAYER */}
+        <div className="player-wrapper">
+          <video
+            className="video-player"
+            controls
+            preload="metadata"
+            poster={video?.thumbnail}
+          >
+            <source src={video.customVideoURL} type="video/mp4" />
+          </video>
+          {currentViews !== null && (
+            <div className="video-views">
+              <FaEye className="view-icon" />
+              {currentViews.toLocaleString()} views
+            </div>
+          )}
+        </div>
 
-      {/* META */}
-      <div className="meta">
-        <span>Artist: {video.artist}</span>
-        <span>Upload: {new Date(video.uploadDate).toDateString()}</span>
-      </div>
+        {/* TITLE */}
+        <h1 className="video-title">{video.title}</h1>
 
-      {/* CHARACTERS */}
-      <div className="characters">
-        {video.characters?.map((char, i) => (
-          <span key={i} className="character">
-            {char.name}
-          </span>
-        ))}
-      </div>
+        {/* META */}
+        <div className="meta">
+          <span>Artist: {video.artist}</span>
+          <span>Upload: {new Date(video.uploadDate).toDateString()}</span>
+        </div>
 
-      {/* TAGS */}
-      <div className="tags">
-        {video.tags?.slice(0, 25).map((tag, i) => (
-          <span key={i} className="tag">
-            {tag.name}
-          </span>
-        ))}
-      </div>
+        {/* CHARACTERS */}
+        <div className="characters">
+          {video.characters?.map((char, i) => (
+            <span key={i} className="character">
+              {char.name}
+            </span>
+          ))}
+        </div>
 
-      {/* RELATED */}
-      <h2 className="related-title">Related Videos</h2>
+        {/* TAGS */}
+        <div className="tags">
+          {video.tags?.slice(0, 25).map((tag, i) => (
+            <span key={i} className="tag">
+              {tag.name}
+            </span>
+          ))}
+        </div>
 
-      <div className="related-grid">
+        {/* RELATED */}
+        <h2 className="related-title">Related Videos</h2>
 
-        {video.related?.map((item, i) => {
+        <div className="related-grid">
 
-          const slug = new URL(item.link).pathname.replace(/\/$/, "");
-          const internal = `/special${slug}`;
+          {video.related?.map((item, i) => {
 
-          const previewVideo = item.thumbnail
-            .replace(/-\d+x\d+\.webp$/, ".mp4")
-            .split("/")
-            .pop();
+            const slug = new URL(item.link).pathname.replace(/\/$/, "");
+            const internal = `/special${slug}`;
 
-          const previewSrc = `https://3dhq1.org/video/3d/${previewVideo}`;
+            const previewVideo = item.thumbnail
+              .replace(/-\d+x\d+\.webp$/, ".mp4")
+              .split("/")
+              .pop();
 
-          return (
-            <Link
-              key={i}
-              href={internal}
-              className="related-card"
-              onMouseEnter={playPreview}
-              onMouseLeave={stopPreview}
-              onTouchStart={playPreview}
-            >
+            const previewSrc = `https://3dhq1.org/video/3d/${previewVideo}`;
 
-              <div className="thumb">
+            return (
+              <Link
+                key={i}
+                href={internal}
+                className="related-card"
+                onMouseEnter={playPreview}
+                onMouseLeave={stopPreview}
+                onTouchStart={playPreview}
+              >
 
-                <img
-                  src={item.thumbnail}
-                  alt={item.title}
-                />
+                <div className="thumb">
 
-                {/* hover preview */}
-                <video
-                  className="hover-preview"
-                  muted
-                  loop
-                  playsInline
-                  preload="none"
-                  data-src={previewSrc}
-                />
+                  <img
+                    src={item.thumbnail}
+                    alt={item.title}
+                  />
 
-                {/* overlay */}
-                <div className="overlay">
-                  <FaPlay />
+                  {/* hover preview */}
+                  <video
+                    className="hover-preview"
+                    muted
+                    loop
+                    playsInline
+                    preload="none"
+                    data-src={previewSrc}
+                  />
+
+                  {/* overlay */}
+                  <div className="overlay">
+                    <FaPlay />
+                  </div>
+
+                  {/* duration */}
+                  <span className="duration">
+                    {item.duration}
+                  </span>
+
                 </div>
 
-                {/* duration */}
-                <span className="duration">
-                  {item.duration}
-                </span>
+                <p className="related-name">
+                  {item.title}
+                </p>
 
-              </div>
+              </Link>
+            );
+          })}
 
-              <p className="related-name">
-                {item.title}
-              </p>
+        </div>
+        <ShareSlab
+          pageId={id}
+          url={`https://henpro.fun/special/${id}`}
+          title={video.title}
+          pageName="this hentai"
 
-            </Link>
-          );
-        })}
+        />
+        <CommentSection contentId={contentId} showToast={showCustomToast} />
       </div>
-    </div>
+
+
+      <Footer />
+    </SessionProvider>
   );
 }

@@ -17,7 +17,7 @@ export default async function Page({ params }) {
 
   return (
     <div>
-      <Special video={video}/>
+      <Special video={video} id={slug}/>
     </div>
   );
 }
