@@ -185,6 +185,13 @@
   white-space: nowrap;
 }
 
+.player-wrapper {
+  width: 100%;
+  aspect-ratio: 16/9;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
 /* MOBILE */
 
 @media (max-width: 768px) {
