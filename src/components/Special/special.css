@@ -1,216 +1,271 @@
-.special-container {
-  max-width: 1400px;
-  margin: auto;
-  padding: 20px 6%;
-  color: white;
+.special-container{
+  max-width:1400px;
+  margin:auto;
+  padding:20px 6%;
+  color:white;
 }
 
 /* PLAYER */
 
-.player-wrapper {
-  width: 100%;
-  aspect-ratio: 16/9;
-  border-radius: 12px;
-  overflow: hidden;
-  background: #000;
-  margin-bottom: 20px;
+.player-wrapper{
+  width:100%;
+  aspect-ratio:16/9;
+  border-radius:12px;
+  overflow:hidden;
+  background:#000;
+  margin-bottom:20px;
 }
 
-.video-player {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.video-player{
+  width:100%;
+  height:100%;
+  object-fit:cover;
 }
 
 /* TITLE */
 
-.video-title {
-  font-size: 28px;
-  font-weight: 700;
-  margin-bottom: 10px;
-  background: linear-gradient(90deg, #fdbd73, #ff9a3c);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.video-title{
+  font-size:28px;
+  font-weight:700;
+  margin-bottom:10px;
+  line-height:1.3;
+  background:linear-gradient(90deg,#fdbd73,#ff9a3c);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
 }
 
 /* META */
 
-.meta {
-  display: flex;
-  gap: 25px;
-  font-size: 14px;
-  color: #bbb;
-  margin-bottom: 18px;
+.meta{
+  display:flex;
+  gap:25px;
+  font-size:14px;
+  color:#bbb;
+  margin-bottom:18px;
+  flex-wrap:wrap;
 }
 
 /* CHARACTERS */
 
-.characters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 15px;
+.characters{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-bottom:15px;
 }
 
-.character {
-  background: #2c2c2c;
-  padding: 5px 10px;
-  border-radius: 6px;
-  font-size: 13px;
+.character{
+  background:#2c2c2c;
+  padding:5px 10px;
+  border-radius:6px;
+  font-size:13px;
 }
 
 /* TAGS */
 
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 20px;
+.tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-bottom:20px;
 }
 
-.tag {
-  background: #1f1f1f;
-  border: 1px solid #fdbd73;
-  padding: 5px 8px;
-  border-radius: 6px;
-  font-size: 12px;
+.tag{
+  background:#1f1f1f;
+  border:1px solid #fdbd73;
+  padding:5px 8px;
+  border-radius:6px;
+  font-size:12px;
 }
 
 /* RELATED TITLE */
 
-.related-title {
-  font-size: 24px;
-  font-weight: 700;
-  margin: 30px 0 20px;
-  border-left: 4px solid #ff9741;
-  padding-left: 12px;
+.related-title{
+  font-size:24px;
+  font-weight:700;
+  margin:30px 0 20px;
+  border-left:4px solid #ff9741;
+  padding-left:12px;
 }
 
 /* GRID */
 
-.related-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 20px;
+.related-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:20px;
 }
 
 /* CARD */
 
-.related-card {
-  text-decoration: none;
-  color: white;
-  transition: transform 0.25s ease;
+.related-card{
+  text-decoration:none;
+  color:white;
+  transition:transform .25s ease;
 }
 
-.related-card:hover {
-  transform: translateY(-5px);
+.related-card:hover{
+  transform:translateY(-5px);
 }
 
 /* THUMB */
 
-.thumb {
-  position: relative;
-  border-radius: 12px;
-  overflow: hidden;
-  background: #111;
-  aspect-ratio: 16/9;
+.thumb{
+  position:relative;
+  border-radius:12px;
+  overflow:hidden;
+  background:#111;
+  aspect-ratio:16/9;
 }
 
-.thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+.thumb img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
 }
 
 /* VIDEO PREVIEW */
 
-.hover-preview {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0;
-  transition: opacity 0.3s ease;
+.hover-preview{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  opacity:0;
+  transition:opacity .3s ease;
 }
 
-.related-card:hover .hover-preview {
-  opacity: 1;
+.related-card:hover .hover-preview{
+  opacity:1;
 }
 
-.related-card:hover img {
-  opacity: 0;
+.related-card:hover img{
+  opacity:0;
 }
 
-/* OVERLAY PLAY */
+/* PLAY OVERLAY */
 
-.overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 36px;
-  color: #ff9741;
-  background: rgba(0, 0, 0, 0);
-  opacity: 0;
-  transition: all 0.3s ease;
+.overlay{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:36px;
+  color:#ff9741;
+  background:rgba(0,0,0,0);
+  opacity:0;
+  transition:.3s;
 }
 
-.related-card:hover .overlay {
-  background: rgba(0, 0, 0, 0.45);
-  opacity: 1;
+.related-card:hover .overlay{
+  background:rgba(0,0,0,.45);
+  opacity:1;
 }
 
 /* BADGES */
 
-.duration {
-  position: absolute;
-  bottom: 8px;
-  right: 8px;
-  background: rgba(0, 0, 0, 0.7);
-  padding: 3px 6px;
-  font-size: 12px;
-  border-radius: 4px;
+.duration{
+  position:absolute;
+  bottom:8px;
+  right:8px;
+  background:rgba(0,0,0,.75);
+  padding:3px 6px;
+  font-size:12px;
+  border-radius:4px;
 }
 
 /* TITLE */
 
-.related-name {
-  font-size: 15px;
-  margin-top: 8px;
-  line-height: 1.4;
-  font-weight: 500;
-  color: #ddd;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.related-name{
+  font-size:15px;
+  margin-top:8px;
+  line-height:1.4;
+  font-weight:500;
+  color:#ddd;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
 }
 
-/* MOBILE */
+/* ===================== */
+/* RESPONSIVE BREAKPOINTS */
+/* ===================== */
 
-@media (max-width: 768px) {
-  .special-container {
-    padding: 20px 4%;
+/* Tablets */
+
+@media (max-width:1024px){
+
+  .special-container{
+    padding:20px 5%;
   }
 
-  .video-title {
-    font-size: 20px;
+  .related-grid{
+    grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+    gap:18px;
   }
 
-  .meta {
-    flex-direction: column;
-    gap: 5px;
+}
+
+/* Small tablets */
+
+@media (max-width:768px){
+
+  .video-title{
+    font-size:22px;
   }
 
-  .related-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
+  .meta{
+    flex-direction:column;
+    gap:6px;
   }
 
-  .related-name {
-    font-size: 14px;
+  .related-grid{
+    grid-template-columns:repeat(2,1fr);
+    gap:14px;
   }
+
+  .related-name{
+    font-size:14px;
+  }
+
+}
+
+/* Phones */
+
+@media (max-width:480px){
+
+  .special-container{
+    padding:16px 4%;
+  }
+
+  .video-title{
+    font-size:18px;
+  }
+
+  .player-wrapper{
+    border-radius:8px;
+  }
+
+  .related-grid{
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+  }
+
+  .related-name{
+    font-size:13px;
+  }
+
+}
+
+/* Very small phones */
+
+@media (max-width:360px){
+
+  .related-grid{
+    grid-template-columns:1fr;
+  }
+
 }
