@@ -1,6 +1,6 @@
 "use client";
 import { SessionProvider } from "next-auth/react";
-import React from "react";
+import React, { useRef } from "react";
 import Navbar from "../Navbar/Navbar";
 import Hero from "../Hero/Hero";
 import RecentEpisodes from "../RecentEpisodes/RecentEpisodes";
@@ -10,80 +10,99 @@ import Footer from "../footer/Footer";
 import "./home.css";
 
 const Home = (props) => {
+
+  const playPreview = (e) => {
+    const video = e.currentTarget.querySelector("video");
+    if (video) {
+      video.src = video.dataset.src;
+      video.play();
+    }
+  };
+
+  const stopPreview = (e) => {
+    const video = e.currentTarget.querySelector("video");
+    if (video) {
+      video.pause();
+      video.currentTime = 0;
+    }
+  };
+
   return (
     <SessionProvider>
-      <div>
+      <div className="home-container">
+
         <Navbar now={true} creator={props.creator} />
         <Hero recentEpi={props.recentEpi} creator={props.creator} />
 
-        {/* Ad */}
+        {/* AD */}
         <div className="ad-container">
           <iframe src="/ad" title="Sponsored Ad" scrolling="no" />
         </div>
 
-        {/* SPECIAL GRID SECTION */}
+        {/* TRENDING GRID */}
         <section className="special-section">
-          <div className="special-grid-wrapper">
-            <h2 className="special-title">🔥 Trending 3D Videos</h2>
 
-            <div className="special-grid">
-              {props.specialHome?.data?.map((item, index) => {
-                const slug = new URL(item.link).pathname.replace(/\/$/, "");
-                const internalLink = `/special${slug}`;
-
-                const previewVideo = item.thumbnail
-                  .replace(/-\d+x\d+\.webp$/, ".mp4")
-                  .split("/")
-                  .pop();
-
-                return (
-                  <a
-                    key={index}
-                    href={internalLink}
-                    className="special-card"
-                    onMouseEnter={(e) => {
-                      const video = e.currentTarget.querySelector("video");
-                      if (video) video.play();
-                    }}
-                    onMouseLeave={(e) => {
-                      const video = e.currentTarget.querySelector("video");
-                      if (video) {
-                        video.pause();
-                        video.currentTime = 0;
-                      }
-                    }}
-                  >
-                    <div className="thumb-wrapper">
-                      <img
-                        src={item.thumbnail}
-                        alt={item.title}
-                        className="thumb-image"
-                        loading="lazy"
-                      />
-
-                      <video
-                        className="hover-preview"
-                        src={`https://3dhq1.org/video/3d/${previewVideo}`}
-                        muted
-                        loop
-                        playsInline
-                        preload="none"
-                      />
-
-                      <span className="duration">{item.duration}</span>
-                      <span className="rating">{item.rating}</span>
-                    </div>
-
-                    <p className="title">{item.title}</p>
-
-                    <div className="meta">
-                      <span>{item.views}</span>
-                    </div>
-                  </a>
-                );
-              })}
-            </div>
+          <div className="section-header">
+            <h2>🔥 Trending 3D Videos</h2>
           </div>
+
+          <div className="special-grid">
+
+            {props.specialHome?.data?.map((item, index) => {
+
+              const slug = new URL(item.link).pathname.replace(/\/$/, "");
+              const internalLink = `/special${slug}`;
+
+              const previewVideo = item.thumbnail
+                .replace(/-\d+x\d+\.webp$/, ".mp4")
+                .split("/")
+                .pop();
+
+              return (
+                <a
+                  key={index}
+                  href={internalLink}
+                  className="special-card"
+                  onMouseEnter={playPreview}
+                  onMouseLeave={stopPreview}
+                  onTouchStart={playPreview}
+                >
+
+                  <div className="thumb-wrapper">
+
+                    <img
+                      src={item.thumbnail}
+                      alt={item.title}
+                      className="thumb-image"
+                      loading="lazy"
+                    />
+
+                    <video
+                      className="hover-preview"
+                      muted
+                      loop
+                      playsInline
+                      preload="none"
+                      data-src={`https://3dhq1.org/video/3d/${previewVideo}`}
+                    />
+
+                    <span className="duration">{item.duration}</span>
+                    <span className="rating">⭐ {item.rating}</span>
+
+                  </div>
+
+                  <p className="title">{item.title}</p>
+
+                  <div className="meta">
+                    <span>👁 {item.views}</span>
+                  </div>
+
+                </a>
+              );
+            })}
+
+          </div>
+
         </section>
 
         <RecentEpisodes
@@ -139,6 +158,7 @@ const Home = (props) => {
         />
 
         <Footer creator={props.creator} />
+
       </div>
     </SessionProvider>
   );
