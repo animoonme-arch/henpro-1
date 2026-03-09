@@ -138,7 +138,7 @@ const Navbar = (props) => {
 
       {/* User Profile Modal */}
       {profiIsOpen && (
-        <Profilo setProfiIsOpen={setProfiIsOpen} profiIsOpen={profiIsOpen} creator={creat}/>
+        <Profilo setProfiIsOpen={setProfiIsOpen} profiIsOpen={profiIsOpen} creator={creat} />
       )}
 
       {/* Navigation Sidebar */}
@@ -172,14 +172,21 @@ const Navbar = (props) => {
               )}
 
               {searchResults.slice(0, 6).map((result, idx) => {
-                const safeUrl = result?.url
-                  ? result.url.replace("https://watchhentai.net/series/", "")
-                  : "#";
+                let finalUrl = "#";
+
+                if (result?.source === "hanime") {
+                  const safeUrl = result?.url
+                    ? result.url.replace("https://watchhentai.net/series/", "")
+                    : "";
+                  finalUrl = getUpdatedLink(`/watch/${safeUrl}`);
+                } else if (result?.source === "special") {
+                  finalUrl = getUpdatedLink(result.url);
+                }
+
                 return (
                   <Link
                     key={idx}
-                    // ⭐️ APPLY getUpdatedLink
-                    href={getUpdatedLink(`/watch/${safeUrl}`)}
+                    href={finalUrl}
                     className="search-item"
                     onClick={handleMobileClose}
                   >
@@ -188,13 +195,21 @@ const Navbar = (props) => {
                       alt={result?.title || "No title"}
                       className="search-thumb"
                     />
+
                     <div className="search-info">
                       <p className="search-title">
                         {result?.title || "Untitled"}
                       </p>
-                      <span className="search-date">
-                        {result?.date || "N/A"}
-                      </span>
+
+                      <div className="search-meta">
+                        <span className="search-date">
+                          {result?.date || "N/A"}
+                        </span>
+
+                        <span className={`search-source ${result?.source}`}>
+                          {result?.source === "special" ? "Special" : "Hanime"}
+                        </span>
+                      </div>
                     </div>
                   </Link>
                 );
@@ -217,9 +232,8 @@ const Navbar = (props) => {
 
       {/* 🧭 Main Navbar */}
       <div
-        className={`navbar ${
-          isScrolled || !props.now ? "dark" : "transparent"
-        }`}
+        className={`navbar ${isScrolled || !props.now ? "dark" : "transparent"
+          }`}
       >
         <div className="nav-1">
           <div className="bars" onClick={() => setSidebarIsOpen(true)}>
@@ -264,29 +278,44 @@ const Navbar = (props) => {
                   <div className="search-empty">No results found</div>
                 )}
                 {searchResults.slice(0, 6).map((result, idx) => {
-                  const safeUrl = result?.url
-                    ? result.url.replace("https://watchhentai.net/series/", "")
-                    : "#";
+                  let finalUrl = "#";
+
+                  if (result?.source === "hanime") {
+                    const safeUrl = result?.url
+                      ? result.url.replace("https://watchhentai.net/series/", "")
+                      : "";
+                    finalUrl = getUpdatedLink(`/watch/${safeUrl}`);
+                  } else if (result?.source === "special") {
+                    finalUrl = getUpdatedLink(result.url);
+                  }
+
                   return (
                     <Link
                       key={idx}
-                      // ⭐️ APPLY getUpdatedLink
-                      href={getUpdatedLink(`/watch/${safeUrl}`)}
+                      href={finalUrl}
                       className="search-item"
-                      onClick={handleSearchLinkClick}
+                      onClick={handleMobileClose}
                     >
                       <img
                         src={result?.img || "/placeholder.jpg"}
                         alt={result?.title || "No title"}
                         className="search-thumb"
                       />
+
                       <div className="search-info">
                         <p className="search-title">
                           {result?.title || "Untitled"}
                         </p>
-                        <span className="search-date">
-                          {result?.date || "N/A"}
-                        </span>
+
+                        <div className="search-meta">
+                          <span className="search-date">
+                            {result?.date || "N/A"}
+                          </span>
+
+                          <span className={`search-source ${result?.source}`}>
+                            {result?.source === "special" ? "Special" : "Hanime"}
+                          </span>
+                        </div>
                       </div>
                     </Link>
                   );
