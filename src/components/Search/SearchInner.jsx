@@ -8,8 +8,7 @@ import Footer from "../footer/Footer";
 const SearchInner = (props) => {
   return (
     <>
-      <Navbar now={false} creator={props.creator} />
-
+      <Navbar now={false} />
       <div
         style={{
           display: "flex",
@@ -36,22 +35,18 @@ const SearchInner = (props) => {
           }}
         />
       </div>
-
       <div className="compli">
         <div className="watc">
           <HorizontalSlabs
-            data={props.data.results || []}
+            data={props.data.data.results}
             keyword={props.keyword}
-            creator={props.creator}
           />
         </div>
-
         <div className="sidc">
-          <Sidebar creator={props.creator} />
+          <Sidebar sidebar={props.data.data.sidebar} />
         </div>
       </div>
-
-      <Footer creator={props.creator} />
+      <Footer />
     </>
   );
 };

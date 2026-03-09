@@ -1,15 +1,16 @@
 "use client";
-
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 export default function HorizontalSlabs({ data = [], keyword, creator }) {
   if (!data || data.length === 0) return null;
 
+  // const searchParams = useSearchParams();
   const creat = creator;
 
-  // Append creator parameter to internal links
+  // Helper function to append the creat parameter to a URL
   const getUpdatedLink = (baseLink) => {
     if (!creat || baseLink.startsWith("http")) return baseLink;
 
@@ -31,21 +32,20 @@ export default function HorizontalSlabs({ data = [], keyword, creator }) {
           <Link
             href={getUpdatedLink(item.link)}
             target="_blank"
-            rel="noopener noreferrer"
-            key={item.id || item.title}
+            key={item.id}
             className="slab-link"
+            rel="noopener noreferrer"
           >
             <div className="slab">
               <div className="slab-poster">
                 <div className="poster-wrapper">
                   <Image
-                    src={item.poster || "/no-image.jpg"}
-                    alt={item.title || "poster"}
+                    src={item.poster}
+                    alt={item.title}
                     width={200}
                     height={280}
                     className="poster-img"
                   />
-
                   <div className="poster-overlay">
                     <span>▶</span>
                   </div>
@@ -54,10 +54,8 @@ export default function HorizontalSlabs({ data = [], keyword, creator }) {
 
               <div className="slab-info">
                 <h3 className="slab-title">{item.title}</h3>
-                {item.year && <p className="slab-year">{item.year}</p>}
-                {item.description && (
-                  <p className="slab-desc">{item.description}</p>
-                )}
+                <p className="slab-year">{item.year}</p>
+                <p className="slab-desc">{item.description}</p>
               </div>
             </div>
           </Link>
@@ -65,12 +63,14 @@ export default function HorizontalSlabs({ data = [], keyword, creator }) {
       </div>
 
       <style jsx>{`
+        /* Main container */
         .horizontal-slabs-container {
           width: 100%;
           padding: 30px 20px;
           color: #fff;
         }
 
+        /* Heading section */
         .heading-container {
           text-align: center;
           margin-bottom: 30px;
@@ -85,6 +85,7 @@ export default function HorizontalSlabs({ data = [], keyword, creator }) {
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           letter-spacing: 0.8px;
+          text-shadow: 0 0 10px rgba(255, 151, 65, 0.3);
           margin: 0;
         }
 
@@ -100,8 +101,31 @@ export default function HorizontalSlabs({ data = [], keyword, creator }) {
           height: 3px;
           background: linear-gradient(90deg, transparent, #ff9741, transparent);
           border-radius: 50%;
+          box-shadow: 0 0 12px #ff9741;
+          animation: glow 2s infinite alternate;
         }
 
+        @keyframes glow {
+          from {
+            opacity: 0.5;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        /* Slabs styling */
         .slabs-wrapper {
           display: flex;
           flex-direction: column;
@@ -123,12 +147,14 @@ export default function HorizontalSlabs({ data = [], keyword, creator }) {
           padding: 16px;
           box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
           transition: all 0.3s ease;
+          border: 1px solid rgba(255, 255, 255, 0.05);
           cursor: pointer;
         }
 
         .slab:hover {
           transform: translateY(-5px);
           box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7);
+          background: linear-gradient(145deg, #1d1d1d, #242424);
         }
 
         .poster-wrapper {
@@ -168,6 +194,12 @@ export default function HorizontalSlabs({ data = [], keyword, creator }) {
           color: #ff9741;
           font-size: 2rem;
           font-weight: bold;
+          transform: scale(1);
+          transition: transform 0.3s ease;
+        }
+
+        .slab:hover .poster-overlay span {
+          transform: scale(1.3);
         }
 
         .slab-info {
@@ -183,6 +215,7 @@ export default function HorizontalSlabs({ data = [], keyword, creator }) {
           font-weight: 700;
           color: #ff9741;
           margin-bottom: 8px;
+          line-height: 1.3;
         }
 
         .slab-year {
@@ -201,9 +234,15 @@ export default function HorizontalSlabs({ data = [], keyword, creator }) {
           color: #e0e0e0;
         }
 
+        /* Responsive */
         @media (max-width: 700px) {
           .results-heading {
             font-size: 1.8rem;
+          }
+
+          .heading-line {
+            width: 130px;
+            height: 2px;
           }
 
           .slab {
@@ -221,16 +260,13 @@ export default function HorizontalSlabs({ data = [], keyword, creator }) {
             margin-left: 0;
             margin-top: 12px;
           }
-        }
 
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
+          .slab-title {
+            font-size: 1.2rem;
           }
-          to {
-            opacity: 1;
-            transform: translateY(0);
+
+          .slab-desc {
+            font-size: 0.95rem;
           }
         }
       `}</style>
