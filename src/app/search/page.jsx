@@ -1,51 +1,46 @@
-// app/series/page.js (or app/search/page.js, based on your routing)
+// app/series/page.js  (or app/search/page.js)
 
-// Assuming connectDB is set up in "@/lib/mongoClient"
 import { connectDB } from "@/lib/mongoClient";
 import Advertize from "@/components/Advertize/Advertize";
 import Search from "@/components/Search/Search";
 
 export default async function SeriesPage({ searchParams }) {
-  const q = searchParams.q || ""; // The search query is expected to be 'q'
-  const creatorApiKey = searchParams.creator; // ✨ Get the creator API key
+  const q = searchParams.q || "";
+  const creatorApiKey = searchParams.creator;
 
-  // --- Start Dynamic Ad Link Logic ---
+  /* ---------- Dynamic Ad Logic ---------- */
+
   const DEFAULT_AD_LINK =
     "https://violentlinedexploit.com/ukqgqrv4n?key=acf2a1b713094b78ec1cc21761e9b149";
+
   let dynamicAdLink = DEFAULT_AD_LINK;
 
   if (creatorApiKey) {
     try {
-      // 1. Connect to MongoDB
       const db = await connectDB();
-      // Assuming your collection is named 'creators'
       const collection = db.collection("creators");
 
-      // 2. Fetch the creator data
       const creatorData = await collection.findOne(
         { username: creatorApiKey },
-        // Project to only include the smartlink for efficiency
-        { projection: { adsterraSmartlink: 1, _id: 0 } },
+        { projection: { adsterraSmartlink: 1, _id: 0 } }
       );
 
-      // 3. Update the ad link if found
-      if (creatorData && creatorData.adsterraSmartlink) {
+      if (creatorData?.adsterraSmartlink) {
         dynamicAdLink = creatorData.adsterraSmartlink;
       }
     } catch (error) {
       console.error(
         "MongoDB fetch failed for creator on search page:",
         creatorApiKey,
-        error,
+        error
       );
-      // Fallback to DEFAULT_AD_LINK
     }
   }
-  // --- End Dynamic Ad Link Logic ---
 
-  // --- Standard Search Data Fetch Logic ---
-  // Ensure the query parameter is correctly URL-encoded for safety
+  /* ---------- Search Logic ---------- */
+
   const encodedQ = encodeURIComponent(q);
+
   const apiDomains = [
     "https://api.henpro.fun",
     "https://api2.henpro.fun",
@@ -54,23 +49,86 @@ export default async function SeriesPage({ searchParams }) {
 
   const randomDomain =
     apiDomains[Math.floor(Math.random() * apiDomains.length)];
-  const apiUrl = `${randomDomain}/api/search?q=${encodedQ}`;
 
-  const res = await fetch(apiUrl, {
-    next: { revalidate: 300 }, // revalidate every 5 min
-  });
+  const hanimeURL = `${randomDomain}/api/hanime-search?q=${encodedQ}`;
+  const specialURL = `${randomDomain}/api/special-search?q=${encodedQ}`;
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch series");
+  let data = { results: [] };
+
+  try {
+    const [hanimeRes, specialRes] = await Promise.allSettled([
+      fetch(hanimeURL, { next: { revalidate: 300 } }),
+      fetch(specialURL, { next: { revalidate: 300 } }),
+    ]);
+
+    let hanimeResults = [];
+    let specialResults = [];
+
+    /* ---------- Hanime Results ---------- */
+
+    if (hanimeRes.status === "fulfilled" && hanimeRes.value.ok) {
+      const hanimeData = await hanimeRes.value.json();
+
+      hanimeResults = (hanimeData.data || []).map((item) => ({
+        id: item.id || item.slug,
+        title: item.title,
+        url: item.url,
+        img: item.img || item.thumbnail,
+        date: item.date || null,
+        source: "hanime",
+      }));
+    }
+
+    /* ---------- Special Results ---------- */
+
+    if (specialRes.status === "fulfilled" && specialRes.value.ok) {
+      const specialData = await specialRes.value.json();
+
+      specialResults = (specialData.data || []).map((item) => ({
+        id: item.slug,
+        title: item.title,
+        url: item.url,
+        img: item.thumbnail,
+        date: item.uploadDate || null,
+        source: "special",
+      }));
+    }
+
+    /* ---------- Balanced Distribution ---------- */
+
+    let combinedResults = [];
+
+    if (hanimeResults.length >= 3 && specialResults.length >= 2) {
+      combinedResults = [
+        ...hanimeResults.slice(0, 3),
+        ...specialResults.slice(0, 2),
+      ];
+    } else if (hanimeResults.length >= 2 && specialResults.length >= 3) {
+      combinedResults = [
+        ...hanimeResults.slice(0, 2),
+        ...specialResults.slice(0, 3),
+      ];
+    } else if (hanimeResults.length > 0 && specialResults.length > 0) {
+      combinedResults = [...hanimeResults, ...specialResults].slice(0, 5);
+    } else if (hanimeResults.length > 0) {
+      combinedResults = hanimeResults.slice(0, 5);
+    } else {
+      combinedResults = specialResults.slice(0, 5);
+    }
+
+    data = {
+      results: combinedResults,
+    };
+  } catch (err) {
+    console.error("Search fetch error:", err);
   }
 
-  const data = await res.json();
-  // --- End Standard Data Fetch Logic ---
+  /* ---------- Render ---------- */
 
   return (
     <div className="page-wrapper">
       <Search data={data || []} keyword={q} creator={creatorApiKey} />
-      {/* 🌟 Pass the dynamic ad link to the Advertize component */}
+
       <Advertize initialAdLink={dynamicAdLink} />
     </div>
   );

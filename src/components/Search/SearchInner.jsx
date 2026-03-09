@@ -9,6 +9,7 @@ const SearchInner = (props) => {
   return (
     <>
       <Navbar now={false} creator={props.creator} />
+
       <div
         style={{
           display: "flex",
@@ -35,18 +36,21 @@ const SearchInner = (props) => {
           }}
         />
       </div>
+
       <div className="compli">
         <div className="watc">
           <HorizontalSlabs
-            data={props.data.data.results}
+            data={props.data.results || []}
             keyword={props.keyword}
             creator={props.creator}
           />
         </div>
+
         <div className="sidc">
-          <Sidebar sidebar={props.data.data.sidebar} creator={props.creator} />
+          <Sidebar creator={props.creator} />
         </div>
       </div>
+
       <Footer creator={props.creator} />
     </>
   );
