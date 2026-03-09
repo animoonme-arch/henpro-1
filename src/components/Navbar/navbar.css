@@ -324,6 +324,32 @@
   transform: scale(1.05);
 }
 
+.search-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.search-source {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* Hanime label */
+.search-source.hanime {
+  background: #ff4d6d;
+  color: white;
+}
+
+/* Special label */
+.search-source.special {
+  background: #6c5ce7;
+  color: white;
+}
+
 /* Keyframe Animation */
 @keyframes slideInDown {
   from {
