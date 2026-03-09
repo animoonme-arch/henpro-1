@@ -66,47 +66,47 @@ export default function Special({ video, id }) {
 
   /* ------------------ */
   /* VIEW SYSTEM */
-/* ------------------ */
+  /* ------------------ */
 
-useEffect(() => {
-  if (!contentId || hasCountedRef.current) return;
+  useEffect(() => {
+    if (!contentId || hasCountedRef.current) return;
 
-  hasCountedRef.current = true;
+    hasCountedRef.current = true;
 
-  const trackAndFetch = async () => {
-    try {
+    const trackAndFetch = async () => {
+      try {
 
-      // increment view
-      await fetch("/api/views", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          contentKey: contentId,
-        }),
-      });
+        // increment view
+        await fetch("/api/views", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            contentKey: contentId,
+          }),
+        });
 
-      // fetch updated count
-      const res = await fetch(`/api/views?contentKey=${contentId}`);
+        // fetch updated count
+        const res = await fetch(`/api/views?contentKey=${contentId}`);
 
-      if (res.ok) {
-        const data = await res.json();
-        setCurrentViews(data.views ?? 0);
+        if (res.ok) {
+          const data = await res.json();
+          setCurrentViews(data.views ?? 0);
+        }
+
+      } catch (err) {
+        console.error("View system error:", err);
       }
+    };
 
-    } catch (err) {
-      console.error("View system error:", err);
-    }
-  };
+    trackAndFetch();
 
-  trackAndFetch();
-
-}, [contentId]);
+  }, [contentId]);
 
   /* ------------------ */
   /* PREVIEW VIDEO */
-/* ------------------ */
+  /* ------------------ */
 
   const playPreview = (e) => {
     const vid = e.currentTarget.querySelector("video");
@@ -115,7 +115,7 @@ useEffect(() => {
 
     if (!vid.src) vid.src = vid.dataset.src;
 
-    vid.play().catch(() => {});
+    vid.play().catch(() => { });
   };
 
   const stopPreview = (e) => {
@@ -129,7 +129,7 @@ useEffect(() => {
 
   /* ------------------ */
   /* SAFETY CHECK */
-/* ------------------ */
+  /* ------------------ */
 
   if (!video) {
     return <div style={{ padding: "40px", color: "white" }}>Loading...</div>;
@@ -148,6 +148,32 @@ useEffect(() => {
       )}
 
       <div className="special-container">
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "10px 0",
+            backgroundColor: "#201f31",
+          }}
+        >
+          <iframe
+            src="/ad"
+            title="Sponsored Ad"
+            scrolling="no"
+
+            referrerPolicy="no-referrer-when-downgrade"
+            style={{
+              width: "100%",
+              maxWidth: "728px",
+              height: "90px",
+              border: "none",
+              borderRadius: "10px",
+              overflow: "hidden",
+              backgroundColor: "#201f31",
+            }}
+          />
+        </div>
 
         {/* VIDEO PLAYER */}
 
@@ -211,6 +237,32 @@ useEffect(() => {
         </div>
 
         {/* RELATED */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "10px 0",
+            backgroundColor: "#201f31",
+          }}
+        >
+          <iframe
+            src="/ad"
+            title="Sponsored Ad"
+            scrolling="no"
+
+            referrerPolicy="no-referrer-when-downgrade"
+            style={{
+              width: "100%",
+              maxWidth: "728px",
+              height: "90px",
+              border: "none",
+              borderRadius: "10px",
+              overflow: "hidden",
+              backgroundColor: "#201f31",
+            }}
+          />
+        </div>
 
         <h2 className="related-title">Related Videos</h2>
 
@@ -276,6 +328,32 @@ useEffect(() => {
         </div>
 
         {/* SHARE */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "10px 0",
+            backgroundColor: "#201f31",
+          }}
+        >
+          <iframe
+            src="/ad"
+            title="Sponsored Ad"
+            scrolling="no"
+
+            referrerPolicy="no-referrer-when-downgrade"
+            style={{
+              width: "100%",
+              maxWidth: "728px",
+              height: "90px",
+              border: "none",
+              borderRadius: "10px",
+              overflow: "hidden",
+              backgroundColor: "#201f31",
+            }}
+          />
+        </div>
 
         <ShareSlab
           pageId={id}
@@ -285,6 +363,32 @@ useEffect(() => {
         />
 
         {/* COMMENTS */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "10px 0",
+            backgroundColor: "#201f31",
+          }}
+        >
+          <iframe
+            src="/ad"
+            title="Sponsored Ad"
+            scrolling="no"
+
+            referrerPolicy="no-referrer-when-downgrade"
+            style={{
+              width: "100%",
+              maxWidth: "728px",
+              height: "90px",
+              border: "none",
+              borderRadius: "10px",
+              overflow: "hidden",
+              backgroundColor: "#201f31",
+            }}
+          />
+        </div>
 
         {contentId && (
           <CommentSection
@@ -292,6 +396,32 @@ useEffect(() => {
             showToast={showCustomToast}
           />
         )}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "10px 0",
+            backgroundColor: "#201f31",
+          }}
+        >
+          <iframe
+            src="/ad"
+            title="Sponsored Ad"
+            scrolling="no"
+
+            referrerPolicy="no-referrer-when-downgrade"
+            style={{
+              width: "100%",
+              maxWidth: "728px",
+              height: "90px",
+              border: "none",
+              borderRadius: "10px",
+              overflow: "hidden",
+              backgroundColor: "#201f31",
+            }}
+          />
+        </div>
 
       </div>
 
