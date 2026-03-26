@@ -11,7 +11,7 @@ const Footer = () => {
   const renderSiteName = (isFooterLogo = false) => {
     // Determine the base and accent parts based on whether the name contains "pro"
     const isPro = siteName.toLowerCase().includes("pro");
-    const base = isPro ? "hen" : "hanime";
+    const base = isPro ? "hen" : "hentaio";
     const accent = isPro ? "pro" : "tv";
     const accentClass = isFooterLogo ? "col-p" : "col-imp";
 

@@ -19,13 +19,8 @@
   background: linear-gradient(90deg, #ffcc00, #ff6600);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  text-decoration: none;
   letter-spacing: 1px;
-  text-shadow: 0 0 10px rgba(255, 140, 0, 0.3);
-}
-
-.dotpro {
-  opacity: 0.8;
-  font-size: 22px;
 }
 
 /* 🧭 Main Navbar Container */
