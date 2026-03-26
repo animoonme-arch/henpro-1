@@ -243,20 +243,7 @@ const Navbar = (props) => {
           </div>
 
           <Link href={getUpdatedLink("/")} className="logo">
-            {" "}
-            {/* ⭐️ Added to home link */}
-            <Image
-              src="/logo.png"
-              alt="Logo"
-              width={150}
-              height={50}
-              priority
-              style={{
-                height: "auto",
-                maxHeight: "100%",
-                width: "auto",
-              }}
-            />
+            <span className="logo-text">hentaio.pro</span>
           </Link>
 
           {/* 🧠 Desktop Search */}

@@ -12,10 +12,20 @@ export default function HorizontalSlabs({ data = [], keyword, creator }) {
 
   // Helper function to append the creat parameter to a URL
   const getUpdatedLink = (baseLink) => {
-    if (!creat || baseLink.startsWith("http")) return baseLink;
+    if (!baseLink) return baseLink;
 
-    const separator = baseLink.includes("?") ? "&" : "?";
-    return `${baseLink}${separator}creator=${creat}`;
+    const url = new URL(baseLink);
+
+    // Extract slug after /series/
+    const slug = url.pathname.replace("/series/", "").replace(/\/$/, "");
+
+    let newLink = `https://hentaio.pro/${slug}`;
+
+    if (creat) {
+      newLink += `?creator=${creat}`;
+    }
+
+    return newLink;
   };
 
   return (

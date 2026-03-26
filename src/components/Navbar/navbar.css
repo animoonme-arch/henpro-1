@@ -13,6 +13,16 @@
   font-family: "Inter", sans-serif;
 }
 
+.logo-text {
+  font-size: 28px;
+  font-weight: 800;
+  background: linear-gradient(90deg, #ffcc00, #ff6600);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-decoration: none;
+  letter-spacing: 1px;
+}
+
 /* 🧭 Main Navbar Container */
 .navbar {
   display: flex;
@@ -22,7 +32,9 @@
   position: sticky;
   top: 0;
   z-index: 10; /* High z-index for fixed/sticky element */
-  transition: background-color 0.4s ease, backdrop-filter 0.4s ease,
+  transition:
+    background-color 0.4s ease,
+    backdrop-filter 0.4s ease,
     box-shadow 0.4s ease;
 }
 
@@ -56,7 +68,9 @@
   font-size: 15px;
   border-radius: 20px; /* Pill shape */
   cursor: pointer;
-  transition: background 0.3s ease, transform 0.1s ease;
+  transition:
+    background 0.3s ease,
+    transform 0.1s ease;
 }
 
 .login:hover {
@@ -316,7 +330,9 @@
   cursor: pointer;
   border: 3px solid var(--primary-color);
   object-fit: cover;
-  transition: box-shadow 0.3s ease, transform 0.2s ease;
+  transition:
+    box-shadow 0.3s ease,
+    transform 0.2s ease;
 }
 
 .profile-ico:hover {
