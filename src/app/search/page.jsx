@@ -46,7 +46,7 @@ export default async function SeriesPage({ searchParams }) {
   // --- Standard Search Data Fetch Logic ---
   // Ensure the query parameter is correctly URL-encoded for safety
   const encodedQ = encodeURIComponent(q);
-  const apiUrl = `https://api.henpro.fun/api/search?q=${encodedQ}`;
+  const apiUrl = `https://api.hentaio.pro/api/search?q=${encodedQ}`;
 
   const res = await fetch(apiUrl, {
     next: { revalidate: 300 }, // revalidate every 5 min

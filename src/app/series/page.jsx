@@ -46,9 +46,9 @@ export default async function SeriesPage({ searchParams }) {
 
   // --- Standard Series Data Fetch Logic ---
     const apiDomains = [
-    "https://api.henpro.fun",
-    "https://api2.henpro.fun",
-    "https://api3.henpro.fun",
+    "https://api.hentaio.pro",
+    "https://api2.hentaio.pro",
+    "https://api3.hentaio.pro",
   ];
 
   const randomDomain =

@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }) {
   const { slug } = params;
 
-  const res = await fetch(`https://api.henpro.fun/api/special-watch/${slug}`, {
+  const res = await fetch(`https://api.hentaio.pro/api/special-watch/${slug}`, {
     next: { revalidate: 3600 },
   });
 
@@ -20,7 +20,7 @@ export async function generateMetadata({ params }) {
     };
   }
 
-  const pageUrl = `https://henpro.fun/special/${slug}`;
+  const pageUrl = `https://hentaio.pro/special/${slug}`;
 
   return {
     title: video.title,
@@ -63,7 +63,7 @@ export async function generateMetadata({ params }) {
 export default async function Page({ params }) {
   const { slug } = params;
 
-  const res = await fetch(`https://api.henpro.fun/api/special-watch/${slug}`, {
+  const res = await fetch(`https://api.hentaio.pro/api/special-watch/${slug}`, {
     next: { revalidate: 3600 },
   });
 

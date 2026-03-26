@@ -10,16 +10,16 @@ import MonetizeContent from "@/components/MonetizeContent/MonetizeContent";
 export async function generateMetadata() {
   return {
     title:
-      "Monetize Your Creator Profile | Earn Money from Views & Traffic - Hanimetv",
+      "Monetize Your Creator Profile | Earn Money from Views & Traffic - Hentaio",
     description:
-      "Join Hanimetv's monetization program and start earning from your content. Connect your Adsterra Smart Link and API key, track analytics, and get paid for every view you bring.",
+      "Join Hentaio's monetization program and start earning from your content. Connect your Adsterra Smart Link and API key, track analytics, and get paid for every view you bring.",
     openGraph: {
-      title: "Monetize Your Hanimetv Creator Profile | Earn from Views & Clicks",
+      title: "Monetize Your Hentaio Creator Profile | Earn from Views & Clicks",
       description:
-        "Set up your Adsterra Smart Link and API integration to start earning. Real-time analytics, payout tracking, and easy setup for all creators on Hanimetv.",
-      url: "https://hanimetv.fun/monetize",
+        "Set up your Adsterra Smart Link and API integration to start earning. Real-time analytics, payout tracking, and easy setup for all creators on Hentaio.",
+      url: "https://hentaio.pro/monetize",
       type: "website",
-      siteName: "Hanimetv",
+      siteName: "Hentaio",
       // images: [
       //   {
       //     url: "https://henpro.fun/og/monetize-banner.jpg",
@@ -37,19 +37,19 @@ export async function generateMetadata() {
     //   images: ["https://henpro.fun/og/monetize-banner.jpg"],
     // },
     keywords: [
-      "hanimetv",
+      "Hentaio",
       "hanime",
       "tv",
       "hanime monetization",
       "creator earnings",
       "adsterra smart link",
-      "hanimetv dashboard",
+      "Hentaio dashboard",
       "earn money online",
       "creator program",
-      "hanimetv analytics",
+      "Hentaio analytics",
     ],
     alternates: {
-      canonical: "https://hanimetv.fun/monetize",
+      canonical: "https://hentaio.pro/monetize",
     },
   };
 }
