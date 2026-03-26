@@ -243,7 +243,9 @@ const Navbar = (props) => {
           </div>
 
           <Link href={getUpdatedLink("/")} className="logo">
-            <span className="logo-text">hentaio.pro</span>
+            <span className="logo-text">
+              hentaio<span className="dotpro">.pro</span>
+            </span>
           </Link>
 
           {/* 🧠 Desktop Search */}
