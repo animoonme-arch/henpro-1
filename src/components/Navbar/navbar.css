@@ -13,7 +13,7 @@
   font-family: "Inter", sans-serif;
 }
 
-.logo-text {
+/* .logo-text {
   font-size: 28px;
   font-weight: 800;
   background: linear-gradient(90deg, #ffcc00, #ff6600);
@@ -21,7 +21,7 @@
   -webkit-text-fill-color: transparent;
   text-decoration: none;
   letter-spacing: 1px;
-}
+} */
 
 /* 🧭 Main Navbar Container */
 .navbar {
