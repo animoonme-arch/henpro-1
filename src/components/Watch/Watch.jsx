@@ -575,7 +575,7 @@ export default function WatchPageClient({
 
             <ShareSlab
               pageId={id}
-              url={`https://henpro.fun/watch/${id}`}
+              url={`https://hentaio.pro/watch/${id}`}
               title={watchData.title}
               pageName="this hentai"
               creator={creator}

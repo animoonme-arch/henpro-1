@@ -181,7 +181,7 @@ const Navbar = (props) => {
                   finalUrl = getUpdatedLink(`/watch/${safeUrl}`);
                 } else if (result?.source === "special") {
                   finalUrl = result.url
-                    .replace("https://3dhentai.co/", "https://henpro.fun/special/")
+                    .replace("https://3dhentai.co/", "https://hentaio.pro/special/")
                     .replace(/\/$/, ""); // remove trailing slash
                 }
 
@@ -289,7 +289,7 @@ const Navbar = (props) => {
                     finalUrl = getUpdatedLink(`/watch/${safeUrl}`);
                   } else if (result?.source === "special") {
                     finalUrl = result.url
-                      .replace("https://3dhentai.co/", "https://henpro.fun/special/")
+                      .replace("https://3dhentai.co/", "https://hentaio.pro/special/")
                       .replace(/\/$/, ""); // remove trailing slash
                   }
 

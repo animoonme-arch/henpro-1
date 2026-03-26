@@ -141,9 +141,9 @@ const Home = (props) => {
 
         <ShareSlab
           pageId={"home"}
-          url={`https://henpro.fun/`}
-          title={"Watch Hentai on Henpro"}
-          pageName="Henpro"
+          url={`https://hentaio.pro/`}
+          title={"Watch Hentai on Hentaio"}
+          pageName="Hentaio"
           creator={props.creator}
         />
 
