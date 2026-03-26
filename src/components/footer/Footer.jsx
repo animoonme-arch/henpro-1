@@ -12,7 +12,7 @@ const Footer = () => {
     // Determine the base and accent parts based on whether the name contains "pro"
     const isPro = siteName.toLowerCase().includes("pro");
     const base = isPro ? "hen" : "hentaio";
-    const accent = isPro ? "pro" : "tv";
+    const accent = isPro ? "pro" : ".pro";
     const accentClass = isFooterLogo ? "col-p" : "col-imp";
 
     return (
@@ -135,7 +135,7 @@ const Footer = () => {
             />
           </div>
           <div className="headi">
-            <span className="logo-text">Hentaio</span>
+            {renderSiteName(true)}{" "}
             {/* Pass true to use 'col-p' for the logo text accent */}
             <div className="copyright-text">
               <p>
