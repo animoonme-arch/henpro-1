@@ -48,7 +48,7 @@ export async function generateMetadata({ params }) {
     .join(" ");
 
   return {
-    title: `Watch ${title} Hentai Video Streams Online in 720p, 1080p HD - Henpro`,
+    title: `Watch ${title} Hentai Video Streams Online in 720p, 1080p HD - Hentaio`,
     description:
       "Enjoy your unlimited hentai & anime collection. Stream high quality 720p / 1080p HD hentai videos for free.",
   };

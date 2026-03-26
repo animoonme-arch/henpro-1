@@ -8,7 +8,7 @@ const isPro = siteName.toLowerCase().includes("pro");
 const base = isPro ? "Hen" : "Hanime";
 const accent = isPro ? "Pro" : "TV";
 
-const fullSiteName = `${base}${accent}`;
+const fullSiteName = `${siteName}`;
 
 export const metadata = {
   metadataBase: new URL(domain),

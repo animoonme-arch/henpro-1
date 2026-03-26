@@ -34,7 +34,7 @@ export async function generateMetadata({ params }) {
       title: video.title,
       description: video.description,
       url: pageUrl,
-      siteName: "HenPro",
+      siteName: "Hentaio",
       images: [
         {
           url: video.thumbnail,

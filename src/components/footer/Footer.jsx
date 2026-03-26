@@ -38,12 +38,12 @@ const Footer = () => {
           <div className="site-lines">
             {/* HEADING 1 */}
             <div className="line-head">
-              Watch Hentai online at {renderSiteName()}
+              Watch Hentai online at {siteName}
             </div>
 
             {/* PARAGRAPH 1 */}
             <div className="line-inn">
-              In {renderSiteName()} you will find a hentai haven for the latest
+              In {siteName} you will find a hentai haven for the latest
               uncensored Hentai. We offer the best hentai collection in the
               highest possible quality at 1080p from Blu-Ray rips. Many videos
               are licensed direct downloads from the original animators,
@@ -53,7 +53,7 @@ const Footer = () => {
             {/* PARAGRAPH 2 */}
             <div className="line-inn">
               If you're looking for the latest Hentai videos of various genres,
-              {renderSiteName()} is exactly what you need. Our website is an
+              {siteName} is exactly what you need. Our website is an
               international hub of Hentai animation. Here you will find a great
               collection of uncensored Hentai videos as well as links to sex
               games and porn. Browse our catalog to find the most exciting and
@@ -66,7 +66,7 @@ const Footer = () => {
             {/* PARAGRAPH 3 */}
             <div className="line-inn">
               With
-              {renderSiteName()}, you can watch the newest Hentai series and
+              {siteName}, you can watch the newest Hentai series and
               follow your favorite characters. Whether you like a raw fap
               material or a well-developed plot, we have got you covered. Here,
               you can find Hentai that focuses on the physical aspect of love as
@@ -101,7 +101,7 @@ const Footer = () => {
 
             {/* HEADING 3 */}
             <div className="line-head">
-              Join our hentai {renderSiteName()} fans community Discord
+              Join our hentai {siteName} fans community Discord
             </div>
 
             {/* PARAGRAPH 5 */}
