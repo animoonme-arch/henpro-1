@@ -248,7 +248,7 @@ const Navbar = (props) => {
 
           {/* 🧠 Desktop Search */}
           <div className={`search ${focused ? "focused" : ""}`}>
-            <input
+            <input  
               ref={searchInputRef}
               type="text"
               placeholder="Search hentai..."

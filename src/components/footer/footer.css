@@ -16,6 +16,16 @@
     margin-top: 100px;
 }
 
+.logo-text {
+  font-size: 28px;
+  font-weight: 800;
+  background: linear-gradient(90deg, #ffcc00, #ff6600);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-decoration: none;
+  letter-spacing: 1px;
+}
+
 /* Site Details Container (Main Content Area) */
 .site-details {
     /* Base styles from media query, applied globally for large screens */

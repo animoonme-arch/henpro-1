@@ -131,11 +131,11 @@ const Footer = () => {
               alt={`${siteName} Logo`}
               width={50}
               height={50}
-              className="kisan"
+              className="kisan" 
             />
           </div>
           <div className="headi">
-            {renderSiteName(true)}{" "}
+            <span className="logo-text">Hentaio</span>
             {/* Pass true to use 'col-p' for the logo text accent */}
             <div className="copyright-text">
               <p>
