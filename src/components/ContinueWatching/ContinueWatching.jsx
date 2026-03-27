@@ -168,9 +168,7 @@ const ContinueWatching = (props) => {
             <>
               <Link
                 // ⬅️ UPDATED: Append creator param
-                href={`/user/continue-watching?page=1&refer=${
-                  props.refer
-                }${getCreatorQuery()}`}
+                href={`/user/continue-watching?page=1${getCreatorQuery()}`}
                 className="pagin-tile"
                 aria-label="First Page"
               >
@@ -178,9 +176,7 @@ const ContinueWatching = (props) => {
               </Link>
               <Link
                 // ⬅️ UPDATED: Append creator param
-                href={`/user/continue-watching?page=${currentPage - 1}&refer=${
-                  props.refer
-                }${getCreatorQuery()}`}
+                href={`/user/continue-watching?page=${currentPage - 1}${getCreatorQuery()}`}
                 className="pagin-tile"
                 aria-label="Previous Page"
               >
@@ -193,9 +189,7 @@ const ContinueWatching = (props) => {
             <Link
               key={pageNum}
               // ⬅️ UPDATED: Append creator param
-              href={`/user/continue-watching?page=${pageNum}&refer=${
-                props.refer
-              }${getCreatorQuery()}`}
+              href={`/user/continue-watching?page=${pageNum}${getCreatorQuery()}`}
               className={`pagin-tile ${
                 currentPage === pageNum ? "pagin-colo" : ""
               }`}
@@ -209,9 +203,7 @@ const ContinueWatching = (props) => {
             <>
               <Link
                 // ⬅️ UPDATED: Append creator param
-                href={`/user/continue-watching?page=${currentPage + 1}&refer=${
-                  props.refer
-                }${getCreatorQuery()}`}
+                href={`/user/continue-watching?page=${currentPage + 1}${getCreatorQuery()}`}
                 className="pagin-tile"
                 aria-label="Next Page"
               >
@@ -219,9 +211,7 @@ const ContinueWatching = (props) => {
               </Link>
               <Link
                 // ⬅️ UPDATED: Append creator param
-                href={`/user/continue-watching?page=${totalPages}&refer=${
-                  props.refer
-                }${getCreatorQuery()}`}
+                href={`/user/continue-watching?page=${totalPages}${getCreatorQuery()}`}
                 className="pagin-tile"
                 aria-label="Last Page"
               >
