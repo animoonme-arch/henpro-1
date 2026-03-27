@@ -1334,7 +1334,7 @@ const CommentSection = ({ contentId, showToast , creator }) => {
               }}
             >
               <p style={{ color: "#aaa", fontSize: "15px" }}>
-                <div
+                <span
                   // href="/api/auth/signin"
                   className="login-link"
                   onClick={() => toggleSignInModal(true)}
@@ -1343,6 +1343,7 @@ const CommentSection = ({ contentId, showToast , creator }) => {
                     textDecoration: "none",
                     fontWeight: "bold",
                     transition: "text-shadow 0.3s ease",
+                    cursor: "pointer",
                   }}
                   onMouseEnter={(e) =>
                   (e.currentTarget.style.textShadow = `0 0 10px ${glow(
@@ -1355,7 +1356,7 @@ const CommentSection = ({ contentId, showToast , creator }) => {
                   }
                 >
                   Log in
-                </div>{" "}
+                </span>{" "}
                 to join the conversation and post a comment.
               </p>
             </div>
