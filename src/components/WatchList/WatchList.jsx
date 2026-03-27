@@ -48,7 +48,7 @@ const getLink = (item, creator) => {
         ? `?creator=${encodeURIComponent(creator)}`
         : "";
 
-    return `${basePath}${basePath.includes("?") ? "&" : "?"}${creatorParam}`;
+    return `${basePath}${creatorParam}`;
 };
 
 // --- InternalPageSlider Component Logic (Unchanged) ---
