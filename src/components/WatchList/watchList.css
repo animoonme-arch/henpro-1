@@ -95,6 +95,8 @@
   column-gap: 1.5rem;
   row-gap: 3rem;
   padding: 0;
+  align-items: center;
+  justify-content: center;
 }
 .drd-col {
   width: calc(75% - 1rem);
