@@ -1,6 +1,5 @@
-// app/series/page.js (or app/release/page.js, based on your routing)
+// app/release/page.js (or app/series/page.js)
 
-// Assuming connectDB is set up in "@/lib/mongoClient"
 import { connectDB } from "@/lib/mongoClient";
 import Advertize from "@/components/Advertize/Advertize";
 import Release from "@/components/Release/Release";
@@ -8,59 +7,92 @@ import Release from "@/components/Release/Release";
 export default async function SeriesPage({ searchParams }) {
   const page = searchParams.page || 1;
   const year = searchParams.year;
-  const creatorApiKey = searchParams.creator; // ✨ Get the creator API key
+  const creatorApiKey = searchParams.creator;
 
-  // --- Start Dynamic Ad Link Logic ---
+  /* ------------------ */
+  /* DYNAMIC AD LOGIC */
+  /* ------------------ */
+
   const DEFAULT_AD_LINK =
     "https://violentlinedexploit.com/ukqgqrv4n?key=acf2a1b713094b78ec1cc21761e9b149";
+
   let dynamicAdLink = DEFAULT_AD_LINK;
 
   if (creatorApiKey) {
     try {
-      // 1. Connect to MongoDB
       const db = await connectDB();
-      // Assuming your collection is named 'creators'
       const collection = db.collection("creators");
 
-      // 2. Fetch the creator data
       const creatorData = await collection.findOne(
         { username: creatorApiKey },
-        // Project to only include the smartlink for efficiency
         { projection: { adsterraSmartlink: 1, _id: 0 } }
       );
 
-      // 3. Update the ad link if found
-      if (creatorData && creatorData.adsterraSmartlink) {
+      if (creatorData?.adsterraSmartlink) {
         dynamicAdLink = creatorData.adsterraSmartlink;
       }
     } catch (error) {
-      console.error("MongoDB fetch failed for creator:", creatorApiKey, error);
-      // It will fall back to DEFAULT_AD_LINK
+      console.error(
+        "MongoDB fetch failed for creator:",
+        creatorApiKey,
+        error
+      );
     }
   }
-  // --- End Dynamic Ad Link Logic ---
 
-  // --- Standard Data Fetch Logic ---
-    const apiDomains = [
+  /* ------------------ */
+  /* API FETCH (FIXED) */
+  /* ------------------ */
+
+  const apiDomains = [
     "https://api.hentaio.pro",
     "https://api2.hentaio.pro",
-    "https://api3.hentaio.pro"
+    "https://api3.hentaio.pro",
   ];
 
-  const randomDomain =
-    apiDomains[Math.floor(Math.random() * apiDomains.length)];
-  const apiUrl = `${randomDomain}/api/year?year=${year}&page=${page}`;
+  let data = null;
 
-  const res = await fetch(apiUrl, {
-    next: { revalidate: 300 }, // revalidate every 5 min
-  });
+  for (const domain of apiDomains) {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 5000);
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch series by year");
+      const res = await fetch(
+        `${domain}/api/year?year=${year}&page=${page}`,
+        {
+          signal: controller.signal,
+          next: { revalidate: 300 }, // cache 5 min
+        }
+      );
+
+      clearTimeout(timeout);
+
+      if (!res.ok) {
+        throw new Error(`Failed on ${domain}`);
+      }
+
+      data = await res.json();
+      break; // ✅ stop on first success
+    } catch (err) {
+      console.error("API failed:", domain, err.message);
+    }
   }
 
-  const data = await res.json();
-  // --- End Standard Data Fetch Logic ---
+  /* ------------------ */
+  /* FAIL SAFE */
+  /* ------------------ */
+
+  if (!data) {
+    return (
+      <div style={{ color: "white", padding: "40px" }}>
+        Failed to load data. Please try again later.
+      </div>
+    );
+  }
+
+  /* ------------------ */
+  /* RENDER */
+  /* ------------------ */
 
   return (
     <div className="page-wrapper">
@@ -70,7 +102,7 @@ export default async function SeriesPage({ searchParams }) {
         totalPages={data?.totalPages || 1}
         creator={creatorApiKey}
       />
-      {/* 🌟 Pass the dynamic ad link to the Advertize component */}
+
       <Advertize initialAdLink={dynamicAdLink} />
     </div>
   );
