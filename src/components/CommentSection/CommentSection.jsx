@@ -656,7 +656,7 @@ Comment.displayName = "Comment";
 // ======================================================================
 // 2. CommentSection Component (Fixes/Updates for Sorting)
 // ======================================================================
-const CommentSection = ({ contentId, showToast }) => {
+const CommentSection = ({ contentId, showToast , creator }) => {
   const { data: session } = useSession();
   const userId = session?.user?.id;
   const [comments, setComments] = useState([]);
@@ -1040,7 +1040,7 @@ const CommentSection = ({ contentId, showToast }) => {
   );
 
   const [logIsOpen, setLogIsOpen] = useState(false);
-  const creat = props.creator ? props.creator : "";
+  const creat = creator ? creator : "";
 
   const toggleSignInModal = (isOpen) => setLogIsOpen(isOpen);
 
