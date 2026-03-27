@@ -24,7 +24,7 @@ export default function RecentEpisodes({ recentEpi = [], creator }) {
 
       <div className="decent-grid">
         {recentEpi.map((ep) => (
-          <Link key={ep.link} href={`/watch/${ep.link}?creator=${creator}`} className="decent-card">
+          <Link key={ep.link} href={`/watch/${ep.link}${creator ? `?creator=${encodeURIComponent(creator)}` : ""}`} className="decent-card">
             <div className="image-container">
               <img src={ep.poster} alt={ep.seriesName} className="poster" />
 
