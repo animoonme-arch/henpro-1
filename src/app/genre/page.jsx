@@ -2,67 +2,97 @@
 
 import Advertize from "@/components/Advertize/Advertize";
 import Genre from "@/components/Genre/Genre";
-import { connectDB } from "@/lib/mongoClient"; // ✨ Import the DB connection utility
+import { connectDB } from "@/lib/mongoClient";
 
 export default async function SeriesPage({ searchParams }) {
   const page = searchParams.page || 1;
   const genre = searchParams.genre;
-  const creatorApiKey = searchParams.creator; // Get the creator API key
+  const creatorApiKey = searchParams.creator;
 
-  // --- Start Creator Ad Link Logic ---
+  /* ------------------ */
+  /* CREATOR AD LOGIC */
+  /* ------------------ */
+
   const DEFAULT_AD_LINK =
     "https://violentlinedexploit.com/ukqgqrv4n?key=acf2a1b713094b78ec1cc21761e9b149";
+
   let dynamicAdLink = DEFAULT_AD_LINK;
 
   if (creatorApiKey) {
-    let client;
     try {
-      // 1. Connect to MongoDB
       const db = await connectDB();
       const collection = db.collection("creators");
 
-      // 2. Fetch the creator data using the creatorApiKey
-      // Note: No need for a separate fetch() call, we query the DB directly.
       const creatorData = await collection.findOne(
         { username: creatorApiKey },
-        { projection: { adsterraSmartlink: 1, _id: 0 } } // Only retrieve the smartlink
+        { projection: { adsterraSmartlink: 1, _id: 0 } }
       );
 
-      // 3. Update the ad link if found
-      if (creatorData && creatorData.adsterraSmartlink) {
+      if (creatorData?.adsterraSmartlink) {
         dynamicAdLink = creatorData.adsterraSmartlink;
       }
     } catch (error) {
-      console.error("MongoDB fetch failed for creator:", creatorApiKey, error);
-      // Fallback to default link
+      console.error(
+        "MongoDB fetch failed for creator:",
+        creatorApiKey,
+        error
+      );
     }
-    // No need to explicitly close the connection when using the module-scoped client pattern
   }
-  // --- End Creator Ad Link Logic ---
 
-  // --- Start Genre Data Fetch Logic ---
+  /* ------------------ */
+  /* API FETCH (FIXED) */
+  /* ------------------ */
+
   const apiDomains = [
     "https://api.hentaio.pro",
     "https://api2.hentaio.pro",
-    "https://api3.hentaio.pro"
+    "https://api3.hentaio.pro",
   ];
 
-  const randomDomain =
-    apiDomains[Math.floor(Math.random() * apiDomains.length)];
+  let data = null;
 
-  const apiUrl = `${randomDomain}/api/genre?genre=${genre}&page=${page}`;
+  for (const domain of apiDomains) {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 5000);
 
-  const res = await fetch(apiUrl, {
-    next: { revalidate: 300 }, // revalidate every 5 min
-  });
+      const res = await fetch(
+        `${domain}/api/genre?genre=${genre}&page=${page}`,
+        {
+          signal: controller.signal,
+          next: { revalidate: 300 },
+        }
+      );
 
-  if (!res.ok) {
-    // Note: You might want to log the fetch error or handle it more gracefully
-    throw new Error("Failed to fetch series");
+      clearTimeout(timeout);
+
+      if (!res.ok) {
+        throw new Error(`Failed on ${domain}`);
+      }
+
+      data = await res.json();
+      break; // ✅ stop after first success
+    } catch (err) {
+      console.error("API failed:", domain, err.message);
+    }
   }
 
-  const data = await res.json();
-  // --- End Genre Data Fetch Logic ---
+  /* ------------------ */
+  /* FAIL SAFE UI */
+  /* ------------------ */
+
+  if (!data) {
+    return (
+      <div style={{ color: "white", padding: "40px" }}>
+        Failed to load data. Please try again later.
+      </div>
+    );
+  }
+
+  /* ------------------ */
+  /* RENDER */
+  /* ------------------ */
 
   return (
     <div className="page-wrapper">
@@ -72,8 +102,8 @@ export default async function SeriesPage({ searchParams }) {
         totalPages={data?.totalPages || 1}
         creator={creatorApiKey}
       />
-      <Advertize initialAdLink={dynamicAdLink} />{" "}
-      {/* Pass the link to the client component */}
+
+      <Advertize initialAdLink={dynamicAdLink} />
     </div>
   );
 }

@@ -1,35 +1,33 @@
-// app/trending/page.js (or wherever your TrendingPage is located)
+// app/trending/page.js
 
-// Assuming connectDB is set up in "@/lib/mongoClient"
 import { connectDB } from "@/lib/mongoClient";
 import Advertize from "@/components/Advertize/Advertize";
-import Series from "@/components/Trending/Trending"; // Renamed to 'Series' in the import
+import Series from "@/components/Trending/Trending";
 
 export default async function TrendingPage({ searchParams }) {
   const page = searchParams.page || 1;
-  const creatorApiKey = searchParams.creator; // ✨ Get the creator API key
+  const creatorApiKey = searchParams.creator;
 
-  // --- Start Dynamic Ad Link Logic ---
+  /* ------------------ */
+  /* CREATOR AD LOGIC */
+  /* ------------------ */
+
   const DEFAULT_AD_LINK =
     "https://violentlinedexploit.com/ukqgqrv4n?key=acf2a1b713094b78ec1cc21761e9b149";
+
   let dynamicAdLink = DEFAULT_AD_LINK;
- 
+
   if (creatorApiKey) {
     try {
-      // 1. Connect to MongoDB
       const db = await connectDB();
-      // Assuming your collection is named 'creators'
       const collection = db.collection("creators");
 
-      // 2. Fetch the creator data
       const creatorData = await collection.findOne(
         { username: creatorApiKey },
-        // Project to only include the smartlink
         { projection: { adsterraSmartlink: 1, _id: 0 } }
       );
 
-      // 3. Update the ad link if found
-      if (creatorData && creatorData.adsterraSmartlink) {
+      if (creatorData?.adsterraSmartlink) {
         dynamicAdLink = creatorData.adsterraSmartlink;
       }
     } catch (error) {
@@ -38,37 +36,71 @@ export default async function TrendingPage({ searchParams }) {
         creatorApiKey,
         error
       );
-      // Fallback to DEFAULT_AD_LINK
     }
   }
-  // --- End Dynamic Ad Link Logic ---
 
-  // --- Standard Trending Data Fetch Logic ---
-      const apiDomains = [
+  /* ------------------ */
+  /* API FETCH (FIXED) */
+  /* ------------------ */
+
+  const apiDomains = [
     "https://api.hentaio.pro",
     "https://api2.hentaio.pro",
     "https://api3.hentaio.pro",
   ];
 
-  const randomDomain =
-    apiDomains[Math.floor(Math.random() * apiDomains.length)];
-  const apiUrl = `${randomDomain}/api/trending?page=${page}`;
+  let data = null;
 
-  const res = await fetch(apiUrl, {
-    next: { revalidate: 300 }, // revalidate every 5 min
-  });
+  for (const domain of apiDomains) {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 5000);
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch trending series");
+      const res = await fetch(
+        `${domain}/api/trending?page=${page}`,
+        {
+          signal: controller.signal,
+          next: { revalidate: 300 },
+        }
+      );
+
+      clearTimeout(timeout);
+
+      if (!res.ok) {
+        throw new Error(`Failed on ${domain}`);
+      }
+
+      data = await res.json();
+      break; // ✅ stop on first success
+    } catch (err) {
+      console.error("Trending API failed:", domain, err.message);
+    }
   }
 
-  const data = await res.json();
-  // --- End Standard Trending Data Fetch Logic ---
+  /* ------------------ */
+  /* FAIL SAFE */
+  /* ------------------ */
+
+  if (!data) {
+    return (
+      <div style={{ color: "white", padding: "40px" }}>
+        Failed to load trending series. Please try again later.
+      </div>
+    );
+  }
+
+  /* ------------------ */
+  /* RENDER */
+  /* ------------------ */
 
   return (
     <div className="page-wrapper">
-      <Series data={data || []} totalPages={data?.totalPages || 1} creator={creatorApiKey} />
-      {/* 🌟 Pass the dynamic ad link to the Advertize component */}
+      <Series
+        data={data || []}
+        totalPages={data?.totalPages || 1}
+        creator={creatorApiKey}
+      />
+
       <Advertize initialAdLink={dynamicAdLink} />
     </div>
   );

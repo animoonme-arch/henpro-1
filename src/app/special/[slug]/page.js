@@ -3,15 +3,54 @@ import Advertize from "@/components/Advertize/Advertize";
 
 export const dynamic = "force-dynamic";
 
+/* ------------------ */
+/* FETCH WITH FAILOVER */
+/* ------------------ */
+
+const apiDomains = [
+  "https://api.hentaio.pro",
+  "https://api2.hentaio.pro",
+  "https://api3.hentaio.pro",
+];
+
+async function fetchVideo(slug) {
+  for (const domain of apiDomains) {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 5000);
+
+      const res = await fetch(
+        `${domain}/api/special-watch/${slug}`,
+        {
+          signal: controller.signal,
+          next: { revalidate: 3600 },
+        }
+      );
+
+      clearTimeout(timeout);
+
+      if (!res.ok) {
+        throw new Error(`Failed on ${domain}`);
+      }
+
+      const json = await res.json();
+      return json.data;
+    } catch (err) {
+      console.error("Special API failed:", domain, err.message);
+    }
+  }
+
+  return null; // all failed
+}
+
+/* ------------------ */
+/* METADATA */
+/* ------------------ */
+
 export async function generateMetadata({ params }) {
   const { slug } = params;
 
-  const res = await fetch(`https://api.hentaio.pro/api/special-watch/${slug}`, {
-    next: { revalidate: 3600 },
-  });
-
-  const json = await res.json();
-  const video = json.data;
+  const video = await fetchVideo(slug);
 
   if (!video) {
     return {
@@ -60,18 +99,25 @@ export async function generateMetadata({ params }) {
   };
 }
 
+/* ------------------ */
+/* PAGE */
+/* ------------------ */
+
 export default async function Page({ params }) {
   const { slug } = params;
 
-  const res = await fetch(`https://api.hentaio.pro/api/special-watch/${slug}`, {
-    next: { revalidate: 3600 },
-  });
-
-  const json = await res.json();
-  const video = json.data;
+  const video = await fetchVideo(slug);
 
   const DEFAULT_AD_LINK =
     "https://violentlinedexploit.com/ukqgqrv4n?key=acf2a1b713094b78ec1cc21761e9b149";
+
+  if (!video) {
+    return (
+      <div style={{ color: "white", padding: "40px" }}>
+        Failed to load video. Please try again later.
+      </div>
+    );
+  }
 
   return (
     <div>

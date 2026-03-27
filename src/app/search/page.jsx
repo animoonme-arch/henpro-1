@@ -1,35 +1,33 @@
-// app/series/page.js (or app/search/page.js, based on your routing)
+// app/search/page.js (or app/series/page.js)
 
-// Assuming connectDB is set up in "@/lib/mongoClient"
 import { connectDB } from "@/lib/mongoClient";
 import Advertize from "@/components/Advertize/Advertize";
 import Search from "@/components/Search/Search";
 
 export default async function SeriesPage({ searchParams }) {
-  const q = searchParams.q || ""; // The search query is expected to be 'q'
-  const creatorApiKey = searchParams.creator; // ✨ Get the creator API key
+  const q = searchParams.q || "";
+  const creatorApiKey = searchParams.creator;
 
-  // --- Start Dynamic Ad Link Logic ---
+  /* ------------------ */
+  /* CREATOR AD LOGIC */
+  /* ------------------ */
+
   const DEFAULT_AD_LINK =
     "https://violentlinedexploit.com/ukqgqrv4n?key=acf2a1b713094b78ec1cc21761e9b149";
+
   let dynamicAdLink = DEFAULT_AD_LINK;
 
   if (creatorApiKey) {
     try {
-      // 1. Connect to MongoDB
       const db = await connectDB();
-      // Assuming your collection is named 'creators'
       const collection = db.collection("creators");
 
-      // 2. Fetch the creator data
       const creatorData = await collection.findOne(
         { username: creatorApiKey },
-        // Project to only include the smartlink for efficiency
         { projection: { adsterraSmartlink: 1, _id: 0 } }
       );
 
-      // 3. Update the ad link if found
-      if (creatorData && creatorData.adsterraSmartlink) {
+      if (creatorData?.adsterraSmartlink) {
         dynamicAdLink = creatorData.adsterraSmartlink;
       }
     } catch (error) {
@@ -38,31 +36,68 @@ export default async function SeriesPage({ searchParams }) {
         creatorApiKey,
         error
       );
-      // Fallback to DEFAULT_AD_LINK
     }
   }
-  // --- End Dynamic Ad Link Logic ---
 
-  // --- Standard Search Data Fetch Logic ---
-  // Ensure the query parameter is correctly URL-encoded for safety
+  /* ------------------ */
+  /* API FETCH (FIXED) */
+  /* ------------------ */
+
+  const apiDomains = [
+    "https://api.hentaio.pro",
+    "https://api2.hentaio.pro",
+    "https://api3.hentaio.pro",
+  ];
+
   const encodedQ = encodeURIComponent(q);
-  const apiUrl = `https://api.hentaio.pro/api/search?q=${encodedQ}`;
 
-  const res = await fetch(apiUrl, {
-    next: { revalidate: 300 }, // revalidate every 5 min
-  });
+  let data = null;
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch series");
+  for (const domain of apiDomains) {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 5000);
+
+      const res = await fetch(
+        `${domain}/api/search?q=${encodedQ}`,
+        {
+          signal: controller.signal,
+          next: { revalidate: 300 },
+        }
+      );
+
+      clearTimeout(timeout);
+
+      if (!res.ok) {
+        throw new Error(`Failed on ${domain}`);
+      }
+
+      data = await res.json();
+      break; // ✅ stop on first success
+    } catch (err) {
+      console.error("Search API failed:", domain, err.message);
+    }
   }
 
-  const data = await res.json();
-  // --- End Standard Data Fetch Logic ---
+  /* ------------------ */
+  /* FAIL SAFE */
+  /* ------------------ */
+
+  if (!data) {
+    return (
+      <div style={{ color: "white", padding: "40px" }}>
+        Failed to load search results. Try again later.
+      </div>
+    );
+  }
+
+  /* ------------------ */
+  /* RENDER */
+  /* ------------------ */
 
   return (
     <div className="page-wrapper">
       <Search data={data || []} keyword={q} creator={creatorApiKey} />
-      {/* 🌟 Pass the dynamic ad link to the Advertize component */}
       <Advertize initialAdLink={dynamicAdLink} />
     </div>
   );

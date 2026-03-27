@@ -2,27 +2,46 @@ import { connectDB } from "@/lib/mongoClient";
 import Advertize from "@/components/Advertize/Advertize";
 import WatchWrapper from "@/components/Watch/WatchWrapper";
 
-/* ---------------- SAFE FETCH ---------------- */
-async function safeFetchJSON(url) {
-  try {
-    const res = await fetch(url, { cache: "no-store" });
-    const text = await res.text();
-    return JSON.parse(text);
-  } catch (err) {
-    console.error("safeFetchJSON failed:", url, err);
-    return null;
+/* ---------------- FAILOVER FETCH ---------------- */
+const apiDomains = [
+  "https://api.hentaio.pro",
+  "https://api2.hentaio.pro",
+  "https://api3.hentaio.pro",
+];
+
+async function fetchWithFallback(path) {
+  for (const domain of apiDomains) {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 5000);
+
+      const res = await fetch(`${domain}${path}`, {
+        signal: controller.signal,
+        cache: "no-store",
+      });
+
+      clearTimeout(timeout);
+
+      if (!res.ok) throw new Error(`Failed on ${domain}`);
+
+      const text = await res.text();
+      return JSON.parse(text);
+    } catch (err) {
+      console.error("API failed:", domain, path, err.message);
+    }
   }
+
+  return null;
 }
 
 /* ---------------- MONGO EPISODE STREAM ---------------- */
 async function getEpisodeStreamFromDB(episodeId) {
-  // 🔒 HARD GUARD
   if (!episodeId || !episodeId.includes("episode")) return null;
 
   try {
     const db = await connectDB();
-    const episode = await db.collection("episodes").findOne(
-      { episodeId }, // ← EXACT MATCH with your DB
+    return await db.collection("episodes").findOne(
+      { episodeId },
       {
         projection: {
           _id: 0,
@@ -32,8 +51,6 @@ async function getEpisodeStreamFromDB(episodeId) {
         },
       }
     );
-
-    return episode || null;
   } catch (err) {
     console.error("Mongo episode fetch failed:", err);
     return null;
@@ -65,6 +82,7 @@ export default async function Page({ params, searchParams }) {
   /* -------- AD LINK -------- */
   const DEFAULT_AD_LINK =
     "https://violentlinedexploit.com/ukqgqrv4n?key=acf2a1b713094b78ec1cc21761e9b149";
+
   let dynamicAdLink = DEFAULT_AD_LINK;
 
   if (creatorApiKey) {
@@ -83,61 +101,45 @@ export default async function Page({ params, searchParams }) {
     }
   }
 
-  /* -------- DATA FETCH -------- */
-  const apiDomains = [
-    "https://api.hentaio.pro",
-    "https://api2.hentaio.pro",
-    "https://api3.hentaio.pro",
-  ];
+  /* -------- DATA FETCH (FIXED) -------- */
 
-  const randomDomain =
-    apiDomains[Math.floor(Math.random() * apiDomains.length)];
   try {
     if (id.includes("episode")) {
-      /* ----- WATCH API ----- */
-      const watchJson = await safeFetchJSON(
-        `${randomDomain}/api/watch?id=${id}`
-      );
-
+      /* ----- WATCH ----- */
+      const watchJson = await fetchWithFallback(`/api/watch?id=${id}`);
       if (watchJson?.success) watchData = watchJson.data;
 
-      /* ----- PATCH STREAM FROM MONGO ----- */
+      /* ----- MONGO PATCH ----- */
       const mongoEpisode = await getEpisodeStreamFromDB(id);
-
       if (watchData && mongoEpisode) {
         watchData.videoUrl = mongoEpisode.videoUrl || null;
         watchData.iframeSrc = mongoEpisode.iframeSrc || "about:blank";
         watchData.downloadLink = mongoEpisode.downloadUrl || "#";
       }
 
-      /* ----- INFO API ----- */
+      /* ----- INFO ----- */
       const seriesId =
         watchData?.seriesId || id.replace(/-episode-.*/, "-id-01");
 
-      const infoJson = await safeFetchJSON(
-        `${randomDomain}/api/info?id=${seriesId}`
+      const infoJson = await fetchWithFallback(
+        `/api/info?id=${seriesId}`
       );
-
       if (infoJson?.success) infoData = infoJson.data;
     } else {
       /* ----- INFO FIRST ----- */
-      const infoJson = await safeFetchJSON(
-        `${randomDomain}/api/info?id=${id}`
-      );
-
+      const infoJson = await fetchWithFallback(`/api/info?id=${id}`);
       if (infoJson?.success) infoData = infoJson.data;
 
-      /* ----- AUTO LOAD FIRST EPISODE ----- */
+      /* ----- FIRST EPISODE ----- */
       const firstEpisodeSlug = infoData?.episodes?.[0]?.slug;
 
       if (firstEpisodeSlug) {
-        const watchJson = await safeFetchJSON(
-          `${randomDomain}/api/watch?id=${firstEpisodeSlug}`
+        const watchJson = await fetchWithFallback(
+          `/api/watch?id=${firstEpisodeSlug}`
         );
 
         if (watchJson?.success) watchData = watchJson.data;
 
-        /* ----- PATCH FROM MONGO (EPISODE ONLY) ----- */
         if (firstEpisodeSlug.includes("episode")) {
           const mongoEpisode =
             await getEpisodeStreamFromDB(firstEpisodeSlug);
