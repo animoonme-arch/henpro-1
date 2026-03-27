@@ -44,7 +44,6 @@ const getLink = (item, creator) => {
         ? `/watch/${itemId}`
         : `/watch/${itemId}`;
 
-    const referParam = refer || "weebsSecret";
     const creatorParam = creator
         ? `?creator=${encodeURIComponent(creator)}`
         : "";
