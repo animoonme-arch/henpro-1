@@ -4,7 +4,7 @@ import React, {
   useEffect,
   useState,
   useMemo,
-  useTransition, // ⭐️ NEW: For smoother state updates
+  useTransition,
 } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -27,8 +27,7 @@ const CardItem = React.memo(
   ({
     item,
     index,
-    refer,
-    creator, // ⬅️ NEW: Accept creator prop
+    creator,
     keepIt,
     isLoggedIn,
     handleRemove,
@@ -53,7 +52,6 @@ const CardItem = React.memo(
         style={{ height: "fit-content" }}
         ref={(el) => (cardRefs.current[index] = el)}
       >
-        {/* Remove button (Continue Watching) */}
         {keepIt && (
           <button
             onClick={(e) => {
@@ -68,9 +66,8 @@ const CardItem = React.memo(
         )}
 
         <Link
-          // ⬅️ UPDATED: Use getLink which now includes the creator param
-          href={getLink(item, refer, creator)} 
-          className="w-full relative group hover:cursor-pointer card-link"
+          href={getLink(item, creator)}
+                    className="w-full relative group hover:cursor-pointer card-link"
           onClick={() =>
             typeof window !== "undefined" &&
             window.scrollTo({ top: 0, behavior: "smooth" })
@@ -169,6 +166,7 @@ const CardItem = React.memo(
     );
   }
 );
+
 CardItem.displayName = "CardItem";
 
 // =========================================================================
@@ -184,11 +182,10 @@ const CategoryCard = ({
   cardStyle,
   path,
   limit,
-  selectL: language,
-  refer,
+    selectL: language,
   keepIt,
   isLoggedIn,
-  creator, // ⬅️ NEW: Accept creator prop
+  creator,
 }) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition(); // ⭐️ NEW: useTransition
@@ -317,8 +314,11 @@ const CategoryCard = ({
     [isLoggedIn, startTransition]
   );
 
-  // --- Link Generation (Optimized and Updated) ---
-  const getLink = useCallback((item, refer, creator) => { // ⬅️ Accept creator
+  /* ========================= */
+  /* LINK FIX (CORE) */
+  /* ========================= */
+
+  const getLink = useCallback((item, creator) => {
     const episodeId = item.episodeId || item.contentKey;
     const parentId = item.parentContentId;
     const fallbackId = item.id;
@@ -331,17 +331,13 @@ const CategoryCard = ({
       basePath = `/watch/${fallbackId}`;
     }
 
-    // Append 'refer' and 'creator'
-    let queryString = `refer=${refer || "weebsSecret"}`;
     if (creator) {
-      queryString += `&creator=${creator}`;
+      const sep = basePath.includes("?") ? "&" : "?";
+      return `${basePath}${sep}creator=${creator}`;
     }
-    
-    // Determine the separator based on whether basePath already has a query
-    const separator = basePath.includes("?") ? "&" : "?";
-    
-    return `${basePath}${separator}${queryString}`;
-  }, []); // Depend on nothing as arguments provide all external values
+
+    return basePath;
+  }, []);
 
   const formatTime = useCallback((seconds) => {
     const m = Math.floor(seconds / 60);
@@ -349,11 +345,8 @@ const CategoryCard = ({
     return `${m}:${s.toString().padStart(2, "0")}`;
   }, []);
 
-  // --- Render ---
-
-  if (data.length === 0) return null;
-
-  const finalItemsToRender = categoryPage && typeof window !== "undefined" && window.innerWidth > 758 && data.length > 4 ? data.slice(0, 4) : data;
+  if (!data.length) return null;
+   const finalItemsToRender = categoryPage && typeof window !== "undefined" && window.innerWidth > 758 && data.length > 4 ? data.slice(0, 4) : data;
 
   // Helper to generate the creator query string for the View More link
   const getCreatorQueryForViewMore = () => (creator ? `&creator=${creator}` : "");
@@ -392,8 +385,7 @@ const CategoryCard = ({
             key={item.id} // Use item.id as the key for stable identity
             item={item}
             index={index}
-            refer={refer}
-            creator={creator} // ⬅️ NEW: Pass creator to CardItem
+            creator={creator}
             keepIt={keepIt}
             isLoggedIn={isLoggedIn}
             handleRemove={handleRemove}
