@@ -13,6 +13,7 @@ import {
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import Link from "next/link";
 import "./CommentSection.css"; // Ensure this includes the highlightPulse CSS
+import SignInSignUpModal from "../SignSignup/SignInSignUpModal";
 
 // --- THEME CONSTANTS ---
 const GLOW_ACCENT = "#00FFFF"; // Bright Cyan/Aqua
@@ -80,9 +81,9 @@ const formatDateToTimeAgo = (dateString) => {
   return Math.floor(seconds) <= 10
     ? "just now"
     : Math.floor(seconds) +
-        " second" +
-        (Math.floor(seconds) > 1 ? "s" : "") +
-        " ago";
+    " second" +
+    (Math.floor(seconds) > 1 ? "s" : "") +
+    " ago";
 };
 
 // ======================================================================
@@ -270,9 +271,8 @@ const Comment = React.forwardRef(
 
     return (
       <div
-        className={`comment-card depth-${depth} ${
-          isTarget ? "highlight-target" : ""
-        }`}
+        className={`comment-card depth-${depth} ${isTarget ? "highlight-target" : ""
+          }`}
         id={comment._id}
         ref={ref}
         style={{
@@ -1039,258 +1039,273 @@ const CommentSection = ({ contentId, showToast }) => {
     [GLOW_ACCENT, isLoading]
   );
 
+  const [logIsOpen, setLogIsOpen] = useState(false);
+  const creat = props.creator ? props.creator : "";
+
+  const toggleSignInModal = (isOpen) => setLogIsOpen(isOpen);
+
+
   return (
-    <div
-      className="comment-section-container"
-      style={{
-        width: "100%",
-        marginTop: "20px",
-        padding: "20px",
-        backgroundColor: "#0a0a0a",
-        color: "#eee",
-        borderRadius: "10px",
-        border: `1px solid ${GLOW_ACCENT}50`,
-        boxShadow: `0 0 15px ${GLOW_ACCENT}30`,
-      }}
-    >
-      <h3
-        className="comment-heading"
-        style={headingStyle}
-        onMouseEnter={(e) =>
+    <>
+      {logIsOpen && (
+        <SignInSignUpModal
+          logIsOpen={logIsOpen}
+          setLogIsOpen={setLogIsOpen}
+          sign={toggleSignInModal}
+          creator={creat}
+        />
+      )}
+      <div
+        className="comment-section-container"
+        style={{
+          width: "100%",
+          marginTop: "20px",
+          padding: "20px",
+          backgroundColor: "#0a0a0a",
+          color: "#eee",
+          borderRadius: "10px",
+          border: `1px solid ${GLOW_ACCENT}50`,
+          boxShadow: `0 0 15px ${GLOW_ACCENT}30`,
+        }}
+      >
+        <h3
+          className="comment-heading"
+          style={headingStyle}
+          onMouseEnter={(e) =>
           (e.currentTarget.style.textShadow = `0 0 10px ${glow(
             GLOW_ACCENT,
             0.8
           )}`)
-        }
-        onMouseLeave={(e) =>
+          }
+          onMouseLeave={(e) =>
           (e.currentTarget.style.textShadow = `0 0 5px ${glow(
             GLOW_ACCENT,
             0.4
           )}`)
-        }
-      >
-        <FaCommentDots style={{ color: GLOW_ACCENT }} />
-        Comments ({totalComments})
-      </h3>
-      <div
-        className="sorting-controls-container"
-        style={{
-          marginBottom: "20px",
-          display: "flex",
-          alignItems: "center",
-          borderBottom: "1px solid #333",
-          paddingBottom: "15px",
-          gap: "10px",
-        }}
-      >
-        <label
-          htmlFor="comment-sort"
+          }
+        >
+          <FaCommentDots style={{ color: GLOW_ACCENT }} />
+          Comments ({totalComments})
+        </h3>
+        <div
+          className="sorting-controls-container"
           style={{
-            fontSize: "14px",
-            color: "#ccc",
-            fontWeight: "500",
-            marginRight: "5px",
-            flexShrink: 0,
+            marginBottom: "20px",
+            display: "flex",
+            alignItems: "center",
+            borderBottom: "1px solid #333",
+            paddingBottom: "15px",
+            gap: "10px",
           }}
         >
-          Sort by:
-        </label>
-        {/* 🔑 ONCHANGE HANDLER TO SET sortOrder STATE */}
-        <select
-          id="comment-sort"
-          className="sort-dropdown"
-          value={sortOrder}
-          onChange={(e) => {
-            setSortOrder(e.target.value);
-            setPage(1);
-            setComments([]);
-            setHasMore(false);
-          }}
-          disabled={isLoading}
-          style={selectStyle}
-          onMouseEnter={(e) =>
+          <label
+            htmlFor="comment-sort"
+            style={{
+              fontSize: "14px",
+              color: "#ccc",
+              fontWeight: "500",
+              marginRight: "5px",
+              flexShrink: 0,
+            }}
+          >
+            Sort by:
+          </label>
+          {/* 🔑 ONCHANGE HANDLER TO SET sortOrder STATE */}
+          <select
+            id="comment-sort"
+            className="sort-dropdown"
+            value={sortOrder}
+            onChange={(e) => {
+              setSortOrder(e.target.value);
+              setPage(1);
+              setComments([]);
+              setHasMore(false);
+            }}
+            disabled={isLoading}
+            style={selectStyle}
+            onMouseEnter={(e) =>
             (e.currentTarget.style.boxShadow = `0 0 10px ${glow(
               GLOW_ACCENT,
               1
             )}`)
-          }
-          onMouseLeave={(e) =>
+            }
+            onMouseLeave={(e) =>
             (e.currentTarget.style.boxShadow = `0 0 5px ${glow(
               GLOW_ACCENT,
               0.2
             )}`)
-          }
-          onFocus={(e) =>
-            (e.currentTarget.style.border = `1px solid ${glow(GLOW_ACCENT, 1)}`)
-          }
-          onBlur={(e) =>
+            }
+            onFocus={(e) =>
+              (e.currentTarget.style.border = `1px solid ${glow(GLOW_ACCENT, 1)}`)
+            }
+            onBlur={(e) =>
             (e.currentTarget.style.border = `1px solid ${glow(
               GLOW_ACCENT,
               0.5
             )}`)
-          }
-        >
-          <option
-            value="latest"
-            style={{ backgroundColor: "#151515", color: GLOW_ACCENT }}
+            }
           >
-            Latest
-          </option>
-          <option
-            value="highest_likes"
-            style={{ backgroundColor: "#151515", color: GLOW_ACCENT }}
-          >
-            Highest Liked
-          </option>
-          <option
-            value="most_replied"
-            style={{ backgroundColor: "#151515", color: GLOW_ACCENT }}
-          >
-            Most Replied
-          </option>
-          <option
-            value="oldest"
-            style={{ backgroundColor: "#151515", color: GLOW_ACCENT }}
-          >
-            Oldest
-          </option>
-          <option
-            value="highest_dislikes"
-            style={{ backgroundColor: "#151515", color: GLOW_ACCENT }}
-          >
-            Most Disliked
-          </option>
-        </select>
-        {isLoading && (
-          <AiOutlineLoading3Quarters
-            className="spinner"
-            size={18}
-            style={{ color: GLOW_ACCENT, animation: "spin 1s linear infinite" }}
-          />
-        )}
-      </div>
-      <form
-        className="comment-form"
-        onSubmit={handlePostComment}
-        style={{
-          marginBottom: "30px",
-          backgroundColor: "#1b1b1b",
-          borderRadius: "8px",
-          padding: "20px",
-          boxShadow: `0 0 10px ${glow(GLOW_ACCENT, 0.1)}`,
-          border: `1px solid ${glow(GLOW_ACCENT, 0.2)}`,
-          transition: "box-shadow 0.3s ease",
-        }}
-        onMouseEnter={(e) =>
+            <option
+              value="latest"
+              style={{ backgroundColor: "#151515", color: GLOW_ACCENT }}
+            >
+              Latest
+            </option>
+            <option
+              value="highest_likes"
+              style={{ backgroundColor: "#151515", color: GLOW_ACCENT }}
+            >
+              Highest Liked
+            </option>
+            <option
+              value="most_replied"
+              style={{ backgroundColor: "#151515", color: GLOW_ACCENT }}
+            >
+              Most Replied
+            </option>
+            <option
+              value="oldest"
+              style={{ backgroundColor: "#151515", color: GLOW_ACCENT }}
+            >
+              Oldest
+            </option>
+            <option
+              value="highest_dislikes"
+              style={{ backgroundColor: "#151515", color: GLOW_ACCENT }}
+            >
+              Most Disliked
+            </option>
+          </select>
+          {isLoading && (
+            <AiOutlineLoading3Quarters
+              className="spinner"
+              size={18}
+              style={{ color: GLOW_ACCENT, animation: "spin 1s linear infinite" }}
+            />
+          )}
+        </div>
+        <form
+          className="comment-form"
+          onSubmit={handlePostComment}
+          style={{
+            marginBottom: "30px",
+            backgroundColor: "#1b1b1b",
+            borderRadius: "8px",
+            padding: "20px",
+            boxShadow: `0 0 10px ${glow(GLOW_ACCENT, 0.1)}`,
+            border: `1px solid ${glow(GLOW_ACCENT, 0.2)}`,
+            transition: "box-shadow 0.3s ease",
+          }}
+          onMouseEnter={(e) =>
           (e.currentTarget.style.boxShadow = `0 0 15px ${glow(
             GLOW_ACCENT,
             0.3
           )}`)
-        }
-        onMouseLeave={(e) =>
+          }
+          onMouseLeave={(e) =>
           (e.currentTarget.style.boxShadow = `0 0 10px ${glow(
             GLOW_ACCENT,
             0.1
           )}`)
-        }
-      >
-        {session?.user?.id ? (
-          <>
-            {/* ✍️ Textarea */}
-            <textarea
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              placeholder={
-                session?.user?.id
-                  ? "Join the discussion..."
-                  : "Log in to post a comment."
-              }
-              maxLength={500}
-              rows={3}
-              disabled={!session?.user?.id || isPosting}
-              style={{
-                width: "100%",
-                padding: "15px",
-                border: `1px solid ${GLOW_ACCENT}70`,
-                borderRadius: "8px",
-                resize: "vertical",
-                backgroundColor: "#151515",
-                color: "#fff",
-                marginBottom: "10px",
-                outline: "none",
-                fontSize: "15px",
-                transition: "all 0.3s ease",
-                boxShadow: `inset 0 0 8px ${GLOW_ACCENT}30`,
-              }}
-              onFocus={(e) => {
-                e.currentTarget.style.border = `1px solid ${GLOW_ACCENT}`;
-                e.currentTarget.style.boxShadow = `0 0 10px ${GLOW_ACCENT}70`;
-              }}
-              onBlur={(e) => {
-                e.currentTarget.style.border = `1px solid ${GLOW_ACCENT}70`;
-                e.currentTarget.style.boxShadow = `inset 0 0 8px ${GLOW_ACCENT}30`;
-              }}
-            />
-
-            <button
-              type="submit"
-              disabled={!newComment.trim() || isPosting || !session?.user?.id}
-              style={{
-                padding: "10px 20px",
-                backgroundColor: newComment.trim() ? GLOW_ACCENT : "#444",
-                color: DARK_BG,
-                border: "none",
-                borderRadius: "6px",
-                cursor:
-                  newComment.trim() && session?.user?.id
-                    ? "pointer"
-                    : "not-allowed",
-                fontWeight: "bold",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                boxShadow: newComment.trim()
-                  ? `0 0 10px ${GLOW_ACCENT}70`
-                  : "none",
-                transition: "all 0.3s ease",
-              }}
-              onMouseEnter={(e) => {
-                if (!isPosting && newComment.trim().length > 0) {
-                  e.currentTarget.style.boxShadow = `0 0 20px ${glow(
-                    BUTTON_BG,
-                    1
-                  )}`;
-                  e.currentTarget.style.transform = "scale(1.02)";
+          }
+        >
+          {session?.user?.id ? (
+            <>
+              {/* ✍️ Textarea */}
+              <textarea
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                placeholder={
+                  session?.user?.id
+                    ? "Join the discussion..."
+                    : "Log in to post a comment."
                 }
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = `0 0 12px ${glow(
-                  BUTTON_BG,
-                  0.8
-                )}`;
-                e.currentTarget.style.transform = "scale(1)";
-              }}
-            >
-              {isPosting ? (
-                <>
-                  <AiOutlineLoading3Quarters
-                    className="spin"
-                    style={{
-                      marginRight: "8px",
-                      animation: "spin 1s linear infinite",
-                    }}
-                  />
-                  Posting...
-                </>
-              ) : (
-                <>
-                  <FaPaperPlane /> Post Comment
-                </>
-              )}
-            </button>
+                maxLength={500}
+                rows={3}
+                disabled={!session?.user?.id || isPosting}
+                style={{
+                  width: "100%",
+                  padding: "15px",
+                  border: `1px solid ${GLOW_ACCENT}70`,
+                  borderRadius: "8px",
+                  resize: "vertical",
+                  backgroundColor: "#151515",
+                  color: "#fff",
+                  marginBottom: "10px",
+                  outline: "none",
+                  fontSize: "15px",
+                  transition: "all 0.3s ease",
+                  boxShadow: `inset 0 0 8px ${GLOW_ACCENT}30`,
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.border = `1px solid ${GLOW_ACCENT}`;
+                  e.currentTarget.style.boxShadow = `0 0 10px ${GLOW_ACCENT}70`;
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.border = `1px solid ${GLOW_ACCENT}70`;
+                  e.currentTarget.style.boxShadow = `inset 0 0 8px ${GLOW_ACCENT}30`;
+                }}
+              />
 
-            {/* 🌀 Simple keyframes for spinner */}
-            <style jsx>{`
+              <button
+                type="submit"
+                disabled={!newComment.trim() || isPosting || !session?.user?.id}
+                style={{
+                  padding: "10px 20px",
+                  backgroundColor: newComment.trim() ? GLOW_ACCENT : "#444",
+                  color: DARK_BG,
+                  border: "none",
+                  borderRadius: "6px",
+                  cursor:
+                    newComment.trim() && session?.user?.id
+                      ? "pointer"
+                      : "not-allowed",
+                  fontWeight: "bold",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  boxShadow: newComment.trim()
+                    ? `0 0 10px ${GLOW_ACCENT}70`
+                    : "none",
+                  transition: "all 0.3s ease",
+                }}
+                onMouseEnter={(e) => {
+                  if (!isPosting && newComment.trim().length > 0) {
+                    e.currentTarget.style.boxShadow = `0 0 20px ${glow(
+                      BUTTON_BG,
+                      1
+                    )}`;
+                    e.currentTarget.style.transform = "scale(1.02)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = `0 0 12px ${glow(
+                    BUTTON_BG,
+                    0.8
+                  )}`;
+                  e.currentTarget.style.transform = "scale(1)";
+                }}
+              >
+                {isPosting ? (
+                  <>
+                    <AiOutlineLoading3Quarters
+                      className="spin"
+                      style={{
+                        marginRight: "8px",
+                        animation: "spin 1s linear infinite",
+                      }}
+                    />
+                    Posting...
+                  </>
+                ) : (
+                  <>
+                    <FaPaperPlane /> Post Comment
+                  </>
+                )}
+              </button>
+
+              {/* 🌀 Simple keyframes for spinner */}
+              <style jsx>{`
               @keyframes spin {
                 from {
                   transform: rotate(0deg);
@@ -1303,128 +1318,129 @@ const CommentSection = ({ contentId, showToast }) => {
                 animation: spin 1s linear infinite;
               }
             `}</style>
-          </>
-        ) : (
-          // 🔐 Login Prompt
-          <div
-            className="login-prompt"
-            style={{
-              textAlign: "center",
-              padding: "20px",
-              border: `1px dashed ${glow(GLOW_ACCENT, 0.6)}`,
-              borderRadius: "6px",
-              backgroundColor: "#121212",
-              color: "#ccc",
-              boxShadow: `0 0 6px ${glow(GLOW_ACCENT, 0.1)}`,
-            }}
-          >
-            <p style={{ color: "#aaa", fontSize: "15px" }}>
-              <Link
-                href="/api/auth/signin"
-                className="login-link"
-                style={{
-                  color: GLOW_ACCENT,
-                  textDecoration: "none",
-                  fontWeight: "bold",
-                  transition: "text-shadow 0.3s ease",
-                }}
-                onMouseEnter={(e) =>
+            </>
+          ) : (
+            // 🔐 Login Prompt
+            <div
+              className="login-prompt"
+              style={{
+                textAlign: "center",
+                padding: "20px",
+                border: `1px dashed ${glow(GLOW_ACCENT, 0.6)}`,
+                borderRadius: "6px",
+                backgroundColor: "#121212",
+                color: "#ccc",
+                boxShadow: `0 0 6px ${glow(GLOW_ACCENT, 0.1)}`,
+              }}
+            >
+              <p style={{ color: "#aaa", fontSize: "15px" }}>
+                <div
+                  // href="/api/auth/signin"
+                  className="login-link"
+                  onClick={() => toggleSignInModal(true)}
+                  style={{
+                    color: GLOW_ACCENT,
+                    textDecoration: "none",
+                    fontWeight: "bold",
+                    transition: "text-shadow 0.3s ease",
+                  }}
+                  onMouseEnter={(e) =>
                   (e.currentTarget.style.textShadow = `0 0 10px ${glow(
                     GLOW_ACCENT,
                     1
                   )}`)
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.textShadow = `0 0 0px transparent`)
-                }
-              >
-                Log in
-              </Link>{" "}
-              to join the conversation and post a comment.
-            </p>
-          </div>
-        )}
-      </form>
-      {/* --- Comment List --- */}
-      <div className="comment-list">
-        {comments.map((comment) => (
-          <Comment
-            key={comment._id}
-            comment={comment}
-            userId={userId}
-            onDelete={handleDeleteComment}
-            onLikeToggle={handleLikeToggle}
-            onDislikeToggle={handleDislikeToggle}
-            onReply={handleReply}
-            depth={0}
-            // 🔑 Pass the target ID down
-            targetId={targetCommentId}
-          />
-        ))}
-                {/* Loading state */}     
-        {isLoading && comments.length === 0 && (
-          <div
-            className="loading-state"
-            style={{ textAlign: "center", padding: "20px", color: GLOW_ACCENT }}
-          >
-                     
-            <AiOutlineLoading3Quarters
-              className="spin"
-              style={{ fontSize: "24px" }}
-            />{" "}
-                        Loading Comments...        
-          </div>
-        )}
-                {/* No comments state */}     
-        {!isLoading && totalComments === 0 && page === 1 && (
-          <div
-            className="loading-state"
-            style={{ textAlign: "center", padding: "20px", color: "#aaa" }}
-          >
-                        Be the first to leave a comment! ✨        
-          </div>
-        )}
-                {/* Load More Button with Glow */}     
-        {hasMore && (
-          <button
-            onClick={() => fetchComments(page + 1, true)}
-            className="load-more-btn"
-            disabled={isLoading}
-            style={{
-              width: "100%",
-              padding: "12px",
-              marginTop: "20px",
-              backgroundColor: "transparent",
-              color: GLOW_ACCENT,
-              border: `1px solid ${GLOW_ACCENT}`,
-              borderRadius: "4px",
-              cursor: "pointer",
-              fontWeight: "bold",
-              boxShadow: `0 0 10px ${GLOW_ACCENT}50`, // Subtle glow
-              transition: "all 0.3s ease",
-              opacity: isLoading ? 0.7 : 1,
-            }}
-          >
-                     
-            {isLoading ? (
-              <>
-                             
-                <AiOutlineLoading3Quarters
-                  className="spin"
-                  style={{ marginRight: "8px" }}
-                />{" "}
-                                Loading More...            
-              </>
-            ) : (
-              `Load More Comments (${totalPages - page} page(s) left)`
-            )}
-                   
-          </button>
-        )}
-           
-      </div>
-       
-    </div>
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.textShadow = `0 0 0px transparent`)
+                  }
+                >
+                  Log in
+                </div>{" "}
+                to join the conversation and post a comment.
+              </p>
+            </div>
+          )}
+        </form>
+        {/* --- Comment List --- */}
+        <div className="comment-list">
+          {comments.map((comment) => (
+            <Comment
+              key={comment._id}
+              comment={comment}
+              userId={userId}
+              onDelete={handleDeleteComment}
+              onLikeToggle={handleLikeToggle}
+              onDislikeToggle={handleDislikeToggle}
+              onReply={handleReply}
+              depth={0}
+              // 🔑 Pass the target ID down
+              targetId={targetCommentId}
+            />
+          ))}
+          {/* Loading state */}
+          {isLoading && comments.length === 0 && (
+            <div
+              className="loading-state"
+              style={{ textAlign: "center", padding: "20px", color: GLOW_ACCENT }}
+            >
+
+              <AiOutlineLoading3Quarters
+                className="spin"
+                style={{ fontSize: "24px" }}
+              />{" "}
+              Loading Comments...
+            </div>
+          )}
+          {/* No comments state */}
+          {!isLoading && totalComments === 0 && page === 1 && (
+            <div
+              className="loading-state"
+              style={{ textAlign: "center", padding: "20px", color: "#aaa" }}
+            >
+              Be the first to leave a comment! ✨
+            </div>
+          )}
+          {/* Load More Button with Glow */}
+          {hasMore && (
+            <button
+              onClick={() => fetchComments(page + 1, true)}
+              className="load-more-btn"
+              disabled={isLoading}
+              style={{
+                width: "100%",
+                padding: "12px",
+                marginTop: "20px",
+                backgroundColor: "transparent",
+                color: GLOW_ACCENT,
+                border: `1px solid ${GLOW_ACCENT}`,
+                borderRadius: "4px",
+                cursor: "pointer",
+                fontWeight: "bold",
+                boxShadow: `0 0 10px ${GLOW_ACCENT}50`, // Subtle glow
+                transition: "all 0.3s ease",
+                opacity: isLoading ? 0.7 : 1,
+              }}
+            >
+
+              {isLoading ? (
+                <>
+
+                  <AiOutlineLoading3Quarters
+                    className="spin"
+                    style={{ marginRight: "8px" }}
+                  />{" "}
+                  Loading More...
+                </>
+              ) : (
+                `Load More Comments (${totalPages - page} page(s) left)`
+              )}
+
+            </button>
+          )}
+
+        </div>
+
+      </div></>
   );
 };
 

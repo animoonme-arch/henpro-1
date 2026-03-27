@@ -5,7 +5,7 @@ import Link from "next/link";
 // Import the necessary hook from next/navigation
 // import { useSearchParams } from "next/navigation";
 
-export default function Sidebar({ sidebar = {} , creator }) {
+export default function Sidebar({ sidebar = {}, creator }) {
   const [activeTab, setActiveTab] = useState("popular");
   // Get the current search parameters
   // const searchParams = useSearchParams();
@@ -50,21 +50,19 @@ export default function Sidebar({ sidebar = {} , creator }) {
       {/* --- Switch Buttons (No Change Needed Here) --- */}
       <div className="flex justify-center mb-5 bg-[#0b0b0b] rounded-xl overflow-hidden">
         <button
-          className={`px-4 py-2 w-1/2 font-semibold transition-all ${
-            activeTab === "popular"
+          className={`px-4 py-2 w-1/2 font-semibold transition-all ${activeTab === "popular"
               ? "bg-gradient-to-r from-[#ff9741] to-[#ffb561] text-black"
               : "text-gray-300 hover:bg-[#1f1f1f]"
-          }`}
+            }`}
           onClick={() => setActiveTab("popular")}
         >
           Popular
         </button>
         <button
-          className={`px-4 py-2 w-1/2 font-semibold transition-all ${
-            activeTab === "newest"
+          className={`px-4 py-2 w-1/2 font-semibold transition-all ${activeTab === "newest"
               ? "bg-gradient-to-r from-[#ff9741] to-[#ffb561] text-black"
               : "text-gray-300 hover:bg-[#1f1f1f]"
-          }`}
+            }`}
           onClick={() => setActiveTab("newest")}
         >
           Newest
@@ -76,7 +74,8 @@ export default function Sidebar({ sidebar = {} , creator }) {
         {list.map((item) => (
           <Link
             key={item.id}
-            href={`/watch/${item.link}?creator=${creatorParam}`}
+            href={`/watch/${item.link}${creatorParam ? `?creator=${encodeURIComponent(creatorParam)}` : ""
+              }`}
             className="flex items-center gap-3 bg-[#111] hover:bg-[#1a1a1a] rounded-xl p-2 transition-all shadow-md hover:shadow-[#ff974133]"
           >
             <div className="relative w-[70px] h-[95px] rounded-lg overflow-hidden flex-shrink-0">
