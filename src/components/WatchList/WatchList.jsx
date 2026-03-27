@@ -34,7 +34,7 @@ const mapTypeToStatus = {
 };
 
 // --- Utility: Generate Watch Link ---
-const getLink = (item, refer, creator) => {
+const getLink = (item, creator) => {
     const itemId = item.contentId;
     const lastWatchedEpId = item.lastEpisodeKey;
 
@@ -46,15 +46,15 @@ const getLink = (item, refer, creator) => {
 
     const referParam = refer || "weebsSecret";
     const creatorParam = creator
-        ? `&creator=${encodeURIComponent(creator)}`
+        ? `?creator=${encodeURIComponent(creator)}`
         : "";
 
-    return `${basePath}${basePath.includes("?") ? "&" : "?"}refer=${referParam}${creatorParam}`;
+    return `${basePath}${basePath.includes("?") ? "&" : "?"}${creatorParam}`;
 };
 
 // --- InternalPageSlider Component Logic (Unchanged) ---
 
-const InternalPageSlider = ({ page, totalPages, handlePageChange, refer, currentType }) => {
+const InternalPageSlider = ({ page, totalPages, handlePageChange, currentType }) => {
     if (totalPages <= 1) return null;
 
     const maxVisiblePages = 7;
@@ -84,8 +84,7 @@ const InternalPageSlider = ({ page, totalPages, handlePageChange, refer, current
     }
 
     const typeParam = currentType ? `type=${currentType}` : '';
-    const referParam = refer ? `refer=${refer}` : 'refer=weebsSecret';
-    const linkBase = `/user/watch-list?${typeParam}${typeParam ? '&' : ''}${referParam}`;
+    const linkBase = `/user/watch-list?${typeParam}${typeParam ? '&' : ''}`;
 
     const scrollToTop = () => {
         typeof window !== "undefined" && window.scrollTo({ top: 0, behavior: "smooth" });
@@ -177,7 +176,6 @@ const WatchList = (props) => {
 
             if (status) queryParams.set("type", status);
             if (currentPage) queryParams.set("page", currentPage);
-            if (props.refer) queryParams.set("refer", props.refer);
 
             const url = `/api/user/watchlist?${queryParams.toString()}`;
 
@@ -201,7 +199,7 @@ const WatchList = (props) => {
         } finally {
             setLoading(false);
         }
-    }, [status, props.refer]);
+    }, [status]);
 
     useEffect(() => {
         const initialPage = props.page ? parseInt(props.page) : 1;
@@ -279,8 +277,7 @@ const WatchList = (props) => {
                         <div className="butInnM">
                             {/* All Link */}
                             <Link
-                                href={`/user/watch-list${props.refer ? `?refer=${props.refer}` : `?refer=weebsSecret`
-                                    }`}
+                                href={`/user/watch-list`}
                                 className={`namil ${!props.type ? "selectedNO" : ""}`}
                                 onClick={() => handlePageChange(1)}
                             >
@@ -290,8 +287,7 @@ const WatchList = (props) => {
                             {[1, 2, 3, 4, 5].map((type) => (
                                 <Link
                                     key={type}
-                                    href={`/user/watch-list?type=${type}${props.refer ? `&refer=${props.refer}` : `&refer=weebsSecret`
-                                        }`}
+                                    href={`/user/watch-list?type=${type}`}
                                     className={`oamil ${props.type === `${type}` ? "selectedNO" : ""
                                         }`}
                                     onClick={() => handlePageChange(1)}
@@ -316,7 +312,7 @@ const WatchList = (props) => {
                                     {data.map((item) => {
                                         const itemId = item.contentId;
                                         const isHovered = hoveredItem === itemId;
-                                        const watchLink = getLink(item, props.refer, props.creator);
+                                        const watchLink = getLink(item,  props.creator);
 
                                         // Format update date for display
                                         const updatedAt = item.updatedAt
@@ -369,8 +365,7 @@ const WatchList = (props) => {
 
                                                 {/* Title Link */}
                                                 <Link
-                                                    href={`/${itemId}${props.refer ? `?refer=${props.refer}` : `?refer=weebsSecret`
-                                                        }`}
+                                                    href={`/${itemId}`}
                                                     onClick={() =>
                                                         window.scrollTo({ top: 0, behavior: "smooth" })
                                                     }
@@ -418,7 +413,6 @@ const WatchList = (props) => {
                                     page={page}
                                     totalPages={totalPages}
                                     handlePageChange={handlePageChange}
-                                    refer={props.refer}
                                     currentType={props.type}
                                 />
                                 {/* --- End of Inlined Page Slider --- */}
