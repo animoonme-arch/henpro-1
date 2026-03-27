@@ -92,10 +92,10 @@ export default function Special({ video, id }) {
   useEffect(() => {
     if (!initialLoaded) return;
 
-    if (vid.currentTime / vid.duration > 0.95) return;
-
     const interval = setInterval(() => {
       const vid = videoRef.current;
+
+      if (vid.currentTime / vid.duration > 0.95) return;
 
       if (!vid || vid.paused || vid.currentTime < 2) return;
 
