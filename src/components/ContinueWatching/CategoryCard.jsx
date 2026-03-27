@@ -127,9 +127,7 @@ const CardItem = React.memo(
         {/* Title link */}
         <Link
           // ⬅️ UPDATED: Append creator param to the title link
-          href={`/${item.parentContentId || item.id}?refer=${
-            refer || "weebsSecret"
-          }${getCreatorQuery()}`}
+          href={`/${item.parentContentId || item.id}${getCreatorQuery()}`}
           className="item-title font-medium mt-2 hover:cursor-pointer line-clamp-1"
           title={item.title} // ⭐️ ADDED: Title attribute for accessibility
         >
@@ -371,7 +369,7 @@ const CategoryCard = ({
           {showViewMore && (
             <Link
               // ⬅️ UPDATED: Append creator param to View all link
-              href={`/${path}?refer=${refer || "weebsSecret"}${getCreatorQueryForViewMore()}`}
+              href={`/${path}${getCreatorQueryForViewMore()}`}
               onClick={() =>
                 typeof window !== "undefined" &&
                 window.scrollTo({ top: 0, behavior: "smooth" })
