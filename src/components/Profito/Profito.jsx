@@ -192,7 +192,7 @@ export default function Profito() {
       <div className="profile-card">
         {/* Left Section: Avatar */}
         <div className="profile-aatar-section">
-          <div className="avatar-wrapper" onClick={() => setShowModal(true)}>
+          <div className="aatar-wrapper" onClick={() => setShowModal(true)}>
             <img
               src={newAvatar || "/default-avatar.png"}
               className="user-aatar"
