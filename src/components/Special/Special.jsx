@@ -51,6 +51,9 @@ const CustomToast = ({ message, type, onClose }) => {
 export default function Special({ video, id }) {
   const contentId = id;
 
+  const videoRef = useRef(null);
+  const [initialLoaded, setInitialLoaded] = useState(false);
+
   const [customToast, setCustomToast] = useState(null);
   const [currentViews, setCurrentViews] = useState(null);
 
@@ -64,6 +67,81 @@ export default function Special({ video, id }) {
     }, 4000);
   };
 
+  useEffect(() => {
+    const loadProgress = async () => {
+      try {
+        const res = await fetch(`/api/progress?contentKey=${contentId}`);
+
+        if (!res.ok) return;
+
+        const data = await res.json();
+
+        if (videoRef.current && data.currentTime > 0) {
+          videoRef.current.currentTime = data.currentTime;
+        }
+      } catch (err) {
+        console.error("Load progress error:", err);
+      } finally {
+        setInitialLoaded(true);
+      }
+    };
+
+    if (contentId) loadProgress();
+  }, [contentId]);
+
+  useEffect(() => {
+    if (!initialLoaded) return;
+
+    if (vid.currentTime / vid.duration > 0.95) return;
+
+    const interval = setInterval(() => {
+      const vid = videoRef.current;
+
+      if (!vid || vid.paused || vid.currentTime < 2) return;
+
+      fetch("/api/progress", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contentKey: contentId,
+          currentTime: vid.currentTime,
+          totalDuration: vid.duration,
+          title: video.title,
+          poster: video.thumbnail,
+          parentContentId: null,
+          episodeNo: null,
+        }),
+      }).catch(() => { });
+    }, 5000); // every 5 sec
+
+    return () => clearInterval(interval);
+  }, [initialLoaded, contentId, video]);
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      const vid = videoRef.current;
+      if (!vid) return;
+
+      navigator.sendBeacon(
+        "/api/progress",
+        JSON.stringify({
+          contentKey: contentId,
+          currentTime: vid.currentTime,
+          totalDuration: vid.duration,
+          title: video.title,
+          poster: video.thumbnail,
+        })
+      );
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [contentId, video]);
   /* ------------------ */
   /* VIEW SYSTEM */
   /* ------------------ */
@@ -179,6 +257,7 @@ export default function Special({ video, id }) {
 
         <div className="player-wrapper">
           <video
+            ref={videoRef}
             className="video-player"
             controls
             preload="metadata"
