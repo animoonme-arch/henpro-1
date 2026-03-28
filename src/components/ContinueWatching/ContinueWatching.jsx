@@ -5,7 +5,7 @@ import {
   FaAngleDoubleLeft,
   FaAngleDoubleRight,
   FaAngleLeft,
-  FaAngleRight,
+  FaAngleRight, 
   FaHistory,
 } from "react-icons/fa";
 import Link from "next/link";

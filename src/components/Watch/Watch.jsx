@@ -314,26 +314,34 @@ export default function WatchPageClient({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+  const secondsRef = useRef(0);
+
   useEffect(() => {
-    let seconds = 0;
+    if (!contentId) return;
 
     const interval = setInterval(() => {
-      seconds += 5;
+      if (document.hidden) return;
+
+      secondsRef.current += 5;
 
       fetch("/api/progress", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           contentKey: contentId,
-          currentTime: seconds,
+          currentTime: secondsRef.current,
           totalDuration: 100,
-          title: watchData?.title,
-          poster: infoData.gallery[0].img,
+          title: watchData?.title || "Untitled",
+          poster: infoData?.gallery?.[0]?.img || "",
         }),
-      });
+      }).catch(() => { });
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [contentId]);
+  }, [contentId, watchData, infoData]);
+  
   return (
     <>
       <Navbar now={false} creator={creator} />
