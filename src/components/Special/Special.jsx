@@ -61,6 +61,15 @@ export default function Special({ video, id }) {
   const [videoDuration, setVideoDuration] = useState(0);
 
   const hasCountedRef = useRef(false);
+
+  const statusOptions = [
+    "Watching",
+    "On-Hold",
+    "Plan to Watch",
+    "Dropped",
+    "Completed",
+  ];
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
