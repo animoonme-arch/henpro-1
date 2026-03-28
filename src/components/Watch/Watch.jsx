@@ -319,10 +319,16 @@ export default function WatchPageClient({
   useEffect(() => {
     if (!contentId) return;
 
+    const DURATION = 24 * 60;
+
     const interval = setInterval(() => {
       if (document.hidden) return;
 
-      secondsRef.current += 5;
+      // ✅ Clamp value so it never exceeds duration
+      secondsRef.current = Math.min(
+        secondsRef.current + 5,
+        DURATION - 5 // keep a small buffer so it never hits 100%
+      );
 
       fetch("/api/progress", {
         method: "POST",
@@ -332,7 +338,7 @@ export default function WatchPageClient({
         body: JSON.stringify({
           contentKey: contentId,
           currentTime: secondsRef.current,
-          totalDuration: 24 * 60,
+          totalDuration: DURATION,
           title: watchData?.title || "Untitled",
           poster: infoData?.gallery?.[0] || "",
         }),

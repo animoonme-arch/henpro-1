@@ -46,9 +46,8 @@ const CardItem = React.memo(
     return (
       <div
         key={item.id + index}
-        className={`relative flex flex-col transition-opacity duration-300 ease-in-out group card-container ${
-          item.isRemoving ? "removing" : ""
-        }`} // ⭐️ ADDED: 'removing' class
+        className={`relative flex flex-col transition-opacity duration-300 ease-in-out group card-container ${item.isRemoving ? "removing" : ""
+          }`} // ⭐️ ADDED: 'removing' class
         style={{ height: "fit-content" }}
         ref={(el) => (cardRefs.current[index] = el)}
       >
@@ -67,7 +66,7 @@ const CardItem = React.memo(
 
         <Link
           href={getLink(item, creator)}
-                    className="w-full relative group hover:cursor-pointer card-link"
+          className="w-full relative group hover:cursor-pointer card-link"
           onClick={() =>
             typeof window !== "undefined" &&
             window.scrollTo({ top: 0, behavior: "smooth" })
@@ -182,7 +181,7 @@ const CategoryCard = ({
   cardStyle,
   path,
   limit,
-    selectL: language,
+  selectL: language,
   keepIt,
   isLoggedIn,
   creator,
@@ -323,14 +322,24 @@ const CategoryCard = ({
     const parentId = item.parentContentId;
     const fallbackId = item.id;
 
+    // 🔑 Determine base type (watch vs special)
+    const isSeries = (parentId || fallbackId)?.includes("-id-");
+
     let basePath;
 
-    if (parentId && episodeId) {
-      basePath = `/watch/${parentId}?ep=${episodeId}`;
+    if (isSeries) {
+      // 👉 WATCH (series / episodes)
+      if (parentId && episodeId) {
+        basePath = `/watch/${parentId}?ep=${episodeId}`;
+      } else {
+        basePath = `/watch/${fallbackId}`;
+      }
     } else {
-      basePath = `/watch/${fallbackId}`;
+      // 👉 SPECIAL (movies / standalone)
+      basePath = `/special/${fallbackId}`;
     }
 
+    // 🔗 Append creator if exists
     if (creator) {
       const sep = basePath.includes("?") ? "&" : "?";
       return `${basePath}${sep}creator=${creator}`;
@@ -346,7 +355,7 @@ const CategoryCard = ({
   }, []);
 
   if (!data.length) return null;
-   const finalItemsToRender = categoryPage && typeof window !== "undefined" && window.innerWidth > 758 && data.length > 4 ? data.slice(0, 4) : data;
+  const finalItemsToRender = categoryPage && typeof window !== "undefined" && window.innerWidth > 758 && data.length > 4 ? data.slice(0, 4) : data;
 
   // Helper to generate the creator query string for the View More link
   const getCreatorQueryForViewMore = () => (creator ? `&creator=${creator}` : "");
