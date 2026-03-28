@@ -314,6 +314,26 @@ export default function WatchPageClient({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+  useEffect(() => {
+    let seconds = 0;
+
+    const interval = setInterval(() => {
+      seconds += 5;
+
+      fetch("/api/progress", {
+        method: "POST",
+        body: JSON.stringify({
+          contentKey: contentId,
+          currentTime: seconds,
+          totalDuration: 100,
+          title: watchData?.title,
+          poster: infoData.gallery[0].img,
+        }),
+      });
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [contentId]);
   return (
     <>
       <Navbar now={false} creator={creator} />
