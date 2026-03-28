@@ -320,7 +320,7 @@ const WatchList = (props) => {
 
                                         return (
                                             <div
-                                                key={item._id}
+                                                key={itemId}
                                                 className="flex flex-col transition-transform duration-300 ease-in-out card-container"
                                                 style={{ height: "fit-content" }}
                                             >
@@ -353,7 +353,7 @@ const WatchList = (props) => {
                                                     <button
                                                         onClick={(e) => {
                                                             e.preventDefault(); // Prevent navigating to the watch link
-                                                            handleDelete(item._id);
+                                                            handleDelete(itemId);
                                                         }}
                                                         className="absolute top-2 right-2 p-2 bg-red-600 bg-opacity-80 hover:bg-red-700 rounded-full z-[15] delete-button"
                                                         title="Remove from Watch List"
