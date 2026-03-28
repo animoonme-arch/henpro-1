@@ -56,8 +56,73 @@ export default function Special({ video, id }) {
 
   const [customToast, setCustomToast] = useState(null);
   const [currentViews, setCurrentViews] = useState(null);
+  const [videoDuration, setVideoDuration] = useState(0);
 
   const hasCountedRef = useRef(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  const videoMetadata = {
+    contentKey: contentId,
+    videoUrl: video.customVideoURL,
+    title: video.title,
+    totalDuration: videoDuration,
+    parentContentId: contentId,
+    poster: video?.thumbnail,
+    episodeTitle: video.title,
+    episodeNo: 1,
+  };
+
+  const handleSelect = async (status) => {
+    if (!session) {
+      // Assuming setLogIsOpen is available via a context or prop, but for now, logging a warning.
+      // If a component is missing, I cannot fix it, so I'll leave the original logic.
+      // setLogIsOpen(true);
+      console.warn("User not logged in. Cannot update watchlist.");
+      showCustomToast("Please sign in to update your list.", "info");
+      return;
+    }
+
+    setDropdownOpen(false);
+
+    try {
+      // ✅ Build the final payload your API expects
+      const payload = {
+        ...videoMetadata,
+        contentId,
+        status,
+      };
+
+      const res = await fetch("/api/user/watchlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        showCustomToast(data.message || "Failed to save.", "error");
+      } else {
+        setWatchlistStatus(status); // Update local status on success
+        showCustomToast(`Added to "${status}"`, "success");
+      }
+    } catch (error) {
+      console.error("Watchlist POST Error:", error);
+      showCustomToast("Something went wrong", "error");
+    }
+  };
+
+  // ✅ Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const showCustomToast = (message, type = "info") => {
     setCustomToast({ message, type });
@@ -262,6 +327,11 @@ export default function Special({ video, id }) {
             controls
             preload="metadata"
             poster={video?.thumbnail}
+            onLoadedMetadata={() => {
+              if (videoRef.current) {
+                setVideoDuration(videoRef.current.duration);
+              }
+            }}
           >
             <source src={video.customVideoURL} type="video/mp4" />
           </video>
@@ -275,6 +345,41 @@ export default function Special({ video, id }) {
             {currentViews.toLocaleString()} views
           </div>
         )}
+
+        {/* --- WATCHLIST BUTTON SECTION --- */}
+        <div className="flex justify-end items-center min-h-[70px] mt-[-20px] p-2.5 w-full">
+          {" "}
+          {/* Centering wrapper */}
+          <div className="relative w-fit" ref={dropdownRef}>
+            {/* Add Button */}
+            <button
+              onClick={() => setDropdownOpen((prev) => !prev)}
+              className="add-button flex gap-x-2 px-6 max-[429px]:px-3 py-2 text-white items-center rounded-3xl font-medium text-lg max-[429px]:text-[15px] transition-all duration-300"
+            >
+              <FontAwesomeIcon
+                icon={faPlus}
+                className="text-[14px] mt-[1px]"
+              />
+              <p>Add to List</p>
+            </button>
+
+            {/* Dropdown */}
+            {dropdownOpen && (
+              <div className="dropdown-menu absolute top-full mt-3 w-full min-w-[170px] bg-[#121212] border border-[#2a2a2a] rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.4)] z-50 overflow-hidden animate-slideDown">
+                {statusOptions.map((status) => (
+                  <button
+                    key={status}
+                    onClick={() => handleSelect(status)}
+                    className="dropdown-item block w-full px-5 py-3 text-left text-sm font-medium text-gray-300 hover:text-white transition-all duration-200"
+                  >
+                    {status}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+        {/* --- END WATCHLIST BUTTON SECTION --- */}
 
         {/* TITLE */}
 
