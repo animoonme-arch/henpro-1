@@ -17,6 +17,8 @@ import { useEffect, useRef, useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import ShareSlab from "../ShareSlab/ShareSlab";
 import CommentSection from "../CommentSection/CommentSection";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export const dynamic = "force-dynamic";
 
