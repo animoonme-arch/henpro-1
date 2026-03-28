@@ -1,3 +1,134 @@
+:root {
+  --primary-color: #ff9741; /* VIBRANT ORANGE THEME COLOR */
+  --accent-color: #00f2fe; /* Secondary accent (optional, keeping old primary for contrast) */
+  --dark-bg: #1e1e1e; /* Main dark background */
+  --card-bg: #2c2c2c; /* Card/Panel background */
+  --input-bg: #404040; /* Input background */
+  --light-text: #e0e0e0; /* Primary text color */
+  --faded-text: #999999; /* Label/Hint text color */
+  --error-color: #e74c3c;
+  --success-color: #2ecc71;
+  --info-color: #3498db;
+}
+
+/* 5. CUSTOM TOAST STYLES */
+.custom-toast {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  padding: 15px 20px;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  z-index: 3000;
+  animation: fadeInSlideUp 0.3s ease-out;
+}
+
+.toast-icon-message {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.custom-toast-success {
+  background-color: var(--success-color);
+}
+.custom-toast-error {
+  background-color: var(--error-color);
+}
+.custom-toast-info {
+  background-color: var(--info-color);
+}
+
+.toast-close-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.1rem;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.toast-close-btn:hover {
+  opacity: 1;
+}
+
+@keyframes fadeInSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 600px) {
+  .custom-toast {
+    bottom: 20px;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 350px;
+    text-align: center;
+  }
+}
+
+/* 🔸 Add Button Styling */
+.add-button {
+  background: linear-gradient(90deg, #ff9741, #a86cf9);
+  box-shadow: 0 0 12px rgba(255, 151, 65, 0.4);
+}
+.add-button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 0 18px rgba(255, 151, 65, 0.6);
+  cursor: pointer;
+}
+.add-button:active {
+  transform: scale(0.98);
+}
+
+/* 🔹 Dropdown Menu Animation */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-slideDown {
+  animation: slideDown 0.2s ease forwards;
+}
+
+/* 🔸 Dropdown Items */
+.dropdown-item {
+  background: transparent;
+  transition: all 0.2s ease-in-out;
+}
+.dropdown-item:hover {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 151, 65, 0.12),
+    rgba(168, 108, 249, 0.12)
+  );
+  color: #ff9741;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+}
+
 .special-container {
   width: 100%;
   max-width: 1400px;
@@ -197,20 +328,20 @@
 
 /* VIDEO VIEWS */
 
-.video-views{
-  margin-top:6px;
-  margin-bottom:14px;
-  font-size:14px;
-  color:#bdbdbd;
-  font-weight:500;
-  display:flex;
-  align-items:center;
-  gap:6px;
+.video-views {
+  margin-top: 6px;
+  margin-bottom: 14px;
+  font-size: 14px;
+  color: #bdbdbd;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.view-icon{
-  font-size:13px;
-  opacity:.8;
+.view-icon {
+  font-size: 13px;
+  opacity: 0.8;
 }
 
 /* ===================== */

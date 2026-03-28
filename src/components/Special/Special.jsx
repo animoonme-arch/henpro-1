@@ -374,7 +374,7 @@ export default function Special({ video, id }) {
               <p>Add to List</p>
             </button>
 
-            {/* Dropdown */}
+            {/* Dropdown */} 
             {dropdownOpen && (
               <div className="dropdown-menu absolute top-full mt-3 w-full min-w-[170px] bg-[#121212] border border-[#2a2a2a] rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.4)] z-50 overflow-hidden animate-slideDown">
                 {statusOptions.map((status) => (

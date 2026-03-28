@@ -141,7 +141,7 @@
   border-radius: 10px;
   transition: all 0.3s ease;
 }
-.episode-list::-webkit-scrollbar-thumb:hover {
+.episode-list::-webkit-scrollbar-thumb:hover { 
   background: linear-gradient(180deg, #ffb561, #c699ff);
   box-shadow: 0 0 6px #ff9741;
 }
