@@ -332,16 +332,16 @@ export default function WatchPageClient({
         body: JSON.stringify({
           contentKey: contentId,
           currentTime: secondsRef.current,
-          totalDuration: 100,
+          totalDuration: 24 * 60,
           title: watchData?.title || "Untitled",
-          poster: infoData?.gallery?.[0]?.img || "",
+          poster: infoData?.gallery?.[0] || "",
         }),
       }).catch(() => { });
     }, 5000);
 
     return () => clearInterval(interval);
   }, [contentId, watchData, infoData]);
-  
+
   return (
     <>
       <Navbar now={false} creator={creator} />
