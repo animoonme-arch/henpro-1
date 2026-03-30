@@ -124,7 +124,7 @@ export default function Special({ video, id }) {
       }
     } catch (error) {
       console.error("Watchlist POST Error:", error);
-      showCustomToast("Something went wrong", "error");
+      showCustomToast("Something went wrong", error);
     }
   };
 
