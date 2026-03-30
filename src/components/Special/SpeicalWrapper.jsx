@@ -1,3 +1,4 @@
+"use client"
 import React from 'react'
 import Special from './Special'
 import { SessionProvider } from 'next-auth/react'
