@@ -264,12 +264,8 @@ export default function WatchPageClient({
   }, [fetchLatestViews]);
 
 
-  const handleSelect = async (status) => {
+  const handleSelect = useCallback(async (status) => {
     if (!session) {
-      // Assuming setLogIsOpen is available via a context or prop, but for now, logging a warning.
-      // If a component is missing, I cannot fix it, so I'll leave the original logic.
-      // setLogIsOpen(true);
-      console.warn("User not logged in. Cannot update watchlist.");
       showCustomToast("Please sign in to update your list.", "info");
       return;
     }
@@ -277,32 +273,142 @@ export default function WatchPageClient({
     setDropdownOpen(false);
 
     try {
-      // ✅ Build the final payload your API expects
+      const safeDuration =
+        videoMetadata?.totalDuration && !isNaN(videoMetadata.totalDuration)
+          ? Math.floor(videoMetadata.totalDuration)
+          : 24 * 60;
+
       const payload = {
-        ...videoMetadata,
         contentId,
+        contentKey: contentId,
         status,
+
+        title: videoMetadata?.title || "Untitled",
+
+        poster:
+          videoMetadata?.poster ||
+          "https://via.placeholder.com/300x400",
+
+        episodeNo: videoMetadata?.episodeNo || 1,
+        episodeTitle: videoMetadata?.episodeTitle || "Episode 1",
+
+        totalDuration: safeDuration,
       };
 
       const res = await fetch("/api/user/watchlist", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(payload),
       });
 
-      const data = await res.json();
+      let data = {};
+      try {
+        data = await res.json();
+      } catch { }
 
       if (!res.ok) {
-        showCustomToast(data.message || "Failed to save.", "error");
-      } else {
-        setWatchlistStatus(status); // Update local status on success
-        showCustomToast(`Added to "${status}"`, "success");
+        showCustomToast(
+          data?.message || `Request failed (${res.status})`,
+          "error"
+        );
+        return;
       }
-    } catch (error) {
-      console.error("Watchlist POST Error:", error);
+
+      setWatchlistStatus(status);
+
+      showCustomToast(
+        status ? `Added to "${status}"` : "Removed from list",
+        "success"
+      );
+    } catch (err) {
+      console.error(err);
       showCustomToast("Something went wrong", "error");
     }
-  };
+  }, [session, contentId, videoMetadata]);
+
+  const hasMarkedWatching = useRef(false);
+
+  useEffect(() => {
+    if (!contentId) return;
+
+    if (!hasMarkedWatching.current) {
+      hasMarkedWatching.current = true;
+
+      if (!watchlistStatus) {
+        handleSelect("Watching");
+      }
+    }
+  }, [contentId]);
+
+  const hasMarkedCompleted = useRef(false);
+
+  useEffect(() => {
+    if (!contentId) return;
+
+    const duration =
+      videoMetadata?.totalDuration || 24 * 60;
+
+    const interval = setInterval(() => {
+      if (document.hidden) return;
+
+      // simulate watching
+      secondsRef.current += 5;
+
+      // ✅ clamp to duration
+      if (secondsRef.current > duration) {
+        secondsRef.current = duration;
+      }
+
+      // ✅ mark completed at 95%
+      if (
+        secondsRef.current / duration >= 0.95 &&
+        !hasMarkedCompleted.current
+      ) {
+        hasMarkedCompleted.current = true;
+        handleSelect("Completed");
+      }
+
+      // ✅ save progress
+      fetch("/api/progress", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contentKey: contentId,
+          currentTime: secondsRef.current,
+          totalDuration: duration,
+          title: videoMetadata?.title || "Untitled",
+          poster: videoMetadata?.poster || "",
+          parentContentId: contentId,
+          episodeNo: videoMetadata?.episodeNo || 1,
+        }),
+      }).catch(() => { });
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [contentId, videoMetadata, handleSelect]);
+
+  useEffect(() => {
+    const loadProgress = async () => {
+      try {
+        const res = await fetch(`/api/progress?contentKey=${contentId}`);
+        if (!res.ok) return;
+
+        const data = await res.json();
+
+        if (data?.currentTime) {
+          secondsRef.current = data.currentTime;
+        }
+      } catch (err) {
+        console.error("Progress load failed:", err);
+      }
+    };
+
+    if (contentId) loadProgress();
+  }, [contentId]);
 
   // ✅ Close dropdown when clicking outside
   useEffect(() => {
@@ -465,31 +571,30 @@ export default function WatchPageClient({
               <div className="flex justify-end items-center min-h-[70px] mt-[-20px] p-2.5 w-full">
                 <div className="relative w-fit" ref={dropdownRef}>
 
-                  {/* Main Button */}
                   <button
                     onClick={() => setDropdownOpen((prev) => !prev)}
-                    className="add-button flex gap-x-2 px-6 max-[429px]:px-3 py-2 text-white items-center rounded-3xl font-medium text-lg max-[429px]:text-[15px] transition-all duration-300"
+                    className={`flex gap-x-2 px-6 py-2 text-white items-center rounded-3xl font-medium text-lg transition-all duration-300
+        ${watchlistStatus === "Watching"
+                        ? "bg-green-600"
+                        : watchlistStatus === "Completed"
+                          ? "bg-blue-600"
+                          : "bg-gray-700"
+                      }`}
                   >
-                    <FontAwesomeIcon icon={faPlus} className="text-[14px] mt-[1px]" />
-
-                    {/* ✅ Dynamic Text */}
-                    <p>
-                      {watchlistStatus ? watchlistStatus : "Add to List"}
-                    </p>
+                    <FontAwesomeIcon icon={faPlus} className="text-[14px]" />
+                    <p>{watchlistStatus || "Add to List"}</p>
                   </button>
 
-                  {/* Dropdown */}
                   {dropdownOpen && (
-                    <div className="dropdown-menu absolute top-full mt-3 w-full min-w-[170px] bg-[#121212] border border-[#2a2a2a] rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.4)] z-50 overflow-hidden animate-slideDown">
+                    <div className="absolute top-full mt-3 w-full min-w-[170px] bg-[#121212] border border-[#2a2a2a] rounded-xl shadow-lg z-50">
 
-                      {/* Status Options */}
                       {statusOptions.map((status) => (
                         <button
                           key={status}
                           onClick={() => handleSelect(status)}
-                          className={`dropdown-item block w-full px-5 py-3 text-left text-sm font-medium transition-all duration-200
+                          className={`block w-full px-5 py-3 text-left text-sm
               ${watchlistStatus === status
-                              ? "text-white bg-[#1f1f1f]" // ✅ Highlight active
+                              ? "bg-[#1f1f1f] text-white"
                               : "text-gray-300 hover:text-white"
                             }`}
                         >
@@ -497,11 +602,10 @@ export default function WatchPageClient({
                         </button>
                       ))}
 
-                      {/* ✅ Remove Option */}
                       {watchlistStatus && (
                         <button
                           onClick={() => handleSelect(null)}
-                          className="dropdown-item block w-full px-5 py-3 text-left text-sm font-medium text-red-400 hover:text-red-300 border-t border-[#2a2a2a]"
+                          className="block w-full px-5 py-3 text-left text-sm text-red-400 border-t border-[#2a2a2a]"
                         >
                           Remove from List
                         </button>
