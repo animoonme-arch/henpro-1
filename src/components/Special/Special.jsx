@@ -13,7 +13,7 @@ import {
 import Navbar from "../Navbar/Navbar";
 import Footer from "../footer/Footer";
 import { SessionProvider, useSession } from "next-auth/react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import ShareSlab from "../ShareSlab/ShareSlab";
 import CommentSection from "../CommentSection/CommentSection";
