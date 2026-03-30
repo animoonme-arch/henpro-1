@@ -61,6 +61,7 @@ export default function Special({ video, id }) {
   const [customToast, setCustomToast] = useState(null);
   const [currentViews, setCurrentViews] = useState(null);
   const [videoDuration, setVideoDuration] = useState(0);
+  const [watchlistStatus, setWatchlistStatus] = useState(null);
 
   const hasCountedRef = useRef(false);
 
@@ -418,33 +419,49 @@ export default function Special({ video, id }) {
 
         {/* --- WATCHLIST BUTTON SECTION --- */}
         <div className="flex justify-end items-center min-h-[70px] mt-[-20px] p-2.5 w-full">
-          {" "}
-          {/* Centering wrapper */}
           <div className="relative w-fit" ref={dropdownRef}>
-            {/* Add Button */}
+
+            {/* Main Button */}
             <button
               onClick={() => setDropdownOpen((prev) => !prev)}
               className="add-button flex gap-x-2 px-6 max-[429px]:px-3 py-2 text-white items-center rounded-3xl font-medium text-lg max-[429px]:text-[15px] transition-all duration-300"
             >
-              <FontAwesomeIcon
-                icon={faPlus}
-                className="text-[14px] mt-[1px]"
-              />
-              <p>Add to List</p>
+              <FontAwesomeIcon icon={faPlus} className="text-[14px] mt-[1px]" />
+
+              {/* ✅ Dynamic Text */}
+              <p>
+                {watchlistStatus ? watchlistStatus : "Add to List"}
+              </p>
             </button>
 
             {/* Dropdown */}
             {dropdownOpen && (
               <div className="dropdown-menu absolute top-full mt-3 w-full min-w-[170px] bg-[#121212] border border-[#2a2a2a] rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.4)] z-50 overflow-hidden animate-slideDown">
+
+                {/* Status Options */}
                 {statusOptions.map((status) => (
                   <button
                     key={status}
                     onClick={() => handleSelect(status)}
-                    className="dropdown-item block w-full px-5 py-3 text-left text-sm font-medium text-gray-300 hover:text-white transition-all duration-200"
+                    className={`dropdown-item block w-full px-5 py-3 text-left text-sm font-medium transition-all duration-200
+              ${watchlistStatus === status
+                        ? "text-white bg-[#1f1f1f]" // ✅ Highlight active
+                        : "text-gray-300 hover:text-white"
+                      }`}
                   >
                     {status}
                   </button>
                 ))}
+
+                {/* ✅ Remove Option */}
+                {watchlistStatus && (
+                  <button
+                    onClick={() => handleSelect(null)}
+                    className="dropdown-item block w-full px-5 py-3 text-left text-sm font-medium text-red-400 hover:text-red-300 border-t border-[#2a2a2a]"
+                  >
+                    Remove from List
+                  </button>
+                )}
               </div>
             )}
           </div>
