@@ -1,5 +1,6 @@
-import Special from "@/components/Special/Special";
+// import Special from "@/components/Special/Special";
 import Advertize from "@/components/Advertize/Advertize";
+import SpeicalWrapper from "@/components/Special/SpeicalWrapper";
 
 export const dynamic = "force-dynamic";
 
@@ -121,7 +122,7 @@ export default async function Page({ params }) {
 
   return (
     <div>
-      <Special video={video} id={slug} />
+      <SpeicalWrapper video={video} id={slug} />
       <Advertize initialAdLink={DEFAULT_AD_LINK} />
     </div>
   );

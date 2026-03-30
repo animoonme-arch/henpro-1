@@ -12,7 +12,7 @@ import {
 
 import Navbar from "../Navbar/Navbar";
 import Footer from "../footer/Footer";
-import { SessionProvider } from "next-auth/react";
+import { SessionProvider, useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import ShareSlab from "../ShareSlab/ShareSlab";
@@ -53,6 +53,8 @@ const CustomToast = ({ message, type, onClose }) => {
 export default function Special({ video, id }) {
   const contentId = id;
 
+  const { data: session } = useSession();
+  
   const videoRef = useRef(null);
   const [initialLoaded, setInitialLoaded] = useState(false);
 
