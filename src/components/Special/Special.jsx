@@ -54,7 +54,7 @@ export default function Special({ video, id }) {
   const contentId = id;
 
   const { data: session } = useSession();
-  
+
   const videoRef = useRef(null);
   const [initialLoaded, setInitialLoaded] = useState(false);
 
@@ -86,23 +86,31 @@ export default function Special({ video, id }) {
     setDropdownOpen(false);
 
     try {
-      // ✅ FULLY CORRECT PAYLOAD (matches API exactly)
-      const payload = {
-        contentId: contentId, // main id
-        contentKey: contentId, // for special videos (same is fine)
+      // ✅ SAFE + STRICT PAYLOAD
+      const safeDuration =
+        videoDuration && !isNaN(videoDuration) && videoDuration > 0
+          ? Math.floor(videoDuration)
+          : 24 * 60;
 
-        status: status,
+      const payload = {
+        contentId: contentId,
+        contentKey: contentId,
+        status,
 
         title: video?.title || "Untitled",
-        poster: video?.thumbnail || "",
+
+        poster:
+          video?.thumbnail ||
+          video?.poster ||
+          "https://via.placeholder.com/300x400",
 
         episodeNo: 1,
-        episodeTitle: video?.title || "Untitled",
+        episodeTitle: video?.title || "Episode 1",
 
-        totalDuration: videoDuration || 24 * 60, // fallback for iframe
+        totalDuration: safeDuration,
       };
 
-      console.log("SENDING PAYLOAD:", payload);
+      console.log("🚀 SENDING PAYLOAD:", payload);
 
       const res = await fetch("/api/user/watchlist", {
         method: "POST",
@@ -112,19 +120,33 @@ export default function Special({ video, id }) {
         body: JSON.stringify(payload),
       });
 
-      const data = await res.json();
-
-      console.log("WATCHLIST RESPONSE:", res.status, data);
-
-      if (!res.ok) {
-        showCustomToast(data.message || "Failed to save.", "error");
-      } else {
-        setWatchlistStatus(status);
-        showCustomToast(`Added to "${status}"`, "success");
+      let data = {};
+      try {
+        data = await res.json();
+      } catch {
+        console.warn("⚠️ Response is not JSON");
       }
+
+      console.log("📥 WATCHLIST RESPONSE:", res.status, data);
+
+      // ❌ HANDLE API ERRORS PROPERLY
+      if (!res.ok) {
+        const errorMessage =
+          data?.message ||
+          `Request failed with status ${res.status}`;
+
+        console.error("❌ API ERROR:", errorMessage);
+        showCustomToast(errorMessage, "error");
+        return;
+      }
+
+      // ✅ SUCCESS
+      setWatchlistStatus(status);
+      showCustomToast(`Added to "${status}"`, "success");
+
     } catch (error) {
-      console.error("Watchlist POST Error:", error);
-      showCustomToast(error, "error");
+      console.error("❌ Watchlist POST Error:", error);
+      showCustomToast(error.message || "Something went wrong", "error");
     }
   };
 
