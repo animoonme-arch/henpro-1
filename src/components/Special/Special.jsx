@@ -73,22 +73,9 @@ export default function Special({ video, id }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  const videoMetadata = {
-    contentKey: contentId,
-    videoUrl: video.customVideoURL,
-    title: video.title,
-    totalDuration: videoDuration,
-    parentContentId: contentId,
-    poster: video?.thumbnail,
-    episodeTitle: video.title,
-    episodeNo: 1,
-  };
 
   const handleSelect = async (status) => {
     if (!session) {
-      // Assuming setLogIsOpen is available via a context or prop, but for now, logging a warning.
-      // If a component is missing, I cannot fix it, so I'll leave the original logic.
-      // setLogIsOpen(true);
       console.warn("User not logged in. Cannot update watchlist.");
       showCustomToast("Please sign in to update your list.", "info");
       return;
@@ -97,25 +84,40 @@ export default function Special({ video, id }) {
     setDropdownOpen(false);
 
     try {
-      // ✅ Build the final payload your API expects
+      // ✅ FULLY CORRECT PAYLOAD (matches API exactly)
       const payload = {
-        ...videoMetadata,
-        contentId,
-        status,
+        contentId: contentId, // main id
+        contentKey: contentId, // for special videos (same is fine)
+
+        status: status,
+
+        title: video?.title || "Untitled",
+        poster: video?.thumbnail || "",
+
+        episodeNo: 1,
+        episodeTitle: video?.title || "Untitled",
+
+        totalDuration: videoDuration || 24 * 60, // fallback for iframe
       };
+
+      console.log("SENDING PAYLOAD:", payload);
 
       const res = await fetch("/api/user/watchlist", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(payload),
       });
 
       const data = await res.json();
 
+      console.log("WATCHLIST RESPONSE:", res.status, data);
+
       if (!res.ok) {
         showCustomToast(data.message || "Failed to save.", "error");
       } else {
-        setWatchlistStatus(status); // Update local status on success
+        setWatchlistStatus(status);
         showCustomToast(`Added to "${status}"`, "success");
       }
     } catch (error) {
@@ -123,6 +125,39 @@ export default function Special({ video, id }) {
       showCustomToast("Something went wrong", "error");
     }
   };
+
+  /* ------------------ */
+  /* CLOSE DROPDOWN */
+  /* ------------------ */
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  /* ------------------ */
+  /* OPTIONAL: GET VIDEO DURATION (only works if using <video>) */
+  /* ------------------ */
+
+  useEffect(() => {
+    if (!videoRef?.current) return;
+
+    const handleLoaded = () => {
+      setVideoDuration(videoRef.current.duration || 0);
+    };
+
+    videoRef.current.addEventListener("loadedmetadata", handleLoaded);
+
+    return () => {
+      videoRef.current?.removeEventListener("loadedmetadata", handleLoaded);
+    };
+  }, []);
 
   // ✅ Close dropdown when clicking outside
   useEffect(() => {
@@ -374,7 +409,7 @@ export default function Special({ video, id }) {
               <p>Add to List</p>
             </button>
 
-            {/* Dropdown */} 
+            {/* Dropdown */}
             {dropdownOpen && (
               <div className="dropdown-menu absolute top-full mt-3 w-full min-w-[170px] bg-[#121212] border border-[#2a2a2a] rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.4)] z-50 overflow-hidden animate-slideDown">
                 {statusOptions.map((status) => (
