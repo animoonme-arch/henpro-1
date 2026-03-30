@@ -40,17 +40,30 @@ const getLink = (item, creator) => {
 
     if (!itemId) return "#";
 
-    const basePath = lastWatchedEpId
-        ? `/watch/${itemId}`
-        : `/watch/${itemId}`;
+    // ✅ Detect type
+    const isAnime = itemId.includes("-id-");
 
-    const creatorParam = creator
-        ? `?creator=${encodeURIComponent(creator)}`
-        : "";
+    // ✅ Choose base route
+    let basePath;
 
-    return `${basePath}${creatorParam}`;
+    if (isAnime) {
+        // anime → watch page
+        basePath = lastWatchedEpId
+            ? `/watch/${itemId}?ep=${lastWatchedEpId}`
+            : `/watch/${itemId}`;
+    } else {
+        // special → special page
+        basePath = `/special/${itemId}`;
+    }
+
+    // ✅ Optional creator param
+    if (creator) {
+        const sep = basePath.includes("?") ? "&" : "?";
+        basePath += `${sep}creator=${encodeURIComponent(creator)}`;
+    }
+
+    return basePath;
 };
-
 // --- InternalPageSlider Component Logic (Unchanged) ---
 
 const InternalPageSlider = ({ page, totalPages, handlePageChange, currentType }) => {
@@ -311,7 +324,7 @@ const WatchList = (props) => {
                                     {data.map((item) => {
                                         const itemId = item.contentId;
                                         const isHovered = hoveredItem === itemId;
-                                        const watchLink = getLink(item,  props.creator);
+                                        const watchLink = getLink(item, props.creator);
 
                                         // Format update date for display
                                         const updatedAt = item.updatedAt
