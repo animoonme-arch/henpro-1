@@ -77,9 +77,8 @@ export default function Special({ video, id }) {
   const dropdownRef = useRef(null);
 
 
-  const handleSelect = async (status) => {
+  const handleSelect = useCallback(async (status) => {
     if (!session) {
-      console.warn("User not logged in. Cannot update watchlist.");
       showCustomToast("Please sign in to update your list.", "info");
       return;
     }
@@ -87,7 +86,6 @@ export default function Special({ video, id }) {
     setDropdownOpen(false);
 
     try {
-      // ✅ SAFE + STRICT PAYLOAD
       const safeDuration =
         videoDuration && !isNaN(videoDuration) && videoDuration > 0
           ? Math.floor(videoDuration)
@@ -111,8 +109,6 @@ export default function Special({ video, id }) {
         totalDuration: safeDuration,
       };
 
-      console.log("🚀 SENDING PAYLOAD:", payload);
-
       const res = await fetch("/api/user/watchlist", {
         method: "POST",
         headers: {
@@ -124,36 +120,138 @@ export default function Special({ video, id }) {
       let data = {};
       try {
         data = await res.json();
-      } catch {
-        console.warn("⚠️ Response is not JSON");
-      }
+      } catch { }
 
-      console.log("📥 WATCHLIST RESPONSE:", res.status, data);
-
-      // ❌ HANDLE API ERRORS PROPERLY
       if (!res.ok) {
-        const errorMessage =
-          data?.message ||
-          `Request failed with status ${res.status}`;
-
-        console.error("❌ API ERROR:", errorMessage);
-        showCustomToast(errorMessage, "error");
+        showCustomToast(
+          data?.message || `Request failed (${res.status})`,
+          "error"
+        );
         return;
       }
 
-      // ✅ SUCCESS
       setWatchlistStatus(status);
-      showCustomToast(`Added to "${status}"`, "success");
-
+      showCustomToast(
+        status ? `Added to "${status}"` : "Removed from list",
+        "success"
+      );
     } catch (error) {
-      console.error("❌ Watchlist POST Error:", error);
-      showCustomToast(error.message || "Something went wrong", "error");
+      console.error(error);
+      showCustomToast("Something went wrong", "error");
     }
-  };
+  }, [session, contentId, video, videoDuration]);
 
   /* ------------------ */
   /* CLOSE DROPDOWN */
   /* ------------------ */
+
+  useEffect(() => {
+    const fetchStatus = async () => {
+      try {
+        const res = await fetch("/api/user/watchlist?page=1");
+
+        if (!res.ok) return;
+
+        const data = await res.json();
+
+        const found = data.data?.find(
+          (item) => item.contentId === contentId
+        );
+
+        if (found) {
+          setWatchlistStatus(found.status);
+        }
+      } catch (err) {
+        console.error("Status fetch failed:", err);
+      }
+    };
+
+    if (contentId) fetchStatus();
+  }, [contentId]);
+
+  const hasMarkedWatching = useRef(false);
+
+  useEffect(() => {
+    if (!videoRef.current) return;
+
+    const onPlay = () => {
+      if (!hasMarkedWatching.current) {
+        hasMarkedWatching.current = true;
+
+        if (watchlistStatus !== "Completed") {
+          handleSelect("Watching");
+        }
+      }
+    };
+
+    videoRef.current.addEventListener("play", onPlay);
+
+    return () => {
+      videoRef.current?.removeEventListener("play", onPlay);
+    };
+  }, [watchlistStatus, handleSelect]);
+
+  const hasMarkedCompleted = useRef(false);
+
+  useEffect(() => {
+    if (!videoRef.current) return;
+
+    const checkProgress = () => {
+      const vid = videoRef.current;
+
+      if (!vid || !vid.duration) return;
+
+      const progress = vid.currentTime / vid.duration;
+
+      if (progress >= 0.95 && !hasMarkedCompleted.current) {
+        hasMarkedCompleted.current = true;
+
+        handleSelect("Completed");
+      }
+    };
+
+    videoRef.current.addEventListener("timeupdate", checkProgress);
+
+    return () => {
+      videoRef.current?.removeEventListener("timeupdate", checkProgress);
+    };
+  }, [handleSelect]);
+
+  const lastSavedTimeRef = useRef(0);
+
+  useEffect(() => {
+    if (!videoRef.current) return;
+
+    const interval = setInterval(() => {
+      const vid = videoRef.current;
+
+      if (!vid || vid.paused || vid.currentTime < 2) return;
+
+      if (Math.abs(vid.currentTime - lastSavedTimeRef.current) < 5) return;
+
+      lastSavedTimeRef.current = vid.currentTime;
+
+      fetch("/api/progress", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contentKey: contentId,
+          currentTime: vid.currentTime,
+          totalDuration: vid.duration || videoDuration || 24 * 60,
+          title: video?.title || "Untitled",
+          poster: video?.thumbnail || "",
+          parentContentId: contentId,
+          episodeNo: 1,
+        }),
+      }).catch(() => { });
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [contentId, video, videoDuration]);
+
+
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -421,31 +519,30 @@ export default function Special({ video, id }) {
         <div className="flex justify-end items-center min-h-[70px] mt-[-20px] p-2.5 w-full">
           <div className="relative w-fit" ref={dropdownRef}>
 
-            {/* Main Button */}
             <button
               onClick={() => setDropdownOpen((prev) => !prev)}
-              className="add-button flex gap-x-2 px-6 max-[429px]:px-3 py-2 text-white items-center rounded-3xl font-medium text-lg max-[429px]:text-[15px] transition-all duration-300"
+              className={`flex gap-x-2 px-6 py-2 text-white items-center rounded-3xl font-medium text-lg transition-all duration-300
+        ${watchlistStatus === "Watching"
+                  ? "bg-green-600"
+                  : watchlistStatus === "Completed"
+                    ? "bg-blue-600"
+                    : "bg-gray-700"
+                }`}
             >
-              <FontAwesomeIcon icon={faPlus} className="text-[14px] mt-[1px]" />
-
-              {/* ✅ Dynamic Text */}
-              <p>
-                {watchlistStatus ? watchlistStatus : "Add to List"}
-              </p>
+              <FontAwesomeIcon icon={faPlus} className="text-[14px]" />
+              <p>{watchlistStatus || "Add to List"}</p>
             </button>
 
-            {/* Dropdown */}
             {dropdownOpen && (
-              <div className="dropdown-menu absolute top-full mt-3 w-full min-w-[170px] bg-[#121212] border border-[#2a2a2a] rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.4)] z-50 overflow-hidden animate-slideDown">
+              <div className="absolute top-full mt-3 w-full min-w-[170px] bg-[#121212] border border-[#2a2a2a] rounded-xl shadow-lg z-50">
 
-                {/* Status Options */}
                 {statusOptions.map((status) => (
                   <button
                     key={status}
                     onClick={() => handleSelect(status)}
-                    className={`dropdown-item block w-full px-5 py-3 text-left text-sm font-medium transition-all duration-200
+                    className={`block w-full px-5 py-3 text-left text-sm
               ${watchlistStatus === status
-                        ? "text-white bg-[#1f1f1f]" // ✅ Highlight active
+                        ? "bg-[#1f1f1f] text-white"
                         : "text-gray-300 hover:text-white"
                       }`}
                   >
@@ -453,11 +550,10 @@ export default function Special({ video, id }) {
                   </button>
                 ))}
 
-                {/* ✅ Remove Option */}
                 {watchlistStatus && (
                   <button
                     onClick={() => handleSelect(null)}
-                    className="dropdown-item block w-full px-5 py-3 text-left text-sm font-medium text-red-400 hover:text-red-300 border-t border-[#2a2a2a]"
+                    className="block w-full px-5 py-3 text-left text-sm text-red-400 border-t border-[#2a2a2a]"
                   >
                     Remove from List
                   </button>
