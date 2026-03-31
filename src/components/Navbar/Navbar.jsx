@@ -11,39 +11,6 @@ import Profilo from "../Profilo/Profilo";
 // ⭐️ IMPORT useSearchParams
 import { useSearchParams } from "next/navigation";
 
-const renderAuthSection = () => {
-  // 🔄 While loading → show skeleton (no login flicker)
-  if (status === "loading") {
-    return <div className="profile-skeleton" />;
-  }
-
-  // ✅ Logged in
-  if (status === "authenticated" && session) {
-    return (
-      <Image
-        src={getAvatarUrl(session)}
-        key={session.user.avatar}
-        className="profile-ico"
-        onClick={toggleProfile}
-        alt={session.user.username || "User Profile"}
-        width={40}
-        height={40}
-        style={{
-          borderRadius: "50%",
-          cursor: "pointer",
-          objectFit: "cover",
-        }}
-      />
-    );
-  }
-
-  // ❌ Not logged in
-  return (
-    <div className="login" onClick={() => toggleSignInModal(true)}>
-      Login
-    </div>
-  );
-};
 
 const Navbar = (props) => {
   const [focused, setFocused] = useState(false);
@@ -156,6 +123,40 @@ const Navbar = (props) => {
     const params = new URLSearchParams({ q: query });
     const baseUrl = `/search?${params.toString()}`;
     return getUpdatedLink(baseUrl); // ⭐️ Apply creator logic here
+  };
+
+  const renderAuthSection = () => {
+    // 🔄 While loading → show skeleton (no login flicker)
+    if (status === "loading") {
+      return <div className="profile-skeleton" />;
+    }
+
+    // ✅ Logged in
+    if (status === "authenticated" && session) {
+      return (
+        <Image
+          src={getAvatarUrl(session)}
+          key={session.user.avatar}
+          className="profile-ico"
+          onClick={toggleProfile}
+          alt={session.user.username || "User Profile"}
+          width={40}
+          height={40}
+          style={{
+            borderRadius: "50%",
+            cursor: "pointer",
+            objectFit: "cover",
+          }}
+        />
+      );
+    }
+
+    // ❌ Not logged in
+    return (
+      <div className="login" onClick={() => toggleSignInModal(true)}>
+        Login
+      </div>
+    );
   };
 
   return (
