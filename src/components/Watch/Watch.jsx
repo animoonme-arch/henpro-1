@@ -29,7 +29,7 @@ import Link from "next/link";
 // import { useSearchParams } from "next/navigation";
 import "./Watch.css";
 import RelatedGrid from "../Related/Related";
-import Loading from "@/[id]/load";
+import Loading from "@/app/[id]/load";
 import ShareSlab from "../ShareSlab/ShareSlab";
 import VideoSection from "../VideoSection/VideoSection";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
