@@ -53,7 +53,11 @@ const NotificationItem = ({ notification, onMarkRead }) => {
       message = `New update on your content.`;
   }
 
-  const link = `/${notification.contentId}#${linkTarget}`;
+  const isWatch = notification.contentId.includes("-id-");
+
+  const link = isWatch
+    ? `/${notification.contentId}#${linkTarget}`
+    : `/special/${notification.contentId}#${linkTarget}`;
 
   const handleClick = async () => {
     if (!notification.read) {
