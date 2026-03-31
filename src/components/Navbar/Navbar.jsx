@@ -11,6 +11,40 @@ import Profilo from "../Profilo/Profilo";
 // ⭐️ IMPORT useSearchParams
 import { useSearchParams } from "next/navigation";
 
+const renderAuthSection = () => {
+  // 🔄 While loading → show skeleton (no login flicker)
+  if (status === "loading") {
+    return <div className="profile-skeleton" />;
+  }
+
+  // ✅ Logged in
+  if (status === "authenticated" && session) {
+    return (
+      <Image
+        src={getAvatarUrl(session)}
+        key={session.user.avatar}
+        className="profile-ico"
+        onClick={toggleProfile}
+        alt={session.user.username || "User Profile"}
+        width={40}
+        height={40}
+        style={{
+          borderRadius: "50%",
+          cursor: "pointer",
+          objectFit: "cover",
+        }}
+      />
+    );
+  }
+
+  // ❌ Not logged in
+  return (
+    <div className="login" onClick={() => toggleSignInModal(true)}>
+      Login
+    </div>
+  );
+};
+
 const Navbar = (props) => {
   const [focused, setFocused] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -25,7 +59,7 @@ const Navbar = (props) => {
   const timeoutRef = useRef(null);
   const searchInputRef = useRef(null);
 
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
   // ⭐️ GET creator PARAMETER
   // const searchParams = useSearchParams();
@@ -248,7 +282,7 @@ const Navbar = (props) => {
 
           {/* 🧠 Desktop Search */}
           <div className={`search ${focused ? "focused" : ""}`}>
-            <input  
+            <input
               ref={searchInputRef}
               type="text"
               placeholder="Search hentai..."
@@ -327,33 +361,14 @@ const Navbar = (props) => {
         </div>
 
         <div className="nav-2">
-          {/* 🔍 Mobile Search Button */}
           <div
             className="mobile-search-btn"
             onClick={() => setShowMobileSearch(true)}
           >
             <FaSearch />
           </div>
-          {session ? (
-            <Image
-              src={getAvatarUrl(session)}
-              key={session.user.avatar}
-              className="profile-ico"
-              onClick={toggleProfile}
-              alt={session.user.username || "User Profile"}
-              width={40}
-              height={40}
-              style={{
-                borderRadius: "50%",
-                cursor: "pointer",
-                objectFit: "cover",
-              }}
-            />
-          ) : (
-            <div className="login" onClick={() => toggleSignInModal(true)}>
-              Login
-            </div>
-          )}
+
+          {renderAuthSection()}
         </div>
       </div>
     </>
