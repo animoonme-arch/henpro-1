@@ -15,6 +15,8 @@ import Footer from "../footer/Footer";
 // import Footer from "../Footer/Footer";
 // import MonetizePage from "../monetize/page";
 
+// /watch
+
 export default function User(props) {
   const slabId = props.id.replace("-", " ");
 

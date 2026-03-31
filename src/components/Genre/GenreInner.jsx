@@ -5,6 +5,8 @@ import "../Watch/Watch.css";
 import Navbar from "../Navbar/Navbar";
 import Footer from "../footer/Footer";
 
+// /watch
+
 const GenreInner = (props) => {
   return (
     <>

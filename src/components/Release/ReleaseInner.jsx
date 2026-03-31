@@ -5,6 +5,8 @@ import "../Watch/Watch.css";
 import Footer from "../footer/Footer";
 import Navbar from "../Navbar/Navbar";
 
+// /watch
+
 const ReleaseInner = (props) => {
   return (
     <>

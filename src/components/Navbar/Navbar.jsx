@@ -11,6 +11,7 @@ import Profilo from "../Profilo/Profilo";
 // ⭐️ IMPORT useSearchParams
 import { useSearchParams } from "next/navigation";
 
+// /watch
 
 const Navbar = (props) => {
   const [focused, setFocused] = useState(false);
@@ -124,7 +125,7 @@ const Navbar = (props) => {
     const baseUrl = `/search?${params.toString()}`;
     return getUpdatedLink(baseUrl); // ⭐️ Apply creator logic here
   };
-
+  // 
   const renderAuthSection = () => {
     // 🔄 While loading → show skeleton (no login flicker)
     if (status === "loading") {
@@ -211,9 +212,9 @@ const Navbar = (props) => {
 
                 if (result?.source === "hanime") {
                   const safeUrl = result?.url
-                    ? result.url.replace("https://watchhentai.net/series/", "")
+                    ? result.url.replace("https:/hentai.net/series/", "")
                     : "";
-                  finalUrl = getUpdatedLink(`/watch/${safeUrl}`);
+                  finalUrl = getUpdatedLink(`/${safeUrl}`);
                 } else if (result?.source === "special") {
                   finalUrl = result.url
                     .replace("https://3dhentai.co/", "https://hentaio.pro/special/")
@@ -306,9 +307,9 @@ const Navbar = (props) => {
 
                   if (result?.source === "hanime") {
                     const safeUrl = result?.url
-                      ? result.url.replace("https://watchhentai.net/series/", "")
+                      ? result.url.replace("https:/hentai.net/series/", "")
                       : "";
-                    finalUrl = getUpdatedLink(`/watch/${safeUrl}`);
+                    finalUrl = getUpdatedLink(`/${safeUrl}`);
                   } else if (result?.source === "special") {
                     finalUrl = result.url
                       .replace("https://3dhentai.co/", "https://hentaio.pro/special/")

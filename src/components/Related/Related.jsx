@@ -5,6 +5,8 @@ import { FaPlay } from "react-icons/fa";
 import { useSearchParams } from "next/navigation"; // ⬅️ Import the hook
 import "./RelatedGrid.css"; // Import CSS file
 
+// 
+
 export default function RelatedGrid({ related = [] , creator }) {
   const [cssLoaded, setCssLoaded] = useState(false);
   
@@ -34,7 +36,7 @@ export default function RelatedGrid({ related = [] , creator }) {
         {related.map((item, index) => (
           <Link 
             // ⬅️ Updated href to include creator query
-            href={`/watch/${item.link}${getCreatorQuery()}`} 
+            href={`/${item.link}${getCreatorQuery()}`} 
             key={index} 
             className="related-card"
           >

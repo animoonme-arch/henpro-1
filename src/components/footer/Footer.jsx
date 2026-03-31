@@ -14,7 +14,7 @@ const Footer = () => {
     const base = isPro ? "hen" : "hentaio";
     const accent = isPro ? "pro" : ".pro";
     const accentClass = isFooterLogo ? "col-p" : "col-imp";
-
+  // 
     return (
       <>
         {base}

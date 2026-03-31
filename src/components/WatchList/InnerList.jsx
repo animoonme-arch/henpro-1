@@ -19,6 +19,8 @@ const getOptionName = (type) => {
   }
 };
 
+// `/watch
+
 const mapTypeToStatus = {
   1: "Watching",
   2: "On-Hold",

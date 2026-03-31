@@ -12,6 +12,8 @@ import "./home.css";
 
 const Home = (props) => {
 
+  // /watch
+
   const playPreview = (e) => {
     const video = e.currentTarget.querySelector("video");
     if (!video) return;

@@ -11,6 +11,7 @@ export default function HorizontalSlabs({ data = [], keyword, creator }) {
   const creat = creator;
 
   // Helper function to append the creat parameter to a URL
+  // /watch
   const getUpdatedLink = (baseLink) => {
     if (!baseLink) return baseLink;
 

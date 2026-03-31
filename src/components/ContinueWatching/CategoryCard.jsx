@@ -316,7 +316,7 @@ const CategoryCard = ({
   /* ========================= */
   /* LINK FIX (CORE) */
   /* ========================= */
-
+// 
   const getLink = useCallback((item, creator) => {
     const episodeId = item.episodeId || item.contentKey;
     const parentId = item.parentContentId;
@@ -330,9 +330,9 @@ const CategoryCard = ({
     if (isSeries) {
       // 👉 WATCH (series / episodes)
       if (parentId && episodeId) {
-        basePath = `/watch/${parentId}?ep=${episodeId}`;
+        basePath = `/${parentId}?ep=${episodeId}`;
       } else {
-        basePath = `/watch/${fallbackId}`;
+        basePath = `/${fallbackId}`;
       }
     } else {
       // 👉 SPECIAL (movies / standalone)

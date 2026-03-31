@@ -5,6 +5,8 @@ import Link from "next/link";
 // Import the necessary hook from next/navigation
 // import { useSearchParams } from "next/navigation";
 
+// 
+
 export default function Sidebar({ sidebar = {}, creator }) {
   const [activeTab, setActiveTab] = useState("popular");
   // Get the current search parameters
@@ -74,7 +76,7 @@ export default function Sidebar({ sidebar = {}, creator }) {
         {list.map((item) => (
           <Link
             key={item.id}
-            href={`/watch/${item.link}${creatorParam ? `?creator=${encodeURIComponent(creatorParam)}` : ""
+            href={`/${item.link}${creatorParam ? `?creator=${encodeURIComponent(creatorParam)}` : ""
               }`}
             className="flex items-center gap-3 bg-[#111] hover:bg-[#1a1a1a] rounded-xl p-2 transition-all shadow-md hover:shadow-[#ff974133]"
           >

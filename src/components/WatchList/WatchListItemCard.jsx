@@ -13,8 +13,8 @@ const getLink = (item, refer, creator) => {
   if (!itemId) return "#";
 
   const basePath = lastWatchedEpId
-    ? `/watch/${itemId}`
-    : `/watch/${itemId}`;
+    ? `/${itemId}`
+    : `/${itemId}`;
 
   const referParam = refer || "weebsSecret";
   const creatorParam = creator
@@ -132,12 +132,12 @@ const WatchListItemCard = ({ item, refer, handleDelete, creator }) => {
         <div className="flex items-center gap-2 mt-2 text-[13px] text-gray-400">
           <span
             className={`font-semibold px-2 py-[2px] rounded-md bg-[#222] border border-[#333] ${item.status === "Watching"
-                ? "text-[#ff9741] border-[#ff9741]/40"
-                : item.status === "Completed"
-                  ? "text-green-400 border-green-500/40"
-                  : item.status === "Dropped"
-                    ? "text-red-400 border-red-500/40"
-                    : "text-gray-300"
+              ? "text-[#ff9741] border-[#ff9741]/40"
+              : item.status === "Completed"
+                ? "text-green-400 border-green-500/40"
+                : item.status === "Dropped"
+                  ? "text-red-400 border-red-500/40"
+                  : "text-gray-300"
               }`}
           >
             {item.status}

@@ -86,7 +86,7 @@ const ContinueWatching = (props) => {
 
     return formatted;
   }, []);
-
+ // 
   useEffect(() => {
     const loadProgress = async () => {
       // 1. If loading session or not logged in, stop immediately

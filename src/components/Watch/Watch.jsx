@@ -29,7 +29,7 @@ import Link from "next/link";
 // import { useSearchParams } from "next/navigation";
 import "./Watch.css";
 import RelatedGrid from "../Related/Related";
-import Loading from "@/app/watch/[id]/load";
+import Loading from "@/[id]/load";
 import ShareSlab from "../ShareSlab/ShareSlab";
 import VideoSection from "../VideoSection/VideoSection";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -39,6 +39,8 @@ import { AiOutlineClose } from "react-icons/ai";
 import CommentSection from "../CommentSection/CommentSection";
 import Footer from "../footer/Footer";
 import { useSession } from "next-auth/react";
+
+// /watch
 
 // Helper function to convert duration string (e.g., "15 min") to seconds
 const durationToSeconds = (durationStr) => {
@@ -541,7 +543,7 @@ export default function WatchPageClient({
                           <Link
                             key={idx}
                             // ⭐️ Applied creator logic to Episode Links
-                            href={getUpdatedLink(`/watch/${ep.slug}`)}
+                            href={getUpdatedLink(`/${ep.slug}`)}
                             className={`episode-card ${isCurrent ? "current-ep" : ""
                               }`}
                           >
@@ -874,7 +876,7 @@ export default function WatchPageClient({
                   key={i.id}
                   className="alliu"
                   // ⭐️ Applied creator logic to Recommendation Links
-                  href={getUpdatedLink(`/watch/${i.id}`)}
+                  href={getUpdatedLink(`/${i.id}`)}
                 >
                   <div className="fixed-size-container">
                     <img
@@ -911,7 +913,7 @@ export default function WatchPageClient({
                     <Link
                       key={idx}
                       // ⭐️ Applied creator logic to Episode Links
-                      href={getUpdatedLink(`/watch/${ep.slug}`)}
+                      href={getUpdatedLink(`/${ep.slug}`)}
                       className={`episode-card ${isCurrent ? "current-ep" : ""
                         }`}
                     >

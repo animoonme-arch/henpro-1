@@ -12,6 +12,8 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "./hero.css";
 
+// 
+
 const Swipe = ({ slides = [], title = "Recent Uploads", slug , creator }) => {
   if (!slides?.length) return null;
 
@@ -129,7 +131,7 @@ const Swipe = ({ slides = [], title = "Recent Uploads", slug , creator }) => {
             >
               <Link
                 // ⭐️ Applied creator logic to individual watch link
-                href={getUpdatedLink(`/watch/${slide.link}`)}
+                href={getUpdatedLink(`/${slide.link}`)}
                 className="crype-image-wrapper"
               >
                 <Image

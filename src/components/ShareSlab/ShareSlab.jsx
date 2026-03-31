@@ -16,6 +16,8 @@ import {
 
 import { AiOutlineClose } from "react-icons/ai";
 
+// /watch
+
 // Replaced 'next/image' with standard 'img' tag and placeholder for image paths
 // const Image = ({ src, alt, width, height, className }) => (
 //   <img src={src} alt={alt} width={width} height={height} className={className} />

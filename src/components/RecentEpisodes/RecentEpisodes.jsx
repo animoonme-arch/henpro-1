@@ -4,6 +4,8 @@ import { FaClock, FaPlay } from "react-icons/fa";
 import "./RecentEpisodes.css";
 import Link from "next/link";
 
+// 
+
 export default function RecentEpisodes({ recentEpi = [], creator }) {
   const normalize = (s) => (s || "").toString().toUpperCase().trim();
 
@@ -24,7 +26,7 @@ export default function RecentEpisodes({ recentEpi = [], creator }) {
 
       <div className="decent-grid">
         {recentEpi.map((ep) => (
-          <Link key={ep.link} href={`/watch/${ep.link}${creator ? `?creator=${encodeURIComponent(creator)}` : ""}`} className="decent-card">
+          <Link key={ep.link} href={`/${ep.link}${creator ? `?creator=${encodeURIComponent(creator)}` : ""}`} className="decent-card">
             <div className="image-container">
               <img src={ep.poster} alt={ep.seriesName} className="poster" />
 

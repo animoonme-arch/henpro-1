@@ -6,7 +6,7 @@ import "plyr/dist/plyr.css";
 
 export default function PlyrPlayer({ url, poster }) {
   const videoRef = useRef(null);
-
+// 
   useEffect(() => {
     const player = new Plyr(videoRef.current, {
       controls: [

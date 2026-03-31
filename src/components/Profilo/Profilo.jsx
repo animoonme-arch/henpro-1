@@ -14,6 +14,8 @@ import { signOut, useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation"; // ⭐️ Imported useSearchParams
 import { FaSackDollar } from "react-icons/fa6";
 
+// 
+
 export default function Profilo(props) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -102,7 +104,7 @@ export default function Profilo(props) {
           </Link>
           <Link
             // ⭐️ Applied creator logic
-            href={getUpdatedLink("/user/watch-list")}
+            href={getUpdatedLink("/user-list")}
             className="profip-menu-item"
             onClick={() => props.setProfiIsOpen(false)}
           >

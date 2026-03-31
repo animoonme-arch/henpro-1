@@ -94,7 +94,7 @@ export default function Series({ data = {}, link, heading , creator }) {
           <Link
             key={index}
             // ⬅️ Preserve creator param in series links
-            href={`/watch/${
+            href={`/${
               item.link || item.id || "#"
             }${getCreatorQueryForLink()}`}
             className="related-card"

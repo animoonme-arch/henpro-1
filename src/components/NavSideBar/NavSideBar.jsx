@@ -6,6 +6,8 @@ import { IoMdHome } from "react-icons/io";
 // import { useSearchParams } from "next/navigation"; // ⭐️ Import useSearchParams
 import "./navSideBar.css";
 
+// /watch 
+
 export default function NavSidebar({ sidebarIsOpen, setSidebarIsOpen, creator
 
 }) {

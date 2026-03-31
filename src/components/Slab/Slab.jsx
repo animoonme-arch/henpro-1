@@ -8,6 +8,8 @@ import { FaSackDollar } from "react-icons/fa6";
 // ⭐️ IMPORT useSearchParams
 import { useSearchParams } from "next/navigation";
 
+// /watch
+
 export default function Slab(props) {
   const { data: session } = useSession();
 

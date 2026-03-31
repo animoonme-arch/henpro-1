@@ -6,6 +6,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlay } from "@fortawesome/free-solid-svg-icons";
 import "./watchList.css";
 
+// `
+
 // Utility to get the display name for the status
 const getOptionName = (type) => {
     switch (type) {
@@ -49,8 +51,8 @@ const getLink = (item, creator) => {
     if (isAnime) {
         // anime → watch page
         basePath = lastWatchedEpId
-            ? `/watch/${itemId}?ep=${lastWatchedEpId}`
-            : `/watch/${itemId}`;
+            ? `/${itemId}?ep=${lastWatchedEpId}`
+            : `/${itemId}`;
     } else {
         // special → special page
         basePath = `/special/${itemId}`;
@@ -171,6 +173,8 @@ const InternalPageSlider = ({ page, totalPages, handlePageChange, currentType })
 };
 
 // --- WatchList Component (Unchanged) ---
+
+// `/watch
 
 const WatchList = (props) => {
     const [data, setData] = useState([]);

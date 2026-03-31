@@ -58,6 +58,8 @@ export default function Category({ path, label, pagel, refer }) {
     fetchHomeInfo();
   }, []);
 
+  // 
+
   // Fetch Category Info (Updated logic)
   useEffect(() => {
     const fetchCategoryInfo = async () => {

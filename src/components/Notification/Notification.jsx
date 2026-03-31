@@ -18,6 +18,8 @@ const formatTimeAgo = (dateString) => {
     ["minute", 60],
   ];
 
+  // 
+
   for (const [name, secs] of intervals) {
     const interval = Math.floor(seconds / secs);
     if (interval >= 1)
@@ -51,7 +53,7 @@ const NotificationItem = ({ notification, onMarkRead }) => {
       message = `New update on your content.`;
   }
 
-  const link = `/watch/${notification.contentId}#${linkTarget}`;
+  const link = `/${notification.contentId}#${linkTarget}`;
 
   const handleClick = async () => {
     if (!notification.read) {

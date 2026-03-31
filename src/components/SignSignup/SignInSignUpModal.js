@@ -14,6 +14,8 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+// /watch
+
 const getRandomImage = () => {
   const categories = Object.keys(imageData.hashtags);
   const randomCategory =
