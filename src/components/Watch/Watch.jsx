@@ -35,9 +35,10 @@ import VideoSection from "../VideoSection/VideoSection";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AiOutlineClose } from "react-icons/ai";
-import { useSession } from "next-auth/react";
+// import { useSession } from "next-auth/react";
 import CommentSection from "../CommentSection/CommentSection";
 import Footer from "../footer/Footer";
+import { useSession } from "next-auth/react";
 
 // Helper function to convert duration string (e.g., "15 min") to seconds
 const durationToSeconds = (durationStr) => {
@@ -132,7 +133,7 @@ export default function WatchPageClient({
   id,
   creat
 }) {
-  const { data: session } = useSession();
+  const { data: session, status: sessionStatus } = useSession();
   const [isScrolled, setIsScrolled] = useState(false);
   const [lightboxImg, setLightboxImg] = useState(null);
   const [adClosed, setAdClosed] = useState(true);
@@ -264,7 +265,10 @@ export default function WatchPageClient({
   }, [fetchLatestViews]);
 
 
-  const handleSelect = useCallback(async (status) => {
+  const handleSelect = useCallback(async (statusValue) => {
+    // ✅ FIX: handle loading state properly
+    if (sessionStatus === "loading") return;
+
     if (!session) {
       showCustomToast("Please sign in to update your list.", "info");
       return;
@@ -281,7 +285,7 @@ export default function WatchPageClient({
       const payload = {
         contentId,
         contentKey: contentId,
-        status,
+        status: statusValue,
 
         title: videoMetadata?.title || "Untitled",
 
@@ -316,18 +320,17 @@ export default function WatchPageClient({
         return;
       }
 
-      setWatchlistStatus(status);
+      setWatchlistStatus(statusValue);
 
       showCustomToast(
-        status ? `Added to "${status}"` : "Removed from list",
+        statusValue ? `Added to "${statusValue}"` : "Removed from list",
         "success"
       );
     } catch (err) {
       console.error(err);
       showCustomToast("Something went wrong", "error");
     }
-  }, [session, contentId, videoMetadata]);
-
+  }, [session, sessionStatus, contentId, videoMetadata]);
   const hasMarkedWatching = useRef(false);
 
   useEffect(() => {
