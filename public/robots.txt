@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://henpro.fun/sitemap.xml
+Sitemap: https://hentaio.pro/sitemap.xml
