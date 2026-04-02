@@ -5,9 +5,6 @@ const axios = require("axios");
 
 const DOMAIN = "https://hentaio.pro";
 
-// 🔥 CONFIG (you can tweak this)
-const MAX_URLS_PER_SITEMAP = 25000;
-
 const PUBLIC_DIR = path.join(__dirname, "../../public");
 const SITEMAP_DIR = path.join(PUBLIC_DIR, "sitemaps");
 
@@ -32,27 +29,44 @@ function getNextServer() {
 async function fetchEpisodes(page) {
   const server = getNextServer();
   const url = `${server}/api/episodes?page=${page}`;
-  const res = await axios.get(url, { timeout: 15000 });
-  return res.data;
+
+  try {
+    const res = await axios.get(url, { timeout: 15000 });
+    return res.data;
+  } catch (error) {
+    console.error(`❌ Episodes failed page ${page}`);
+    throw error;
+  }
 }
 
 async function fetchSpecial(page) {
   const server = getNextServer();
   const url = `${server}/api/special-home?page=${page}`;
-  const res = await axios.get(url, { timeout: 15000 });
-  return res.data;
+
+  try {
+    const res = await axios.get(url, { timeout: 15000 });
+    return res.data;
+  } catch (error) {
+    console.error(`❌ Special failed page ${page}`);
+    throw error;
+  }
 }
 
 // =====================
-// 🔹 HELPERS
+// 🔹 URL HELPERS
 // =====================
 
+// Convert external link → internal /special/slug
 function transformSpecialLink(originalUrl) {
   try {
     const url = new URL(originalUrl);
+
+    // remove leading/trailing slash
     const slug = url.pathname.replace(/^\/|\/$/g, "");
+
     return `${DOMAIN}/special/${slug}`;
-  } catch {
+  } catch (err) {
+    console.error("❌ Invalid URL:", originalUrl);
     return null;
   }
 }
@@ -73,12 +87,14 @@ function createUrlBlock(link) {
 
 async function generate() {
   try {
-    console.log("🚀 Generating optimized sitemap...");
+    console.log("🚀 Generating sitemap...");
 
+    // ensure folders exist
     if (!fs.existsSync(SITEMAP_DIR)) {
       fs.mkdirSync(SITEMAP_DIR, { recursive: true });
     }
 
+    // 🔥 get total pages
     const epFirst = await fetchEpisodes(1);
     const spFirst = await fetchSpecial(1);
 
@@ -88,51 +104,20 @@ async function generate() {
     console.log("📄 Episodes pages:", epTotal);
     console.log("📄 Special pages:", spTotal);
 
-    let allUrls = [];
+    let sitemapCount = 1;
 
     // =====================
-    // 🔹 COLLECT EPISODES
+    // 🔹 EPISODES
     // =====================
     for (let page = 1; page <= epTotal; page++) {
       const data = await fetchEpisodes(page);
 
+      let urls = "";
+
       data.data.recentEpisodes.forEach((ep) => {
-        allUrls.push(`${DOMAIN}/${ep.link}`);
+        const link = `${DOMAIN}/${ep.link}`;
+        urls += createUrlBlock(link);
       });
-
-      console.log(`📥 Episodes page ${page} collected`);
-    }
-
-    // =====================
-    // 🔹 COLLECT SPECIAL
-    // =====================
-    for (let page = 1; page <= spTotal; page++) {
-      const data = await fetchSpecial(page);
-
-      data.data.forEach((item) => {
-        const link = transformSpecialLink(item.link);
-        if (link) allUrls.push(link);
-      });
-
-      console.log(`📥 Special page ${page} collected`);
-    }
-
-    // =====================
-    // 🔹 OPTIONAL DEDUPE
-    // =====================
-    allUrls = [...new Set(allUrls)];
-
-    console.log("📊 Total unique URLs:", allUrls.length);
-
-    // =====================
-    // 🔹 SPLIT INTO CHUNKS
-    // =====================
-    let sitemapCount = 1;
-
-    for (let i = 0; i < allUrls.length; i += MAX_URLS_PER_SITEMAP) {
-      const chunk = allUrls.slice(i, i + MAX_URLS_PER_SITEMAP);
-
-      let urls = chunk.map(createUrlBlock).join("");
 
       const content = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -141,18 +126,45 @@ ${urls}
 
       fs.writeFileSync(
         path.join(SITEMAP_DIR, `sitemap-${sitemapCount}.xml`),
-        content
+        content,
       );
 
-      console.log(
-        `✅ sitemap-${sitemapCount} (${chunk.length} URLs)`
-      );
-
+      console.log(`✅ Episodes sitemap-${sitemapCount}`);
       sitemapCount++;
     }
 
     // =====================
-    // 🔹 INDEX FILE
+    // 🔹 SPECIAL-HOME
+    // =====================
+    for (let page = 1; page <= spTotal; page++) {
+      const data = await fetchSpecial(page);
+
+      let urls = "";
+
+      data.data.forEach((item) => {
+        const transformed = transformSpecialLink(item.link);
+
+        if (transformed) {
+          urls += createUrlBlock(transformed);
+        }
+      });
+
+      const content = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls}
+</urlset>`;
+
+      fs.writeFileSync(
+        path.join(SITEMAP_DIR, `sitemap-${sitemapCount}.xml`),
+        content,
+      );
+
+      console.log(`✅ Special sitemap-${sitemapCount}`);
+      sitemapCount++;
+    }
+
+    // =====================
+    // 🔹 SITEMAP INDEX
     // =====================
     let indexContent = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
@@ -170,7 +182,7 @@ ${urls}
 
     fs.writeFileSync(path.join(PUBLIC_DIR, "sitemap.xml"), indexContent);
 
-    console.log("🎉 DONE: Optimized sitemaps generated!");
+    console.log("🎉 DONE: All sitemaps generated!");
   } catch (err) {
     console.error("❌ Failed:", err.message);
     process.exit(1);
