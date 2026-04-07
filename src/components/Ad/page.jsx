@@ -71,7 +71,7 @@ export default function Ad({ type }) {
       style={{
         width: "100%",
         maxWidth: adConfig[type]?.width,
-        margin: "16px auto",
+        margin: "16px 10px",
         display: "flex",
         justifyContent: "center",
       }}
