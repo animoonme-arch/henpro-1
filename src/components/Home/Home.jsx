@@ -8,25 +8,21 @@ import RecentEpisodes from "../RecentEpisodes/RecentEpisodes";
 import ShareSlab from "../ShareSlab/ShareSlab";
 import Swipe from "../Swipe/Hero";
 import Footer from "../footer/Footer";
+import Ad from "@/components/Ad/page";
 import "./home.css";
 
 const Home = (props) => {
 
-  // /watch
-
   const playPreview = (e) => {
     const video = e.currentTarget.querySelector("video");
     if (!video) return;
-
     if (!video.src) video.src = video.dataset.src;
-
-    video.play().catch(()=>{});
+    video.play().catch(() => { });
   };
 
   const stopPreview = (e) => {
     const video = e.currentTarget.querySelector("video");
     if (!video) return;
-
     video.pause();
     video.currentTime = 0;
   };
@@ -42,9 +38,13 @@ const Home = (props) => {
           creator={props.creator}
         />
 
-        {/* AD */}
+        {/* 🥇 TOP ADS */}
+        <Ad type="728x90" />
+        <Ad type="300x250" />
+
+        {/* 🟣 NATIVE ADFRAME (KEEP) */}
         <div className="ad-container">
-          <iframe src="/ad" title="Sponsored Ad" scrolling="no" />
+          <iframe src="/ad" title="Native Ad" scrolling="no" />
         </div>
 
         {/* TRENDING GRID */}
@@ -69,66 +69,63 @@ const Home = (props) => {
               const previewSrc = `https://3dhq1.org/video/3d/${previewVideo}`;
 
               return (
-                <a
-                  key={index}
-                  href={internalLink}
-                  className="decent-card"
-                  onMouseEnter={playPreview}
-                  onMouseLeave={stopPreview}
-                  onTouchStart={playPreview}
-                >
+                <React.Fragment key={index}>
+                  <a
+                    href={internalLink}
+                    className="decent-card"
+                    onMouseEnter={playPreview}
+                    onMouseLeave={stopPreview}
+                    onTouchStart={playPreview}
+                  >
+                    <div className="image-container">
 
-                  <div className="image-container">
+                      <img
+                        src={item.thumbnail}
+                        alt={item.title}
+                        className="poster"
+                        loading="lazy"
+                      />
 
-                    <img
-                      src={item.thumbnail}
-                      alt={item.title}
-                      className="poster"
-                      loading="lazy"
-                    />
+                      <video
+                        className="hover-preview"
+                        muted
+                        loop
+                        playsInline
+                        preload="none"
+                        data-src={previewSrc}
+                      />
 
-                    <video
-                      className="hover-preview"
-                      muted
-                      loop
-                      playsInline
-                      preload="none"
-                      data-src={previewSrc}
-                    />
+                      <div className="decent-overlay">
+                        <FaPlay className="decent-play-icon" />
+                      </div>
 
-                    {/* overlay */}
-                    <div className="decent-overlay">
-                      <FaPlay className="decent-play-icon" />
+                      <span className="dabel-tag bottom dabel-default">
+                        <FaClock className="inline-icon" />
+                        {item.duration}
+                      </span>
+
+                      <span className="dabel-tag top dabel-unc">
+                        ⭐ {item.rating}
+                      </span>
+
                     </div>
 
-                    {/* duration */}
-                    <span className="dabel-tag bottom dabel-default">
-                      <FaClock className="inline-icon"/>
-                      {item.duration}
-                    </span>
+                    <div className="info">
+                      <h3 className="series-name">
+                        {item.title}
+                      </h3>
 
-                    {/* rating */}
-                    <span className="dabel-tag top dabel-unc">
-                      ⭐ {item.rating}
-                    </span>
-
-                  </div>
-
-                  <div className="info">
-
-                    <h3 className="series-name">
-                      {item.title}
-                    </h3>
-
-                    <div className="meta">
-                      <p className="episode-title">
-                        👁 {item.views}
-                      </p>
+                      <div className="meta">
+                        <p className="episode-title">
+                          👁 {item.views}
+                        </p>
+                      </div>
                     </div>
+                  </a>
 
-                  </div>
-
-                </a>
+                  {/* 🥈 GRID AD */}
+                  {index === 5 && <Ad type="300x250" />}
+                </React.Fragment>
               );
             })}
 
@@ -140,6 +137,14 @@ const Home = (props) => {
           recentEpi={props.recentEpi.data.recentEpisodes}
           creator={props.creator}
         />
+
+        {/* 🥉 BANNER */}
+        <Ad type="300x250" />
+
+        {/* 🟣 NATIVE AGAIN (GOOD POSITION) */}
+        <div className="ad-container">
+          <iframe src="/ad" title="Native Ad" scrolling="no" />
+        </div>
 
         <ShareSlab
           pageId={"home"}
@@ -156,9 +161,8 @@ const Home = (props) => {
           creator={props.creator}
         />
 
-        <div className="ad-container">
-          <iframe src="/ad" title="Sponsored Ad" scrolling="no" />
-        </div>
+        {/* 🟢 EXTRA BANNER */}
+        <Ad type="300x250" />
 
         <Swipe
           title="Uncensored"
@@ -187,6 +191,9 @@ const Home = (props) => {
           slug={`/genre?genre=large-breasts`}
           creator={props.creator}
         />
+
+        {/* 📱 MOBILE STICKY */}
+        <Ad type="320x50" />
 
         <Footer creator={props.creator} />
 
