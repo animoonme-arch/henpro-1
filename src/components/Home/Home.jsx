@@ -39,8 +39,7 @@ const Home = (props) => {
         />
 
         {/* 🥇 TOP ADS */}
-        <Ad type="728x90" />
-        <Ad type="300x250" />
+        <Ad type="320x50" />
 
         {/* 🟣 NATIVE ADFRAME (KEEP) */}
         <div className="ad-container">
@@ -124,7 +123,7 @@ const Home = (props) => {
                   </a>
 
                   {/* 🥈 GRID AD */}
-                  {index === 5 && <Ad type="300x250" />}
+                  {/* {index === 5 && <Ad type="300x250" />} */}
                 </React.Fragment>
               );
             })}
@@ -171,6 +170,8 @@ const Home = (props) => {
           creator={props.creator}
         />
 
+        <Ad type="320x50" />
+
         <Swipe
           title="Harem"
           slides={props.hompro?.genre?.harem || []}
@@ -178,12 +179,16 @@ const Home = (props) => {
           creator={props.creator}
         />
 
+        <Ad type="320x50" />
+
         <Swipe
           title="School Girls"
           slides={props.hompro?.genre?.["school-girls"] || []}
           slug={`/genre?genre=school-girls`}
           creator={props.creator}
         />
+
+        <Ad type="320x50" />
 
         <Swipe
           title="Large Breasts"
@@ -193,7 +198,7 @@ const Home = (props) => {
         />
 
         {/* 📱 MOBILE STICKY */}
-        <Ad type="320x250" />
+        <Ad type="320x50" />
 
         <Footer creator={props.creator} />
 
