@@ -193,7 +193,7 @@ const Home = (props) => {
         />
 
         {/* 📱 MOBILE STICKY */}
-        <Ad type="320x50" />
+        <Ad type="320x250" />
 
         <Footer creator={props.creator} />
 
