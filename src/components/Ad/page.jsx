@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useRef } from "react";
 
 const adConfig = {
@@ -21,43 +20,43 @@ const adConfig = {
 };
 
 export default function Ad({ type }) {
-    const containerRef = useRef(null);
+    const ref = useRef(null);
 
     useEffect(() => {
-        if (!type || !adConfig[type]) return;
+        if (!adConfig[type]) return;
 
         const { key, width, height } = adConfig[type];
 
-        const script1 = document.createElement("script");
-        script1.innerHTML = `
-      atOptions = {
-        'key' : '${key}',
-        'format' : 'iframe',
-        'height' : ${height},
-        'width' : ${width},
-        'params' : {}
-      };
-    `;
+        const container = ref.current;
+        if (!container) return;
 
-        const script2 = document.createElement("script");
-        script2.src = `https://www.highperformanceformat.com/${key}/invoke.js`;
-        script2.async = true;
+        container.innerHTML = "";
 
-        const container = containerRef.current;
-        if (container) {
-            container.innerHTML = ""; // prevent duplicate ads
-            container.appendChild(script1);
-            container.appendChild(script2);
-        }
+        const script = document.createElement("script");
+        script.src = `https://www.highperformanceformat.com/${key}/invoke.js`;
+        script.async = true;
+
+        // 👇 IMPORTANT: set atOptions BEFORE script loads
+        window.atOptions = {
+            key,
+            format: "iframe",
+            height,
+            width,
+            params: {},
+        };
+
+        container.appendChild(script);
     }, [type]);
 
     return (
         <div
-            ref={containerRef}
+            ref={ref}
             style={{
+                width: "100%",
+                maxWidth: adConfig[type]?.width,
+                margin: "16px auto",
                 display: "flex",
                 justifyContent: "center",
-                margin: "16px 0",
             }}
         />
     );
