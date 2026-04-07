@@ -30,23 +30,36 @@ export default function Ad({ type }) {
 
     if (!container) return;
 
-    // Clear old ad
+    // Clear previous ad
     container.innerHTML = "";
 
-    // 🔥 Create isolated iframe
+    // ✅ Create iframe (isolated environment)
     const iframe = document.createElement("iframe");
     iframe.width = width;
     iframe.height = height;
+    iframe.style.width = width + "px";
+    iframe.style.height = height + "px";
     iframe.style.border = "none";
     iframe.style.overflow = "hidden";
+    iframe.style.display = "block";
+    iframe.setAttribute("scrolling", "no");
 
     container.appendChild(iframe);
 
-    // Inject ad inside iframe (same as your working HTML)
+    // ✅ Inject ad script inside iframe
     const doc = iframe.contentWindow.document;
     doc.open();
     doc.write(`
       <html>
+        <head>
+          <style>
+            html, body {
+              margin: 0;
+              padding: 0;
+              overflow: hidden;
+            }
+          </style>
+        </head>
         <body>
           <script>
             atOptions = {
@@ -71,7 +84,7 @@ export default function Ad({ type }) {
       style={{
         width: "100%",
         maxWidth: adConfig[type]?.width,
-        margin: "16px 10px",
+        margin: "16px auto",
         display: "flex",
         justifyContent: "center",
       }}
