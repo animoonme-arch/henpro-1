@@ -3,17 +3,17 @@ import { useEffect, useRef } from "react";
 
 const adConfig = {
   "300x250": {
-    key: "572c88010fa6a2ac86e4ba2c4f58dc0b",
+    key: "843e5a57237a4fb70eb86f5a83a1db27",
     width: 300,
     height: 250,
   },
   "320x50": {
-    key: "b4f57bd16fadcdfa927f6a9fa332fd42",
+    key: "1fab716da86beccb937f53edda1104f1",
     width: 320,
     height: 50,
   },
   "728x90": {
-    key: "df12cd120c8ea551d37e553455c6e10c",
+    key: "9a5122810fe0cfc4a0b7a688ca43cb94",
     width: 728,
     height: 90,
   },
@@ -70,7 +70,7 @@ export default function Ad({ type }) {
               params: {}
             };
           </script>
-          <script src="https://www.highperformanceformat.com/${key}/invoke.js"></script>
+          <script src="https://violentlinedexploit.com/${key}/invoke.js"></script>
         </body>
       </html>
     `);
