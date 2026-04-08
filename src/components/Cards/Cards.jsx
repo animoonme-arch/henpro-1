@@ -11,7 +11,7 @@ import {
 import { useRouter, useSearchParams } from "next/navigation"; // ⬅️ Import useSearchParams
 import "./card.css";
 
-export default function Series({ data = {}, link, heading , creator }) {
+export default function Series({ data = {}, link, heading, creator }) {
   const router = useRouter();
   // const searchParams = useSearchParams(); // ⬅️ Get search params
   const creatorParam = creator; // ⬅️ Get creator param
@@ -80,6 +80,32 @@ export default function Series({ data = {}, link, heading , creator }) {
 
   return (
     <div className="related-grid-section">
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          padding: "10px 0",
+          backgroundColor: "#201f31",
+        }}
+      >
+        <iframe
+          src="/ad"
+          title="Sponsored Ad"
+          scrolling="no"
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          style={{
+            width: "100%",
+            maxWidth: "728px",
+            height: "90px",
+            border: "none",
+            borderRadius: "10px",
+            overflow: "hidden",
+            backgroundColor: "#201f31",
+          }}
+        />
+      </div>
       <div className="heading-wrapper">
         <h2 className="related-heading">{heading}</h2>
         {pagination?.totalSeries > 0 ? (
@@ -94,9 +120,8 @@ export default function Series({ data = {}, link, heading , creator }) {
           <Link
             key={index}
             // ⬅️ Preserve creator param in series links
-            href={`/${
-              item.link || item.id || "#"
-            }${getCreatorQueryForLink()}`}
+            href={`/${item.link || item.id || "#"
+              }${getCreatorQueryForLink()}`}
             className="related-card"
           >
             <div className="related-image-wrapper">
@@ -132,6 +157,33 @@ export default function Series({ data = {}, link, heading , creator }) {
             </div>
           </Link>
         ))}
+      </div>
+
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          padding: "10px 0",
+          backgroundColor: "#201f31",
+        }}
+      >
+        <iframe
+          src="/ad2"
+          title="Sponsored Ad"
+          scrolling="no"
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          style={{
+            width: "100%",
+            maxWidth: "728px",
+            height: "90px",
+            border: "none",
+            borderRadius: "10px",
+            overflow: "hidden",
+            backgroundColor: "#201f31",
+          }}
+        />
       </div>
 
       {/* Pagination */}
@@ -182,6 +234,32 @@ export default function Series({ data = {}, link, heading , creator }) {
         >
           <FaAngleDoubleRight />
         </button>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          padding: "10px 0",
+          backgroundColor: "#201f31",
+        }}
+      >
+        <iframe
+          src="/ad"
+          title="Sponsored Ad"
+          scrolling="no"
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          style={{
+            width: "100%",
+            maxWidth: "728px",
+            height: "90px",
+            border: "none",
+            borderRadius: "10px",
+            overflow: "hidden",
+            backgroundColor: "#201f31",
+          }}
+        />
       </div>
     </div>
   );
