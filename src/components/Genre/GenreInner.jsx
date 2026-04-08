@@ -38,7 +38,7 @@ const GenreInner = (props) => {
         />
       </div>
       <div className="compli">
-        <div className="watc">
+        <div className="watc flex flex-col">
           <Card
             data={props.data}
             link={`genre?genre=${props.genre}`}
