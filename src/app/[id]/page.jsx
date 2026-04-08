@@ -177,7 +177,7 @@ export default async function Page({ params, searchParams }) {
         id={id}
         creator={creatorApiKey}
       />
-      <Advertize initialAdLink={dynamicAdLink} />
+      {/* <Advertize initialAdLink={dynamicAdLink} /> */}
     </>
   );
 }

@@ -103,7 +103,7 @@ export default async function SeriesPage({ searchParams }) {
         creator={creatorApiKey}
       />
 
-      <Advertize initialAdLink={dynamicAdLink} />
+      {/* <Advertize initialAdLink={dynamicAdLink} /> */}
     </div>
   );
 }

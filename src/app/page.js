@@ -110,7 +110,7 @@ export default async function Page({ searchParams }) {
         hompro={hompro}
         creator={creatorApiKey}
       />
-      <Advertize initialAdLink={dynamicAdLink} />
+      {/* <Advertize initialAdLink={dynamicAdLink} /> */}
     </div>
   );
 }

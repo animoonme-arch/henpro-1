@@ -525,34 +525,33 @@ export default function WatchPageClient({
                 )}
               </div>
 
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  padding: "10px 0",
-                  backgroundColor: "#201f31",
-                }}
-              >
-                <iframe
-                  src="/ad"
-                  title="Sponsored Ad"
-                  scrolling="no"
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
+              <div className="cdis">
+                <div
                   style={{
-                    width: "100%",
-                    maxWidth: "728px",
-                    height: "90px",
-                    border: "none",
-                    borderRadius: "10px",
-                    overflow: "hidden",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    padding: "10px 0",
                     backgroundColor: "#201f31",
                   }}
-                />
-              </div>
-
-              <div className="cdis">
+                >
+                  <iframe
+                    src="/ad"
+                    title="Sponsored Ad"
+                    scrolling="no"
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    style={{
+                      width: "100%",
+                      maxWidth: "728px",
+                      height: "90px",
+                      border: "none",
+                      borderRadius: "10px",
+                      overflow: "hidden",
+                      backgroundColor: "#201f31",
+                    }}
+                  />
+                </div>
                 <div className="episode-list">
                   <h3 className="episode-heading">Episodes</h3>
                   <div className="epsi">
