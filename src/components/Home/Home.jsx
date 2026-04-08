@@ -39,11 +39,34 @@ const Home = (props) => {
         />
 
         {/* 🥇 TOP ADS */}
-        <Ad type="320x50" />
+        {/* <Ad type="320x50" /> */}
 
         {/* 🟣 NATIVE ADFRAME (KEEP) */}
-        <div className="ad-container">
-          <iframe src="/ad" title="Native Ad" scrolling="no" />
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "10px 0",
+            backgroundColor: "#201f31",
+          }}
+        >
+          <iframe
+            src="/ad"
+            title="Sponsored Ad"
+            scrolling="no"
+
+            referrerPolicy="no-referrer-when-downgrade"
+            style={{
+              width: "100%",
+              maxWidth: "728px",
+              height: "90px",
+              border: "none",
+              borderRadius: "10px",
+              overflow: "hidden",
+              backgroundColor: "#201f31",
+            }}
+          />
         </div>
 
         {/* TRENDING GRID */}
@@ -132,17 +155,67 @@ const Home = (props) => {
 
         </section>
 
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "10px 0",
+            backgroundColor: "#201f31",
+          }}
+        >
+          <iframe
+            src="/ad2"
+            title="Sponsored Ad"
+            scrolling="no"
+
+            referrerPolicy="no-referrer-when-downgrade"
+            style={{
+              width: "100%",
+              maxWidth: "728px",
+              height: "90px",
+              border: "none",
+              borderRadius: "10px",
+              overflow: "hidden",
+              backgroundColor: "#201f31",
+            }}
+          />
+        </div>
+
         <RecentEpisodes
           recentEpi={props.recentEpi.data.recentEpisodes}
           creator={props.creator}
         />
 
         {/* 🥉 BANNER */}
-        <Ad type="300x250" />
+        {/* <Ad type="300x250" /> */}
 
         {/* 🟣 NATIVE AGAIN (GOOD POSITION) */}
-        <div className="ad-container">
-          <iframe src="/ad" title="Native Ad" scrolling="no" />
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "10px 0",
+            backgroundColor: "#201f31",
+          }}
+        >
+          <iframe
+            src="/ad"
+            title="Sponsored Ad"
+            scrolling="no"
+
+            referrerPolicy="no-referrer-when-downgrade"
+            style={{
+              width: "100%",
+              maxWidth: "728px",
+              height: "90px",
+              border: "none",
+              borderRadius: "10px",
+              overflow: "hidden",
+              backgroundColor: "#201f31",
+            }}
+          />
         </div>
 
         <ShareSlab
@@ -153,6 +226,33 @@ const Home = (props) => {
           creator={props.creator}
         />
 
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "10px 0",
+            backgroundColor: "#201f31",
+          }}
+        >
+          <iframe
+            src="/ad2"
+            title="Sponsored Ad"
+            scrolling="no"
+
+            referrerPolicy="no-referrer-when-downgrade"
+            style={{
+              width: "100%",
+              maxWidth: "728px",
+              height: "90px",
+              border: "none",
+              borderRadius: "10px",
+              overflow: "hidden",
+              backgroundColor: "#201f31",
+            }}
+          />
+        </div>
+
         <Swipe
           title="Series"
           slides={props.hompro?.series || []}
@@ -161,7 +261,32 @@ const Home = (props) => {
         />
 
         {/* 🟢 EXTRA BANNER */}
-        <Ad type="300x250" />
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "10px 0",
+            backgroundColor: "#201f31",
+          }}
+        >
+          <iframe
+            src="/ad"
+            title="Sponsored Ad"
+            scrolling="no"
+
+            referrerPolicy="no-referrer-when-downgrade"
+            style={{
+              width: "100%",
+              maxWidth: "728px",
+              height: "90px",
+              border: "none",
+              borderRadius: "10px",
+              overflow: "hidden",
+              backgroundColor: "#201f31",
+            }}
+          />
+        </div>
 
         <Swipe
           title="Uncensored"
@@ -170,7 +295,32 @@ const Home = (props) => {
           creator={props.creator}
         />
 
-        <Ad type="320x50" />
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "10px 0",
+            backgroundColor: "#201f31",
+          }}
+        >
+          <iframe
+            src="/ad2"
+            title="Sponsored Ad"
+            scrolling="no"
+
+            referrerPolicy="no-referrer-when-downgrade"
+            style={{
+              width: "100%",
+              maxWidth: "728px",
+              height: "90px",
+              border: "none",
+              borderRadius: "10px",
+              overflow: "hidden",
+              backgroundColor: "#201f31",
+            }}
+          />
+        </div>
 
         <Swipe
           title="Harem"
@@ -179,7 +329,32 @@ const Home = (props) => {
           creator={props.creator}
         />
 
-        <Ad type="320x50" />
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "10px 0",
+            backgroundColor: "#201f31",
+          }}
+        >
+          <iframe
+            src="/ad"
+            title="Sponsored Ad"
+            scrolling="no"
+
+            referrerPolicy="no-referrer-when-downgrade"
+            style={{
+              width: "100%",
+              maxWidth: "728px",
+              height: "90px",
+              border: "none",
+              borderRadius: "10px",
+              overflow: "hidden",
+              backgroundColor: "#201f31",
+            }}
+          />
+        </div>
 
         <Swipe
           title="School Girls"
@@ -188,7 +363,32 @@ const Home = (props) => {
           creator={props.creator}
         />
 
-        <Ad type="320x50" />
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "10px 0",
+            backgroundColor: "#201f31",
+          }}
+        >
+          <iframe
+            src="/ad2"
+            title="Sponsored Ad"
+            scrolling="no"
+
+            referrerPolicy="no-referrer-when-downgrade"
+            style={{
+              width: "100%",
+              maxWidth: "728px",
+              height: "90px",
+              border: "none",
+              borderRadius: "10px",
+              overflow: "hidden",
+              backgroundColor: "#201f31",
+            }}
+          />
+        </div>
 
         <Swipe
           title="Large Breasts"
@@ -198,7 +398,32 @@ const Home = (props) => {
         />
 
         {/* 📱 MOBILE STICKY */}
-        <Ad type="320x50" />
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "10px 0",
+            backgroundColor: "#201f31",
+          }}
+        >
+          <iframe
+            src="/ad"
+            title="Sponsored Ad"
+            scrolling="no"
+
+            referrerPolicy="no-referrer-when-downgrade"
+            style={{
+              width: "100%",
+              maxWidth: "728px",
+              height: "90px",
+              border: "none",
+              borderRadius: "10px",
+              overflow: "hidden",
+              backgroundColor: "#201f31",
+            }}
+          />
+        </div>
 
         <Footer creator={props.creator} />
 
