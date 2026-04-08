@@ -471,35 +471,34 @@ export default function WatchPageClient({
         />
       )}
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "10px 0",
-          backgroundColor: "#201f31",
-        }}
-      >
-        <iframe
-          src="/ad"
-          title="Sponsored Ad"
-          scrolling="no"
-
-          referrerPolicy="no-referrer-when-downgrade"
-          style={{
-            width: "100%",
-            maxWidth: "728px",
-            height: "90px",
-            border: "none",
-            borderRadius: "10px",
-            overflow: "hidden",
-            backgroundColor: "#201f31",
-          }}
-        />
-      </div>
-
       <div className="compli">
-        <div className="watc">
+        <div className="watc flex flex-col">
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              padding: "10px 0",
+              backgroundColor: "#201f31",
+            }}
+          >
+            <iframe
+              src="/ad"
+              title="Sponsored Ad"
+              scrolling="no"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              style={{
+                width: "100%",
+                maxWidth: "728px",
+                height: "90px",
+                border: "none",
+                borderRadius: "10px",
+                overflow: "hidden",
+                backgroundColor: "#201f31",
+              }}
+            />
+          </div>
           {/* --- Video Player --- */}
           <div className="video-section">
             <div className="ifro">
@@ -524,6 +523,33 @@ export default function WatchPageClient({
                     {currentViews.toLocaleString()} views
                   </div>
                 )}
+              </div>
+
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  padding: "10px 0",
+                  backgroundColor: "#201f31",
+                }}
+              >
+                <iframe
+                  src="/ad"
+                  title="Sponsored Ad"
+                  scrolling="no"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  style={{
+                    width: "100%",
+                    maxWidth: "728px",
+                    height: "90px",
+                    border: "none",
+                    borderRadius: "10px",
+                    overflow: "hidden",
+                    backgroundColor: "#201f31",
+                  }}
+                />
               </div>
 
               <div className="cdis">
@@ -620,6 +646,33 @@ export default function WatchPageClient({
                 </div>
               </div>
               {/* --- END WATCHLIST BUTTON SECTION --- */}
+
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  padding: "10px 0",
+                  backgroundColor: "#201f31",
+                }}
+              >
+                <iframe
+                  src="/ad2"
+                  title="Sponsored Ad"
+                  scrolling="no"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  style={{
+                    width: "100%",
+                    maxWidth: "728px",
+                    height: "90px",
+                    border: "none",
+                    borderRadius: "10px",
+                    overflow: "hidden",
+                    backgroundColor: "#201f31",
+                  }}
+                />
+              </div>
 
               <div className="slab2">
                 <div className="fourCon">
@@ -718,7 +771,7 @@ export default function WatchPageClient({
                 src="/ad"
                 title="Sponsored Ad"
                 scrolling="no"
-
+                loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
                 style={{
                   width: "100%",
@@ -739,7 +792,6 @@ export default function WatchPageClient({
               pageName="this hentai"
               creator={creator}
             />
-
             <div
               style={{
                 display: "flex",
@@ -750,10 +802,10 @@ export default function WatchPageClient({
               }}
             >
               <iframe
-                src="/ad"
+                src="/ad2"
                 title="Sponsored Ad"
                 scrolling="no"
-
+                loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
                 style={{
                   width: "100%",
@@ -846,7 +898,7 @@ export default function WatchPageClient({
                 src="/ad"
                 title="Sponsored Ad"
                 scrolling="no"
-
+                loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
                 style={{
                   width: "100%",
@@ -862,9 +914,31 @@ export default function WatchPageClient({
 
             <CommentSection contentId={contentId} showToast={showCustomToast} creator={creator} />
 
-            <div>
-              {/* RelatedGrid component handles its own internal links, but if it contained an external view-all link, it would need the creator logic passed in */}
-              <RelatedGrid related={infoData.related || []} creator={creator} />
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                padding: "10px 0",
+                backgroundColor: "#201f31",
+              }}
+            >
+              <iframe
+                src="/ad2"
+                title="Sponsored Ad"
+                scrolling="no"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                style={{
+                  width: "100%",
+                  maxWidth: "728px",
+                  height: "90px",
+                  border: "none",
+                  borderRadius: "10px",
+                  overflow: "hidden",
+                  backgroundColor: "#201f31",
+                }}
+              />
             </div>
           </div>
 
@@ -894,9 +968,61 @@ export default function WatchPageClient({
               ))}
             </div>
           )}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              padding: "10px 0",
+              backgroundColor: "#201f31",
+            }}
+          >
+            <iframe
+              src="/ad"
+              title="Sponsored Ad"
+              scrolling="no"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              style={{
+                width: "100%",
+                maxWidth: "728px",
+                height: "90px",
+                border: "none",
+                borderRadius: "10px",
+                overflow: "hidden",
+                backgroundColor: "#201f31",
+              }}
+            />
+          </div>
         </div>
 
         <div className="sidc">
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              padding: "10px 0",
+              backgroundColor: "#201f31",
+            }}
+          >
+            <iframe
+              src="/ad"
+              title="Sponsored Ad"
+              scrolling="no"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              style={{
+                width: "100%",
+                maxWidth: "728px",
+                height: "90px",
+                border: "none",
+                borderRadius: "10px",
+                overflow: "hidden",
+                backgroundColor: "#201f31",
+              }}
+            />
+          </div>
           <div className="episode-list hno">
             <h3 className="episode-heading">Episodes</h3>
             <div className="epsi">
@@ -941,8 +1067,60 @@ export default function WatchPageClient({
               )}
             </div>
           </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              padding: "10px 0",
+              backgroundColor: "#201f31",
+            }}
+          >
+            <iframe
+              src="/ad2"
+              title="Sponsored Ad"
+              scrolling="no"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              style={{
+                width: "100%",
+                maxWidth: "728px",
+                height: "90px",
+                border: "none",
+                borderRadius: "10px",
+                overflow: "hidden",
+                backgroundColor: "#201f31",
+              }}
+            />
+          </div>
 
           <Sidebar sidebar={watchData.sidebar} creator={creator} />
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              padding: "10px 0",
+              backgroundColor: "#201f31",
+            }}
+          >
+            <iframe
+              src="/ad"
+              title="Sponsored Ad"
+              scrolling="no"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              style={{
+                width: "100%",
+                maxWidth: "728px",
+                height: "90px",
+                border: "none",
+                borderRadius: "10px",
+                overflow: "hidden",
+                backgroundColor: "#201f31",
+              }}
+            />
+          </div>
         </div>
       </div >
       {!adClosed && <Loading onClose={() => setAdClosed(true)} />

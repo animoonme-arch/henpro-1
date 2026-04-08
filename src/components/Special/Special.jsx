@@ -475,7 +475,7 @@ export default function Special({ video, id }) {
             src="/ad"
             title="Sponsored Ad"
             scrolling="no"
-
+            loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
             style={{
               width: "100%",
@@ -570,6 +570,33 @@ export default function Special({ video, id }) {
 
         <h1 className="video-title">{video.title}</h1>
 
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "10px 0",
+            backgroundColor: "#201f31",
+          }}
+        >
+          <iframe
+            src="/ad"
+            title="Sponsored Ad"
+            scrolling="no"
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            style={{
+              width: "100%",
+              maxWidth: "728px",
+              height: "90px",
+              border: "none",
+              borderRadius: "10px",
+              overflow: "hidden",
+              backgroundColor: "#201f31",
+            }}
+          />
+        </div>
+
         {/* META */}
 
         <div className="meta">
@@ -616,10 +643,10 @@ export default function Special({ video, id }) {
           }}
         >
           <iframe
-            src="/ad"
+            src="/ad2"
             title="Sponsored Ad"
             scrolling="no"
-
+            loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
             style={{
               width: "100%",
@@ -742,7 +769,7 @@ export default function Special({ video, id }) {
           }}
         >
           <iframe
-            src="/ad"
+            src="/ad2"
             title="Sponsored Ad"
             scrolling="no"
 

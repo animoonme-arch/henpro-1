@@ -53,8 +53,8 @@ export default function Sidebar({ sidebar = {}, creator }) {
       <div className="flex justify-center mb-5 bg-[#0b0b0b] rounded-xl overflow-hidden">
         <button
           className={`px-4 py-2 w-1/2 font-semibold transition-all ${activeTab === "popular"
-              ? "bg-gradient-to-r from-[#ff9741] to-[#ffb561] text-black"
-              : "text-gray-300 hover:bg-[#1f1f1f]"
+            ? "bg-gradient-to-r from-[#ff9741] to-[#ffb561] text-black"
+            : "text-gray-300 hover:bg-[#1f1f1f]"
             }`}
           onClick={() => setActiveTab("popular")}
         >
@@ -62,8 +62,8 @@ export default function Sidebar({ sidebar = {}, creator }) {
         </button>
         <button
           className={`px-4 py-2 w-1/2 font-semibold transition-all ${activeTab === "newest"
-              ? "bg-gradient-to-r from-[#ff9741] to-[#ffb561] text-black"
-              : "text-gray-300 hover:bg-[#1f1f1f]"
+            ? "bg-gradient-to-r from-[#ff9741] to-[#ffb561] text-black"
+            : "text-gray-300 hover:bg-[#1f1f1f]"
             }`}
           onClick={() => setActiveTab("newest")}
         >
@@ -98,6 +98,33 @@ export default function Sidebar({ sidebar = {}, creator }) {
         ))}
       </div>
 
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          padding: "10px 0",
+          backgroundColor: "#201f31",
+        }}
+      >
+        <iframe
+          src="/ad"
+          title="Sponsored Ad"
+          scrolling="no"
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          style={{
+            width: "100%",
+            maxWidth: "728px",
+            height: "90px",
+            border: "none",
+            borderRadius: "10px",
+            overflow: "hidden",
+            backgroundColor: "#201f31",
+          }}
+        />
+      </div>
+
       {/* --- Genres (Updated Link) --- */}
       <div className="mb-6 sidebar-genres">
         <h3 className="text-lg font-semibold mb-3 border-b border-[#333] pb-1 uppercase tracking-wide text-gray-200">
@@ -129,6 +156,32 @@ export default function Sidebar({ sidebar = {}, creator }) {
             ))}
           </div>
         </div>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          padding: "10px 0",
+          backgroundColor: "#201f31",
+        }}
+      >
+        <iframe
+          src="/ad2"
+          title="Sponsored Ad"
+          scrolling="no"
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          style={{
+            width: "100%",
+            maxWidth: "728px",
+            height: "90px",
+            border: "none",
+            borderRadius: "10px",
+            overflow: "hidden",
+            backgroundColor: "#201f31",
+          }}
+        />
       </div>
 
       {/* --- Years (Updated Link) --- */}
