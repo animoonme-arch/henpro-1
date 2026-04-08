@@ -130,52 +130,65 @@ export default function Category({ path, label, pagel, refer }) {
         <div className="w-full flex flex-col gap-y-4 mt-[70px] max-md:mt-[70px]">
           <div
             style={{
-              width: "100%",
               display: "flex",
               justifyContent: "center",
-              marginTop: "10px 0",
+              alignItems: "center",
+              padding: "10px 0",
+              backgroundColor: "#201f31",
             }}
           >
             <iframe
-              src="/ad3"
-              style={{
-                width: "fit-content",
-                height: "100px",
-                border: "none",
-                overflow: "hidden",
-              }}
+              src="/ad"
+              title="Sponsored Ad"
               scrolling="no"
-            ></iframe>
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              style={{
+                width: "100%",
+                maxWidth: "728px",
+                height: "90px",
+                border: "none",
+                borderRadius: "10px",
+                overflow: "hidden",
+                backgroundColor: "#201f31",
+              }}
+            />
           </div>
           {/* Share Anime Banner */}
           <div className="w-full">
             <Share
-              ShareUrl={`https://shoko.fun/${path}${getCreatorQuery("?")}${
-                refer
-                  ? `${creatorParam ? "&" : "?"}refer=${refer}`
-                  : `${creatorParam ? "&" : "?"}refer=weebsSecret`
-              }`}
+              ShareUrl={`https://shoko.fun/${path}${getCreatorQuery("?")}${refer
+                ? `${creatorParam ? "&" : "?"}refer=${refer}`
+                : `${creatorParam ? "&" : "?"}refer=weebsSecret`
+                }`}
               arise={label?.split?.("/")?.pop() || ""}
             />
           </div>
           <div
             style={{
-              width: "100%",
               display: "flex",
               justifyContent: "center",
-              marginTop: "10px 0",
+              alignItems: "center",
+              padding: "10px 0",
+              backgroundColor: "#201f31",
             }}
           >
             <iframe
               src="/ad2"
-              style={{
-                width: "fit-content",
-                height: "100px",
-                border: "none",
-                overflow: "hidden",
-              }}
+              title="Sponsored Ad"
               scrolling="no"
-            ></iframe>
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              style={{
+                width: "100%",
+                maxWidth: "728px",
+                height: "90px",
+                border: "none",
+                borderRadius: "10px",
+                overflow: "hidden",
+                backgroundColor: "#201f31",
+              }}
+            />
           </div>
 
           {/* Main Content */}
@@ -205,6 +218,32 @@ export default function Category({ path, label, pagel, refer }) {
                       creator={creatorParam}
                     />
                   )}
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      padding: "10px 0",
+                      backgroundColor: "#201f31",
+                    }}
+                  >
+                    <iframe
+                      src="/ad"
+                      title="Sponsored Ad"
+                      scrolling="no"
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      style={{
+                        width: "100%",
+                        maxWidth: "728px",
+                        height: "90px",
+                        border: "none",
+                        borderRadius: "10px",
+                        overflow: "hidden",
+                        backgroundColor: "#201f31",
+                      }}
+                    />
+                  </div>
 
                   <PageSlider
                     page={page}
@@ -214,6 +253,32 @@ export default function Category({ path, label, pagel, refer }) {
                     // ⬅️ Pass creatorParam to PageSlider
                     creator={creatorParam}
                   />
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      padding: "10px 0",
+                      backgroundColor: "#201f31",
+                    }}
+                  >
+                    <iframe
+                      src="/ad2"
+                      title="Sponsored Ad"
+                      scrolling="no"
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      style={{
+                        width: "100%",
+                        maxWidth: "728px",
+                        height: "90px",
+                        border: "none",
+                        borderRadius: "10px",
+                        overflow: "hidden",
+                        backgroundColor: "#201f31",
+                      }}
+                    />
+                  </div>
                 </>
               )}
             </div>
@@ -233,6 +298,33 @@ export default function Category({ path, label, pagel, refer }) {
                       creator={creatorParam}
                     />
                   )}
+
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      padding: "10px 0",
+                      backgroundColor: "#201f31",
+                    }}
+                  >
+                    <iframe
+                      src="/ad"
+                      title="Sponsored Ad"
+                      scrolling="no"
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      style={{
+                        width: "100%",
+                        maxWidth: "728px",
+                        height: "90px",
+                        border: "none",
+                        borderRadius: "10px",
+                        overflow: "hidden",
+                        backgroundColor: "#201f31",
+                      }}
+                    />
+                  </div>
 
                   {homeInfo?.genres && (
                     <Genre
