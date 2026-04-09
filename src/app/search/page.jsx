@@ -98,7 +98,7 @@ export default async function SeriesPage({ searchParams }) {
   return (
     <div className="page-wrapper">
       <Search data={data || []} keyword={q} creator={creatorApiKey} />
-      {/* <Advertize initialAdLink={dynamicAdLink} /> */}
+      <Advertize initialAdLink={dynamicAdLink} />
     </div>
   );
 }

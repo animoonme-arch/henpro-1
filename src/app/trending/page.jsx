@@ -101,7 +101,7 @@ export default async function TrendingPage({ searchParams }) {
         creator={creatorApiKey}
       />
 
-      {/* <Advertize initialAdLink={dynamicAdLink} /> */}
+      <Advertize initialAdLink={dynamicAdLink} />
     </div>
   );
 }

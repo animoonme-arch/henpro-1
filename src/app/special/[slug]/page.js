@@ -123,7 +123,7 @@ export default async function Page({ params }) {
   return (
     <div>
       <SpeicalWrapper video={video} id={slug} />
-      {/* <Advertize initialAdLink={DEFAULT_AD_LINK} /> */}
+      <Advertize initialAdLink={DEFAULT_AD_LINK} />
     </div>
   );
 }

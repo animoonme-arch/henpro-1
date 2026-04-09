@@ -1,19 +1,20 @@
-// components/Advertize/Advertize.js
-
 "use client";
+
 import React, { useEffect, useState } from "react";
 import "./advertize.css";
 
-// 🌟 Accept the dynamic ad link as a prop
 export default function Advertize({ initialAdLink }) {
   const [time, setTime] = useState(new Date());
   const [showAd, setShowAd] = useState(false);
 
-  // ✅ Use the link passed from the Server Component
-  // This value will be the creator's link or the default link.
-  const adLink = initialAdLink;
-
   const ls = typeof window !== "undefined" ? localStorage : null;
+
+  // 🌟 Your external ad link
+  const externalAd =
+    "https://www.profitablecpmratenetwork.com/eqj1sm4h?key=8675fdb0638ddeb85b7967c8e40334e2";
+
+  // 🌟 Internal link (comes from server)
+  const internalAd = initialAdLink;
 
   useEffect(() => {
     const interval = setInterval(() => setTime(new Date()), 1000);
@@ -45,17 +46,28 @@ export default function Advertize({ initialAdLink }) {
   function handleAdClick() {
     if (!ls) return;
 
-    // track clicks if needed
-    const clickCount = parseInt(ls.getItem("adClickCount") || "0", 10) + 1;
+    // 🔥 Get toggle state (default = internal first)
+    const lastType = ls.getItem("lastAdType") || "external";
 
+    // 👇 Switch logic
+    const nextType = lastType === "internal" ? "external" : "internal";
+
+    const targetLink =
+      nextType === "internal" ? internalAd : externalAd;
+
+    // ✅ Save toggle
+    ls.setItem("lastAdType", nextType);
+
+    // track clicks
+    const clickCount = parseInt(ls.getItem("adClickCount") || "0", 10) + 1;
     ls.setItem("adClickCount", clickCount.toString());
+
     ls.setItem("lastDisplay", new Date().toISOString());
     ls.setItem("lastDate", time.getDate().toString());
     ls.setItem("lastHour", time.getHours().toString());
     ls.setItem("truth", "false");
 
-    // ✅ Opens the dynamic link based on the 'creator' query parameter
-    window.open(adLink, "_blank");
+    window.open(targetLink, "_blank");
     setShowAd(false);
   }
 
