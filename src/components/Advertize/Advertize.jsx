@@ -11,7 +11,7 @@ export default function Advertize({ initialAdLink }) {
 
   // 🌟 Your external ad link
   const externalAd =
-    "https://www.profitablecpmratenetwork.com/eqj1sm4h?key=8675fdb0638ddeb85b7967c8e40334e2";
+    "https://violentlinedexploit.com/ukqgqrv4n?key=acf2a1b713094b78ec1cc21761e9b149";
 
   // 🌟 Internal link (comes from server)
   const internalAd = initialAdLink;
