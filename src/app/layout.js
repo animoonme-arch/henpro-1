@@ -2,7 +2,7 @@ import "./globals.css";
 import Script from "next/script";
 
 const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "Hanimetv";
-const domain = process.env.NEXT_PUBLIC_SITE_DOMAIN || "https://henpro.fun";
+const domain = process.env.NEXT_PUBLIC_SITE_DOMAIN || "https://hentaio.pro";
 
 const isPro = siteName.toLowerCase().includes("pro");
 const base = isPro ? "Hen" : "Hanime";
@@ -11,6 +11,7 @@ const accent = isPro ? "Pro" : "TV";
 const fullSiteName = `${siteName}`;
 
 export const metadata = {
+  // ✅ This enables automatic correct canonical URLs
   metadataBase: new URL(domain),
 
   title: {
@@ -52,9 +53,8 @@ export const metadata = {
     images: ["/pearl.png"],
   },
 
-  alternates: {
-    canonical: domain,
-  },
+  // ❌ REMOVED incorrect global canonical
+  // Next.js will now auto-generate correct canonicals per page
 
   robots: {
     index: true,
@@ -73,7 +73,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        {/* Google Analytics */}
+        {/* ✅ Google Analytics */}
         <Script
           strategy="afterInteractive"
           src="https://www.googletagmanager.com/gtag/js?id=G-64QSGGL3N5"
