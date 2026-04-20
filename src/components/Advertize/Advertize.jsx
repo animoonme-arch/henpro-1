@@ -11,10 +11,10 @@ export default function Advertize({ initialAdLink }) {
 
   // 🌟 Your external ad link
   const externalAd =
-    "https://violentlinedexploit.com/ukqgqrv4n?key=acf2a1b713094b78ec1cc21761e9b149";
+    "https://omg10.com/4/10835083";
 
   // 🌟 Internal link (comes from server)
-  const internalAd = initialAdLink;
+  const internalAd = "https://omg10.com/4/10835083";
 
   useEffect(() => {
     const interval = setInterval(() => setTime(new Date()), 1000);
