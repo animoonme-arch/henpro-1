@@ -34,7 +34,7 @@ export default function Advertize({ initialAdLink }) {
       : Infinity;
 
     const shouldShowAd =
-      secondsSinceLastDisplay >= 30 ||
+      secondsSinceLastDisplay >= 15 ||
       currentDate !== parseInt(lastDate) ||
       currentHour !== parseInt(lastHour);
 
