@@ -80,6 +80,11 @@ export default function RootLayout({ children }) {
         />
 
         <Script
+          strategy="afterInteractive"
+          src="https://violentlinedexploit.com/c9/00/44/c90044a4242864685950f91240cbbb70.js"
+        />
+
+        <Script
           id="google-analytics"
           strategy="afterInteractive"
           dangerouslySetInnerHTML={{
@@ -93,9 +98,7 @@ export default function RootLayout({ children }) {
         />
       </head>
 
-      <body className="antialiased">
-        {children}
-      </body>
+      <body className="antialiased">{children}</body>
     </html>
   );
 }

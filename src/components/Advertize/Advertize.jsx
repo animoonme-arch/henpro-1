@@ -1,87 +1,81 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./advertize.css";
 
 export default function Advertize({ initialAdLink }) {
-  const [ready, setReady] = useState(false);
-  const hasClicked = useRef(false);
+  const [time, setTime] = useState(new Date());
+  const [showAd, setShowAd] = useState(false);
 
+  const ls = typeof window !== "undefined" ? localStorage : null;
+
+  // 🌟 Your external ad link
   const externalAd =
     "https://violentlinedexploit.com/ukqgqrv4n?key=acf2a1b713094b78ec1cc21761e9b149";
 
+  // 🌟 Internal link (comes from server)
   const internalAd = initialAdLink;
 
-  /* ---------------- LOAD POP SCRIPT ---------------- */
   useEffect(() => {
-    // prevent multiple loads
-    if (sessionStorage.getItem("popLoaded")) {
-      setReady(true);
-      return;
-    }
+    const interval = setInterval(() => setTime(new Date()), 1000);
 
-    const script = document.createElement("script");
-    script.src =
-      "https://violentlinedexploit.com/c9/00/44/c90044a4242864685950f91240cbbb70.js";
-    script.async = true;
+    if (!ls) return;
 
-    script.onload = () => {
-      console.log("Ad script loaded");
-      sessionStorage.setItem("popLoaded", "true");
-      setReady(true);
-    };
+    const lastDisplay = ls.getItem("lastDisplay");
+    const lastDate = ls.getItem("lastDate");
+    const lastHour = ls.getItem("lastHour");
 
-    document.body.appendChild(script);
-  }, []);
+    const currentDate = time.getDate();
+    const currentHour = time.getHours();
 
-  /* ---------------- CLICK HANDLER ---------------- */
-  const handleClick = () => {
-    if (!ready) return;
+    const lastDisplayDate = lastDisplay ? new Date(lastDisplay) : null;
+    const secondsSinceLastDisplay = lastDisplayDate
+      ? Math.floor((time - lastDisplayDate) / 1000)
+      : Infinity;
 
-    // prevent multiple triggers per session
-    if (hasClicked.current || sessionStorage.getItem("adStarted")) return;
+    const shouldShowAd =
+      secondsSinceLastDisplay >= 30 ||
+      currentDate !== parseInt(lastDate) ||
+      currentHour !== parseInt(lastHour);
 
-    hasClicked.current = true;
-    sessionStorage.setItem("adStarted", "true");
+    setShowAd(shouldShowAd);
 
-    console.log("User clicked → pop should fire");
+    return () => clearInterval(interval);
+  }, [time]);
 
-    /* ---------------- SMARTLINK LOGIC ---------------- */
-    setTimeout(() => {
-      let count = 0;
+  function handleAdClick() {
+    if (!ls) return;
 
-      const interval = setInterval(() => {
-        if (count >= 3) {
-          clearInterval(interval);
-          return;
-        }
+    // 🔥 Get toggle state (default = internal first)
+    const lastType = ls.getItem("lastAdType") || "external";
 
-        // alternate links
-        const link = count % 2 === 0 ? internalAd : externalAd;
+    // 👇 Switch logic
+    const nextType = lastType === "internal" ? "external" : "internal";
 
-        window.open(link, "_blank");
-        count++;
+    const targetLink =
+      nextType === "internal" ? internalAd : externalAd;
 
-        console.log("Smartlink fired:", count);
-      }, 30000); // every 30 sec
-    }, 30000); // start after 30 sec
-  };
+    // ✅ Save toggle
+    ls.setItem("lastAdType", nextType);
 
-  /* ---------------- RENDER OVERLAY ---------------- */
-  if (!ready) return null;
+    // track clicks
+    const clickCount = parseInt(ls.getItem("adClickCount") || "0", 10) + 1;
+    ls.setItem("adClickCount", clickCount.toString());
+
+    ls.setItem("lastDisplay", new Date().toISOString());
+    ls.setItem("lastDate", time.getDate().toString());
+    ls.setItem("lastHour", time.getHours().toString());
+    ls.setItem("truth", "false");
+
+    window.open(targetLink, "_blank");
+    setShowAd(false);
+  }
 
   return (
     <div
-      onClick={handleClick}
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        zIndex: 9999,
-        cursor: "pointer",
-      }}
-    />
+      className="Advertize"
+      style={{ zIndex: showAd ? 100 : -1 }}
+      onClick={handleAdClick}
+    ></div>
   );
 }
