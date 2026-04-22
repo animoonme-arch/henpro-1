@@ -1,81 +1,60 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import "./advertize.css";
+import { useEffect, useRef } from "react";
 
 export default function Advertize({ initialAdLink }) {
-  const [time, setTime] = useState(new Date());
-  const [showAd, setShowAd] = useState(false);
+  const hasTriggeredPop = useRef(false);
+  const smartlinkStarted = useRef(false);
 
-  const ls = typeof window !== "undefined" ? localStorage : null;
-
-  // 🌟 Your external ad link
   const externalAd =
     "https://violentlinedexploit.com/ukqgqrv4n?key=acf2a1b713094b78ec1cc21761e9b149";
 
-  // 🌟 Internal link (comes from server)
   const internalAd = initialAdLink;
 
   useEffect(() => {
-    const interval = setInterval(() => setTime(new Date()), 1000);
+    const handleFirstClick = () => {
+      if (hasTriggeredPop.current) return;
 
-    if (!ls) return;
+      hasTriggeredPop.current = true;
 
-    const lastDisplay = ls.getItem("lastDisplay");
-    const lastDate = ls.getItem("lastDate");
-    const lastHour = ls.getItem("lastHour");
+      // 🔥 Load Adsterra script ONLY once
+      const script = document.createElement("script");
+      script.src =
+        "https://violentlinedexploit.com/c9/00/44/c90044a4242864685950f91240cbbb70.js";
+      script.async = true;
+      document.body.appendChild(script);
 
-    const currentDate = time.getDate();
-    const currentHour = time.getHours();
+      // 🔥 Start smartlink AFTER 30s
+      setTimeout(() => {
+        if (smartlinkStarted.current) return;
+        smartlinkStarted.current = true;
 
-    const lastDisplayDate = lastDisplay ? new Date(lastDisplay) : null;
-    const secondsSinceLastDisplay = lastDisplayDate
-      ? Math.floor((time - lastDisplayDate) / 1000)
-      : Infinity;
+        let count = 0;
 
-    const shouldShowAd =
-      secondsSinceLastDisplay >= 30 ||
-      currentDate !== parseInt(lastDate) ||
-      currentHour !== parseInt(lastHour);
+        const interval = setInterval(() => {
+          if (count >= 3) {
+            clearInterval(interval);
+            return;
+          }
 
-    setShowAd(shouldShowAd);
+          // alternate links
+          const link = count % 2 === 0 ? internalAd : externalAd;
 
-    return () => clearInterval(interval);
-  }, [time]);
+          window.open(link, "_blank");
+          count++;
+        }, 30000);
 
-  function handleAdClick() {
-    if (!ls) return;
+      }, 30000);
 
-    // 🔥 Get toggle state (default = internal first)
-    const lastType = ls.getItem("lastAdType") || "external";
+      document.removeEventListener("click", handleFirstClick);
+    };
 
-    // 👇 Switch logic
-    const nextType = lastType === "internal" ? "external" : "internal";
+    document.addEventListener("click", handleFirstClick);
 
-    const targetLink =
-      nextType === "internal" ? internalAd : externalAd;
+    return () => {
+      document.removeEventListener("click", handleFirstClick);
+    };
+  }, [internalAd]);
 
-    // ✅ Save toggle
-    ls.setItem("lastAdType", nextType);
-
-    // track clicks
-    const clickCount = parseInt(ls.getItem("adClickCount") || "0", 10) + 1;
-    ls.setItem("adClickCount", clickCount.toString());
-
-    ls.setItem("lastDisplay", new Date().toISOString());
-    ls.setItem("lastDate", time.getDate().toString());
-    ls.setItem("lastHour", time.getHours().toString());
-    ls.setItem("truth", "false");
-
-    window.open(targetLink, "_blank");
-    setShowAd(false);
-  }
-
-  return (
-    <div
-      className="Advertize"
-      style={{ zIndex: showAd ? 100 : -1 }}
-      onClick={handleAdClick}
-    ></div>
-  );
+  return null;
 }
